@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>COD Mobile | تورنمنت بتل رویال — سایبرپانک ادیشن</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#08090C;
+    --panel:rgba(18,16,28,0.55);
+    --panel-solid:#100e18;
+    --border:rgba(168,85,247,0.18);
+    --purple:#A855F7;
+    --purple-soft:rgba(168,85,247,0.4);
+    --cyan:#00F0FF;
+    --cyan-soft:rgba(0,240,255,0.4);
+    --red:#FF2050;
+    --red-soft:rgba(255,32,80,0.4);
+    --text:#EDEBFC;
+    --text-dim:#8b87a3;
+    --radius:16px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0; scroll-behavior:smooth;}
+  body{
+    background:
+      radial-gradient(circle at 15% 0%, rgba(168,85,247,0.16), transparent 42%),
+      radial-gradient(circle at 90% 15%, rgba(0,240,255,0.10), transparent 40%),
+      radial-gradient(circle at 50% 100%, rgba(255,32,80,0.08), transparent 45%),
+      var(--bg);
+    color:var(--text);
+    font-family:'Vazirmatn','Rajdhani',sans-serif;
+    min-height:100vh;
+  }
+  body::before{
+    content:"";
+    position:fixed; inset:0; z-index:1; pointer-events:none;
+    background-image:repeating-linear-gradient(0deg, rgba(255,255,255,0.012) 0px, rgba(255,255,255,0.012) 1px, transparent 1px, transparent 3px);
+  }
+  .wrap{position:relative; z-index:2; max-width:1100px; margin:0 auto; padding:20px 16px 70px;}
+
+  ::-webkit-scrollbar{width:8px;}
+  ::-webkit-scrollbar-thumb{background:var(--purple-soft); border-radius:10px;}
+
+  /* ===== TOP BAR (lock icon) ===== */
+  .topbar{display:flex; justify-content:flex-end; margin-bottom:6px;}
+  .lock-btn{
+    width:40px;height:40px;border-radius:10px;
+    background:var(--panel); border:1px solid var(--border);
+    display:flex;align-items:center;justify-content:center;
+    cursor:pointer; font-size:18px;
+    transition:box-shadow .2s ease, transform .15s ease;
+  }
+  .lock-btn:hover{box-shadow:0 0 16px var(--purple-soft); transform:translateY(-1px);}
+  .admin-badge{
+    display:none;
+    align-items:center; gap:6px;
+    font-size:12px; font-weight:700; color:var(--cyan);
+    background:rgba(0,240,255,0.08); border:1px solid var(--cyan-soft);
+    padding:6px 12px; border-radius:20px; margin-left:10px;
+  }
+  .admin-badge.active{display:flex;}
+
+  /* ===== HERO ===== */
+  header.hero{
+    position:relative; overflow:hidden;
+    border:1px solid var(--border); border-radius:var(--radius);
+    background:linear-gradient(160deg, rgba(168,85,247,0.10), rgba(0,240,255,0.04) 60%), var(--panel-solid);
+    padding:30px 24px; margin-bottom:22px;
+  }
+  header.hero::after{
+    content:""; position:absolute; top:-50%; left:-15%;
+    width:380px;height:380px; border-radius:50%;
+    background:radial-gradient(circle, var(--purple-soft), transparent 70%);
+    filter:blur(20px); pointer-events:none;
+  }
+  .free-banner{
+    display:inline-flex; align-items:center; gap:8px;
+    font-size:12.5px; font-weight:700; letter-spacing:.2px;
+    color:var(--cyan);
+    background:rgba(0,240,255,0.06);
+    border:1px solid var(--cyan-soft);
+    padding:6px 14px; border-radius:20px;
+    text-shadow:0 0 10px var(--cyan-soft);
+    margin-bottom:16px;
+    animation:softpulse 2.4s ease-in-out infinite;
+  }
+  @keyframes softpulse{
+    0%,100%{box-shadow:0 0 8px var(--cyan-soft);}
+    50%{box-shadow:0 0 20px var(--cyan-soft);}
+  }
+  h1.title{
+    font-family:'Rajdhani',sans-serif; font-weight:700;
+    font-size:clamp(26px,5vw,44px); line-height:1.15; margin:0 0 8px;
+  }
+  h1.title .grad{
+    background:linear-gradient(90deg, var(--purple), var(--cyan));
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .subtitle{color:var(--text-dim); font-size:15px; max-width:620px; line-height:1.8; margin:0 0 22px;}
+
+  .join-btn{
+    display:inline-flex; align-items:center; gap:10px;
+    background:linear-gradient(135deg, var(--purple), #6d28d9);
+    color:#fff; font-weight:700; font-size:15px;
+    border:none; border-radius:14px; padding:15px 28px;
+    cursor:pointer; margin-bottom:26px;
+    box-shadow:0 0 20px var(--purple-soft), 0 0 50px rgba(168,85,247,0.15);
+    animation:joinGlow 2s ease-in-out infinite;
+    transition:transform .15s ease;
+  }
+  .join-btn:hover{transform:translateY(-2px) scale(1.02);}
+  @keyframes joinGlow{
+    0%,100%{box-shadow:0 0 20px var(--purple-soft), 0 0 50px rgba(168,85,247,0.12);}
+    50%{box-shadow:0 0 32px var(--purple-soft), 0 0 70px rgba(168,85,247,0.28);}
+  }
+
+  /* countdown */
+  .countdown-row{display:flex; flex-wrap:wrap; gap:12px; margin-bottom:20px;}
+  .cd-box{
+    background:rgba(0,0,0,0.4); border:1px solid var(--border);
+    border-radius:12px; padding:12px 18px; min-width:74px; text-align:center;
+  }
+  .cd-box .num{
+    font-family:'Rajdhani',monospace; font-size:30px; font-weight:700;
+    color:var(--cyan); text-shadow:0 0 14px var(--cyan-soft);
+    line-height:1; font-variant-numeric:tabular-nums;
+  }
+  .cd-box .lbl{font-size:11px; color:var(--text-dim); margin-top:6px;}
+
+  .stats-bar{display:flex; align-items:center; gap:16px; flex-wrap:wrap;}
+  .stats-text{font-size:14px;}
+  .stats-text b{color:var(--purple); font-size:18px; text-shadow:0 0 10px var(--purple-soft);}
+  .progress-track{flex:1; min-width:160px; height:10px; border-radius:20px; background:rgba(255,255,255,0.06); overflow:hidden; border:1px solid var(--border);}
+  .progress-fill{height:100%; background:linear-gradient(90deg, var(--purple), var(--cyan)); box-shadow:0 0 10px var(--purple-soft); transition:width .5s ease;}
+
+  /* ===== ROOM CREDENTIALS ===== */
+  .room-box{
+    position:relative; border:1px solid var(--border); border-radius:var(--radius);
+    background:linear-gradient(160deg, rgba(0,240,255,0.06), rgba(168,85,247,0.04)), var(--panel-solid);
+    padding:22px 24px; margin-bottom:22px; overflow:hidden;
+  }
+  .room-box h3{font-family:'Rajdhani',sans-serif; font-size:16px; margin:0 0 14px; color:var(--text-dim); letter-spacing:.3px;}
+  .room-grid{display:flex; gap:16px; flex-wrap:wrap;}
+  .room-field{flex:1; min-width:180px;}
+  .room-field .lbl2{font-size:12px; color:var(--text-dim); margin-bottom:6px;}
+  .room-field .val-row{display:flex; align-items:center; gap:10px;}
+  .room-field .val{
+    font-family:'Rajdhani',monospace; font-size:24px; font-weight:700;
+    color:var(--cyan); text-shadow:0 0 12px var(--cyan-soft); letter-spacing:1px;
+  }
+  .copy-btn{
+    background:rgba(255,255,255,0.06); border:1px solid var(--border);
+    color:var(--text); border-radius:8px; padding:6px 10px; font-size:12px; cursor:pointer;
+  }
+  .copy-btn:hover{background:rgba(255,255,255,0.12);}
+
+  .room-locked-overlay{
+    position:absolute; inset:0;
+    background:rgba(8,9,12,0.88);
+    backdrop-filter:blur(6px);
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center; gap:8px; padding:20px;
+  }
+  .room-locked-overlay .icon{font-size:26px;}
+  .room-locked-overlay .msg{color:var(--text-dim); font-size:13.5px; max-width:340px; line-height:1.7;}
+
+  /* ===== ADMIN PANEL ===== */
+  .admin-panel{
+    display:none;
+    border:1px solid var(--cyan-soft); border-radius:var(--radius);
+    background:linear-gradient(160deg, rgba(0,240,255,0.06), transparent), var(--panel-solid);
+    padding:20px 22px; margin-bottom:22px;
+  }
+  .admin-panel.open{display:block;}
+  .admin-panel h3{font-family:'Rajdhani',sans-serif; font-size:17px; margin:0 0 14px; color:var(--cyan);}
+  .admin-grid{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+  @media (max-width:640px){.admin-grid{grid-template-columns:1fr;}}
+  .field label{font-size:12px; color:var(--text-dim); display:block; margin-bottom:5px;}
+  .field input{
+    width:100%; background:rgba(0,0,0,0.4); border:1px solid var(--border);
+    border-radius:9px; padding:10px 12px; color:var(--text); font-family:'Vazirmatn',sans-serif; font-size:13.5px; outline:none;
+  }
+  .field input:focus{border-color:var(--cyan);}
+  .admin-actions-row{display:flex; gap:10px; margin-top:16px; flex-wrap:wrap;}
+  .btn-mini{
+    border:none; border-radius:9px; padding:10px 18px; font-size:13px; font-weight:700;
+    cursor:pointer; transition:filter .2s ease;
+  }
+  .btn-mini.primary{background:linear-gradient(135deg, var(--cyan), #0891b2); color:#031418;}
+  .btn-mini.primary:hover{filter:brightness(1.1);}
+  .btn-mini.ghost{background:rgba(255,255,255,0.06); color:var(--text); border:1px solid var(--border);}
+
+  /* ===== SQUADS ===== */
+  .squads-section h2{
+    font-family:'Rajdhani',sans-serif; font-size:20px; font-weight:700; margin:0 0 16px;
+    display:flex; align-items:center; gap:10px;
+  }
+  .squads-section h2::before{content:""; width:4px;height:18px;background:var(--purple);border-radius:2px;display:inline-block;}
+
+  .squad{margin-bottom:18px;}
+  .squad-label{
+    font-family:'Rajdhani',sans-serif; font-size:12.5px; font-weight:700; letter-spacing:.5px;
+    color:var(--text-dim); margin-bottom:8px; text-align:center;
+  }
+  .squad-row{
+    display:flex; align-items:stretch; justify-content:center; gap:34px;
+  }
+  .squad-group{display:flex; gap:10px;}
+  .squad-divider{width:1px; background:linear-gradient(180deg, transparent, var(--border), transparent); align-self:stretch;}
+
+  .slot{
+    width:82px; aspect-ratio:1/1;
+    border-radius:12px; border:1px solid var(--border);
+    background:var(--panel); backdrop-filter:blur(8px);
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    cursor:pointer; position:relative; padding:4px; overflow:hidden;
+    transition:transform .15s ease, border-color .2s ease, box-shadow .2s ease;
+  }
+  @media (max-width:520px){
+    .slot{width:60px;}
+    .squad-row{gap:18px;}
+    .squad-group{gap:6px;}
+  }
+  .slot .num{font-family:'Rajdhani',monospace; font-weight:700; font-size:15px; color:var(--text-dim);}
+  .slot:hover:not(.taken){
+    transform:translateY(-2px);
+    border-color:var(--purple);
+    box-shadow:0 0 16px var(--purple-soft), inset 0 0 14px rgba(168,85,247,0.08);
+  }
+  .slot:hover:not(.taken) .num{color:var(--purple);}
+
+  .slot.taken{
+    cursor:default;
+    background:linear-gradient(160deg, rgba(255,32,80,0.14), rgba(20,8,14,0.6));
+    border-color:var(--red-soft);
+  }
+  .slot.taken .num{color:rgba(255,255,255,0.35); font-size:10.5px;}
+  .slot.taken .x-mark{font-size:18px; color:var(--red); text-shadow:0 0 10px var(--red-soft); line-height:1;}
+  .slot.taken .player-name{
+    font-size:8.8px; color:#ffb2c2; margin-top:2px; max-width:100%;
+    overflow:hidden; text-overflow:ellipsis; white-space:nowrap; padding:0 2px;
+  }
+  .slot .kick-btn{
+    display:none;
+    position:absolute; top:2px; left:2px;
+    background:rgba(0,0,0,0.6); color:var(--red);
+    border:1px solid var(--red-soft); border-radius:6px;
+    font-size:9px; padding:2px 4px; cursor:pointer; z-index:5;
+  }
+  .slot.taken.admin-mode .kick-btn{display:block;}
+
+  @keyframes flashTaken{
+    0%{background:rgba(168,85,247,0.55); border-color:var(--purple);}
+    100%{background:linear-gradient(160deg, rgba(255,32,80,0.14), rgba(20,8,14,0.6)); border-color:var(--red-soft);}
+  }
+  .slot.just-taken{animation:flashTaken .8s ease-out, shakeSlot .4s ease-out;}
+  @keyframes shakeSlot{
+    0%,100%{transform:translateX(0);}
+    20%{transform:translateX(-3px);} 40%{transform:translateX(3px);}
+    60%{transform:translateX(-2px);} 80%{transform:translateX(2px);}
+  }
+  .slot.highlight-pulse{animation:highlightPulse 1.4s ease-in-out 2;}
+  @keyframes highlightPulse{
+    0%,100%{box-shadow:0 0 0 var(--cyan-soft);}
+    50%{box-shadow:0 0 26px var(--cyan-soft);}
+  }
+
+  /* toast */
+  .toast{
+    position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(20px);
+    background:var(--panel-solid); border:1px solid var(--border); color:var(--text);
+    padding:12px 20px; border-radius:10px; font-size:14px; z-index:300;
+    opacity:0; transition:opacity .25s ease, transform .25s ease; box-shadow:0 8px 30px rgba(0,0,0,0.5);
+  }
+  .toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+  .toast.err{border-color:var(--red-soft); color:#ffb2c2;}
+  .toast.ok{border-color:var(--cyan-soft); color:var(--cyan);}
+
+  /* modal generic */
+  .modal-overlay{
+    position:fixed; inset:0; background:rgba(4,4,7,0.78); backdrop-filter:blur(3px);
+    display:flex; align-items:center; justify-content:center; z-index:400;
+    opacity:0; pointer-events:none; transition:opacity .2s ease;
+  }
+  .modal-overlay.open{opacity:1; pointer-events:auto;}
+  .modal-box{
+    width:min(92vw, 400px); background:var(--panel-solid); border:1px solid var(--border);
+    border-radius:16px; padding:26px 22px; position:relative;
+    transform:scale(.9) translateY(10px); transition:transform .25s cubic-bezier(.34,1.56,.64,1);
+    box-shadow:0 0 0 1px rgba(168,85,247,0.15), 0 20px 60px rgba(0,0,0,0.6);
+    max-height:88vh; overflow-y:auto;
+  }
+  .modal-overlay.open .modal-box{transform:scale(1) translateY(0);}
+  .modal-box h3{font-family:'Rajdhani',sans-serif; font-size:21px; margin:0 0 4px;}
+  .modal-box h3 b{color:var(--purple);}
+  .modal-box p.sub{color:var(--text-dim); font-size:13px; margin:0 0 18px;}
+  .modal-box label{font-size:12.5px; color:var(--text-dim); display:block; margin:12px 0 6px;}
+  .modal-box label:first-of-type{margin-top:0;}
+  .modal-box input{
+    width:100%; background:rgba(0,0,0,0.35); border:1px solid var(--border); border-radius:10px;
+    padding:12px 14px; color:var(--text); font-family:'Vazirmatn',sans-serif; font-size:14px; outline:none;
+    transition:border-color .2s ease, box-shadow .2s ease;
+  }
+  .modal-box input:focus{border-color:var(--purple); box-shadow:0 0 0 3px rgba(168,85,247,0.14);}
+  .err-msg{color:var(--red); font-size:12.5px; margin-top:8px; min-height:16px;}
+  .modal-actions{display:flex; gap:10px; margin-top:18px;}
+  .btn{
+    flex:1; border:none; border-radius:10px; padding:12px 14px; font-family:'Vazirmatn',sans-serif;
+    font-weight:600; font-size:14px; cursor:pointer; transition:filter .2s ease, transform .1s ease;
+    display:flex; align-items:center; justify-content:center; gap:8px;
+  }
+  .btn:active{transform:scale(.97);}
+  .btn-confirm{background:linear-gradient(135deg, var(--purple), #6d28d9); color:#fff; box-shadow:0 0 18px var(--purple-soft);}
+  .btn-confirm:hover{filter:brightness(1.1);}
+  .btn-confirm:disabled{opacity:.6; cursor:not-allowed; filter:none;}
+  .btn-cancel{background:rgba(255,255,255,0.06); color:var(--text); border:1px solid var(--border);}
+  .btn-cancel:hover{background:rgba(255,255,255,0.1);}
+  .spinner{width:15px;height:15px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  footer{text-align:center; color:var(--text-dim); font-size:12px; margin-top:40px; opacity:.6;}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <div class="topbar">
+    <span class="admin-badge" id="admin-badge">🛡️ حالت ادمین فعال</span>
+    <div class="lock-btn" id="lock-btn" title="ورود ادمین">🔒</div>
+  </div>
+
+  <!-- ===== HERO ===== -->
+  <header class="hero">
+    <div class="free-banner">⚡ ورودی تورنمنت ۱۰۰٪ رایگان است و نیاز به پرداخت هیچ هزینه‌ای نیست</div>
+    <h1 class="title">تورنمنت <span class="grad">Call of Duty Mobile</span> — بتل رویال</h1>
+    <p class="subtitle">۱۰۰ صندلی در قالب ۲۵ اسکواد ۴ نفره. جایگاهت رو رزرو کن، منتظر کد روم بمون و وارد میدون جنگ شو.</p>
+
+    <button class="join-btn" id="join-btn">🎮 من هم می‌خواهم شرکت کنم!</button>
+
+    <div class="countdown-row" id="countdown">
+      <div class="cd-box"><div class="num" id="cd-days">00</div><div class="lbl">روز</div></div>
+      <div class="cd-box"><div class="num" id="cd-hours">00</div><div class="lbl">ساعت</div></div>
+      <div class="cd-box"><div class="num" id="cd-mins">00</div><div class="lbl">دقیقه</div></div>
+      <div class="cd-box"><div class="num" id="cd-secs">00</div><div class="lbl">ثانیه</div></div>
+    </div>
+
+    <div class="stats-bar">
+      <div class="stats-text"><b id="filled-count">0</b> / 100 صندلی پر شده</div>
+      <div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+    </div>
+  </header>
+
+  <!-- ===== ROOM CREDENTIALS ===== -->
+  <div class="room-box" id="room-box">
+    <h3>اطلاعات روم بازی</h3>
+    <div class="room-grid">
+      <div class="room-field">
+        <div class="lbl2">کد روم (Room ID)</div>
+        <div class="val-row">
+          <span class="val" id="room-id-val">—</span>
+          <button class="copy-btn" data-copy-target="room-id-val">کپی</button>
+        </div>
+      </div>
+      <div class="room-field">
+        <div class="lbl2">پسورد (Password)</div>
+        <div class="val-row">
+          <span class="val" id="room-pass-val">—</span>
+          <button class="copy-btn" data-copy-target="room-pass-val">کپی</button>
+        </div>
+      </div>
+    </div>
+    <div class="room-locked-overlay" id="room-locked-overlay">
+      <div class="icon">🔒</div>
+      <div class="msg">روم هنوز ساخته نشده است. اطلاعات کد روم و پسورد، دقایقی قبل از شروع بازی در همین‌جا قرار می‌گیرد.</div>
+    </div>
+  </div>
+
+  <!-- ===== ADMIN PANEL ===== -->
+  <div class="admin-panel" id="admin-panel">
+    <h3>پنل مدیریت</h3>
+    <div class="admin-grid">
+      <div class="field">
+        <label>کد روم (Room ID)</label>
+        <input type="text" id="admin-room-id" placeholder="مثلاً: 5821934">
+      </div>
+      <div class="field">
+        <label>پسورد روم</label>
+        <input type="text" id="admin-room-pass" placeholder="مثلاً: cod123">
+      </div>
+      <div class="field">
+        <label>تاریخ و ساعت شروع تورنمنت</label>
+        <input type="datetime-local" id="admin-start-time">
+      </div>
+    </div>
+    <div class="admin-actions-row">
+      <button class="btn-mini primary" id="admin-publish-room">انتشار کد روم برای همه</button>
+      <button class="btn-mini primary" id="admin-save-time">ذخیره زمان شروع</button>
+      <button class="btn-mini ghost" id="admin-logout">خروج از حالت ادمین</button>
+    </div>
+  </div>
+
+  <!-- ===== SQUADS ===== -->
+  <section class="squads-section">
+    <h2>چیدمان اسکواد‌ها</h2>
+    <div id="squads-container"></div>
+  </section>
+
+  <footer>COD Mobile Tournament &copy; 2026 — سایبرپانک ادیشن</footer>
+</div>
+
+<!-- ===== REGISTRATION MODAL ===== -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal-box">
+    <h3>ثبت‌نام برای صندلی شماره <b id="modal-slot-num">-</b></h3>
+    <p class="sub">اطلاعاتت رو کامل وارد کن تا جایگاهت قطعی بشه.</p>
+
+    <label>نام درون‌بازی (IGN)</label>
+    <input type="text" id="reg-ign" placeholder="مثلاً: Ghost_99" maxlength="24" autocomplete="off">
+
+    <label>شماره موبایل</label>
+    <input type="tel" id="reg-phone" placeholder="مثلاً: 09121234567" maxlength="15" autocomplete="off">
+
+    <label>آیدی تلگرام یا واتساپ</label>
+    <input type="text" id="reg-social" placeholder="مثلاً: @username" maxlength="30" autocomplete="off">
+
+    <div class="err-msg" id="modal-err"></div>
+    <div class="modal-actions">
+      <button class="btn btn-cancel" id="btn-cancel">انصراف</button>
+      <button class="btn btn-confirm" id="btn-confirm"><span id="confirm-label">تأیید و ثبت</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== ADMIN LOGIN MODAL ===== -->
+<div class="modal-overlay" id="admin-modal-overlay">
+  <div class="modal-box">
+    <h3>ورود <b>ادمین</b></h3>
+    <p class="sub">برای دسترسی به پنل مدیریت، رمز عبور را وارد کنید.</p>
+    <label>رمز عبور</label>
+    <input type="password" id="admin-pass-input" placeholder="••••••" maxlength="10">
+    <div class="err-msg" id="admin-modal-err"></div>
+    <div class="modal-actions">
+      <button class="btn btn-cancel" id="admin-btn-cancel">انصراف</button>
+      <button class="btn btn-confirm" id="admin-btn-confirm">ورود</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+(function(){
+
+  // ===================================================================
+  // تنظیمات پایه
+  // ===================================================================
+  const TOTAL_SLOTS = 100;
+  const SLOTS_PER_SQUAD = 4;
+  const TOTAL_SQUADS = TOTAL_SLOTS / SLOTS_PER_SQUAD; // 25
+  const ADMIN_PASSWORD = "22412";
+  const SETTINGS_ROW_ID = 1; // ردیف ثابت تنظیمات در جدول tournament_settings
+
+  let DEFAULT_START = new Date(2026, 9, 15, 20, 0, 0); // مقدار پیش‌فرض تا زمان بارگذاری از سرور
+
+  // ===================================================================
+  // وضعیت داخلی
+  // ===================================================================
+  let slotsState = {};      // { slot_number: {player_name, phone_number, social_id} }
+  let pendingSlot = null;
+  let isSubmitting = false;
+  let isAdmin = false;
+  let tournamentStart = DEFAULT_START;
+  let roomPublished = false;
+
+  // ===================================================================
+  // ساخت چیدمان اسکوادی
+  // ===================================================================
+  const squadsContainer = document.getElementById('squads-container');
+  function buildSquads(){
+    squadsContainer.innerHTML = '';
+    let seatCounter = 1;
+    for(let s = 1; s <= TOTAL_SQUADS; s++){
+      const squadEl = document.createElement('div');
+      squadEl.className = 'squad';
+
+      const label = document.createElement('div');
+      label.className = 'squad-label';
+      label.textContent = `Squad #${s}`;
+      squadEl.appendChild(label);
+
+      const row = document.createElement('div');
+      row.className = 'squad-row';
+
+      const groupA = document.createElement('div'); // صندلی 1 و 2 (راست)
+      groupA.className = 'squad-group';
+      const groupB = document.createElement('div'); // صندلی 3 و 4 (چپ)
+      groupB.className = 'squad-group';
+
+      for(let i = 0; i < SLOTS_PER_SQUAD; i++){
+        const n = seatCounter++;
+        const slotEl = document.createElement('div');
+        slotEl.className = 'slot';
+        slotEl.dataset.slot = n;
+        slotEl.innerHTML = `<div class="num">#${n}</div><button class="kick-btn" data-kick="${n}">حذف</button>`;
+        slotEl.addEventListener('click', (e) => {
+          if(e.target.closest('.kick-btn')) return;
+          onSlotClick(n);
+        });
+        if(i < 2) groupA.appendChild(slotEl); else groupB.appendChild(slotEl);
+      }
+
+      const divider = document.createElement('div');
+      divider.className = 'squad-divider';
+
+      row.appendChild(groupA);
+      row.appendChild(divider);
+      row.appendChild(groupB);
+      squadEl.appendChild(row);
+      squadsContainer.appendChild(squadEl);
+    }
+  }
+  buildSquads();
+
+  function getSlotEl(n){ return squadsContainer.querySelector(`.slot[data-slot="${n}"]`); }
+
+  function renderSlotTaken(n, info, {animate=false} = {}){
+    const el = getSlotEl(n);
+    if(!el) return;
+    const alreadyTaken = el.classList.contains('taken');
+    el.classList.add('taken');
+    if(isAdmin) el.classList.add('admin-mode');
+    el.innerHTML = `
+      <div class="x-mark">❌</div>
+      <div class="num">#${n}</div>
+      <div class="player-name" title="${escapeHtml(info.player_name)}">${escapeHtml(info.player_name)}</div>
+      <button class="kick-btn" data-kick="${n}">حذف</button>
+    `;
+    el.querySelector('.kick-btn').addEventListener('click', (e) => {
+      e.stopPropagation();
+      kickPlayer(n);
+    });
+    if(animate && !alreadyTaken){
+      el.classList.add('just-taken');
+      setTimeout(() => el.classList.remove('just-taken'), 850);
+    }
+  }
+
+  function renderSlotEmpty(n){
+    const el = getSlotEl(n);
+    if(!el) return;
+    el.classList.remove('taken', 'admin-mode');
+    el.innerHTML = `<div class="num">#${n}</div><button class="kick-btn" data-kick="${n}">حذف</button>`;
+  }
+
+  function escapeHtml(str){
+    const d = document.createElement('div');
+    d.textContent = str == null ? '' : str;
+    return d.innerHTML;
+  }
+
+  function updateStats(){
+    const filled = Object.keys(slotsState).length;
+    document.getElementById('filled-count').textContent = filled;
+    document.getElementById('progress-fill').style.width = (filled / TOTAL_SLOTS * 100) + '%';
+  }
+
+  function refreshAdminModeOnSlots(){
+    squadsContainer.querySelectorAll('.slot.taken').forEach(el => {
+      el.classList.toggle('admin-mode', isAdmin);
+    });
+  }
+
+  // ===================================================================
+  // دکمه "من هم می‌خواهم شرکت کنم" -> اسکرول به اولین صندلی خالی
+  // ===================================================================
+  document.getElementById('join-btn').addEventListener('click', () => {
+    let firstEmpty = null;
+    for(let i = 1; i <= TOTAL_SLOTS; i++){
+      if(!slotsState[i]){ firstEmpty = i; break; }
+    }
+    if(!firstEmpty){
+      showToast('همه‌ی صندلی‌ها پر شده‌اند! 🔥', 'err');
+      return;
+    }
+    const el = getSlotEl(firstEmpty);
+    if(el){
+      el.scrollIntoView({ behavior:'smooth', block:'center' });
+      el.classList.add('highlight-pulse');
+      setTimeout(() => el.classList.remove('highlight-pulse'), 3000);
+    }
+  });
+
+  // ===================================================================
+  // تایمر معکوس
+  // ===================================================================
+  function updateCountdown(){
+    const now = new Date();
+    let diff = tournamentStart - now;
+    if(diff < 0) diff = 0;
+    const days = Math.floor(diff / (1000*60*60*24));
+    const hours = Math.floor((diff / (1000*60*60)) % 24);
+    const mins = Math.floor((diff / (1000*60)) % 60);
+    const secs = Math.floor((diff / 1000) % 60);
+    document.getElementById('cd-days').textContent = String(days).padStart(2,'0');
+    document.getElementById('cd-hours').textContent = String(hours).padStart(2,'0');
+    document.getElementById('cd-mins').textContent = String(mins).padStart(2,'0');
+    document.getElementById('cd-secs').textContent = String(secs).padStart(2,'0');
+  }
+  updateCountdown();
+  setInterval(updateCountdown, 1000);
+
+  // ===================================================================
+  // Toast
+  // ===================================================================
+  let toastTimeout = null;
+  function showToast(msg, type=''){
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = 'toast show' + (type ? ' ' + type : '');
+    clearTimeout(toastTimeout);
+    toastTimeout = setTimeout(() => t.classList.remove('show'), 2800);
+  }
+
+  // ===================================================================
+  // مودال ثبت‌نام بازیکن
+  // ===================================================================
+  const overlay = document.getElementById('modal-overlay');
+  const modalSlotNum = document.getElementById('modal-slot-num');
+  const ignInput = document.getElementById('reg-ign');
+  const phoneInput = document.getElementById('reg-phone');
+  const socialInput = document.getElementById('reg-social');
+  const modalErr = document.getElementById('modal-err');
+  const btnConfirm = document.getElementById('btn-confirm');
+  const btnCancel = document.getElementById('btn-cancel');
+  const confirmLabel = document.getElementById('confirm-label');
+
+  function onSlotClick(n){
+    if(slotsState[n]){
+      showToast(`صندلی شماره ${n} قبلاً پر شده است ❌`, 'err');
+      return;
+    }
+    pendingSlot = n;
+    modalSlotNum.textContent = n;
+    ignInput.value = ''; phoneInput.value = ''; socialInput.value = '';
+    modalErr.textContent = '';
+    overlay.classList.add('open');
+    setTimeout(() => ignInput.focus(), 150);
+  }
+  function closeModal(){ overlay.classList.remove('open'); pendingSlot = null; }
+  btnCancel.addEventListener('click', closeModal);
+  overlay.addEventListener('click', (e) => { if(e.target === overlay) closeModal(); });
+
+  function setSubmitting(state){
+    isSubmitting = state;
+    btnConfirm.disabled = state;
+    btnCancel.style.pointerEvents = state ? 'none' : 'auto';
+    btnCancel.style.opacity = state ? '.5' : '1';
+    confirmLabel.innerHTML = state ? '<span class="spinner"></span> در حال ثبت...' : 'تأیید و ثبت';
+  }
+
+  btnConfirm.addEventListener('click', async () => {
+    if(isSubmitting || pendingSlot === null) return;
+    const ign = ignInput.value.trim();
+    const phone = phoneInput.value.trim();
+    const social = socialInput.value.trim();
+
+    if(!ign || ign.length < 2){ modalErr.textContent = 'نام درون‌بازی را وارد کنید (حداقل ۲ کاراکتر).'; return; }
+    if(!phone || phone.length < 8){ modalErr.textContent = 'شماره موبایل معتبر وارد کنید.'; return; }
+    if(!social){ modalErr.textContent = 'آیدی تلگرام یا واتساپ را وارد کنید.'; return; }
+
+    if(slotsState[pendingSlot]){
+      modalErr.textContent = 'این صندلی همین الان توسط شخص دیگری پر شد.';
+      renderSlotTaken(pendingSlot, slotsState[pendingSlot]);
+      updateStats();
+      return;
+    }
+
+    modalErr.textContent = '';
+    setSubmitting(true);
+
+    try {
+      const { error } = await supabaseClient.from('slots').insert([{
+        slot_number: pendingSlot,
+        player_name: ign,
+        phone_number: phone,
+        social_id: social
+      }]);
+
+      if(error){
+        if(error.code === '23505' || /duplicate|unique/i.test(error.message || '')){
+          modalErr.textContent = 'این صندلی همین الان توسط شخص دیگری رزرو شد.';
+          showToast('این صندلی رزرو شده — یک صندلی دیگر انتخاب کنید', 'err');
+        } else {
+          modalErr.textContent = 'خطا در ثبت‌نام. دوباره تلاش کنید.';
+          showToast('خطا در اتصال به سرور', 'err');
+        }
+        setSubmitting(false);
+        return;
+      }
+
+      const info = { player_name: ign, phone_number: phone, social_id: social };
+      slotsState[pendingSlot] = info;
+      renderSlotTaken(pendingSlot, info, {animate:true});
+      updateStats();
+      showToast(`✅ صندلی شماره ${pendingSlot} با نام «${ign}» ثبت شد`, 'ok');
+      setSubmitting(false);
+      closeModal();
+
+    } catch(err){
+      console.error(err);
+      modalErr.textContent = 'خطای غیرمنتظره. لطفاً دوباره تلاش کنید.';
+      setSubmitting(false);
+    }
+  });
+
+  // ===================================================================
+  // حذف/کیک بازیکن (فقط ادمین)
+  // ===================================================================
+  async function kickPlayer(n){
+    if(!isAdmin) return;
+    if(!confirm(`آیا مطمئنید می‌خواهید بازیکن صندلی #${n} را حذف کنید؟`)) return;
+    try {
+      const { error } = await supabaseClient.from('slots').delete().eq('slot_number', n);
+      if(error){
+        showToast('خطا در حذف بازیکن', 'err');
+        return;
+      }
+      delete slotsState[n];
+      renderSlotEmpty(n);
+      updateStats();
+      showToast(`صندلی #${n} خالی شد`, 'ok');
+    } catch(err){
+      console.error(err);
+      showToast('خطای غیرمنتظره در حذف', 'err');
+    }
+  }
+
+  // ===================================================================
+  // ورود ادمین
+  // ===================================================================
+  const lockBtn = document.getElementById('lock-btn');
+  const adminModalOverlay = document.getElementById('admin-modal-overlay');
+  const adminPassInput = document.getElementById('admin-pass-input');
+  const adminModalErr = document.getElementById('admin-modal-err');
+  const adminBtnConfirm = document.getElementById('admin-btn-confirm');
+  const adminBtnCancel = document.getElementById('admin-btn-cancel');
+  const adminBadge = document.getElementById('admin-badge');
+  const adminPanel = document.getElementById('admin-panel');
+
+  lockBtn.addEventListener('click', () => {
+    if(isAdmin){
+      showToast('شما در حال حاضر ادمین هستید.', 'ok');
+      return;
+    }
+    adminPassInput.value = '';
+    adminModalErr.textContent = '';
+    adminModalOverlay.classList.add('open');
+    setTimeout(() => adminPassInput.focus(), 150);
+  });
+  adminBtnCancel.addEventListener('click', () => adminModalOverlay.classList.remove('open'));
+  adminModalOverlay.addEventListener('click', (e) => { if(e.target === adminModalOverlay) adminModalOverlay.classList.remove('open'); });
+  adminPassInput.addEventListener('keydown', (e) => { if(e.key === 'Enter') adminBtnConfirm.click(); });
+
+  adminBtnConfirm.addEventListener('click', () => {
+    if(adminPassInput.value === ADMIN_PASSWORD){
+      isAdmin = true;
+      adminModalOverlay.classList.remove('open');
+      adminBadge.classList.add('active');
+      adminPanel.classList.add('open');
+      refreshAdminModeOnSlots();
+      // پرکردن فرم ادمین با مقادیر فعلی
+      document.getElementById('admin-room-id').value = document.getElementById('room-id-val').textContent === '—' ? '' : document.getElementById('room-id-val').textContent;
+      document.getElementById('admin-room-pass').value = document.getElementById('room-pass-val').textContent === '—' ? '' : document.getElementById('room-pass-val').textContent;
+      const localTime = new Date(tournamentStart.getTime() - tournamentStart.getTimezoneOffset()*60000).toISOString().slice(0,16);
+      document.getElementById('admin-start-time').value = localTime;
+      showToast('حالت ادمین فعال شد ✅', 'ok');
+    } else {
+      adminModalErr.textContent = 'رمز عبور اشتباه است.';
+    }
+  });
+
+  document.getElementById('admin-logout').addEventListener('click', () => {
+    isAdmin = false;
+    adminBadge.classList.remove('active');
+    adminPanel.classList.remove('open');
+    refreshAdminModeOnSlots();
+    showToast('از حالت ادمین خارج شدید.', 'ok');
+  });
+
+  // انتشار کد روم
+  document.getElementById('admin-publish-room').addEventListener('click', async () => {
+    const roomId = document.getElementById('admin-room-id').value.trim();
+    const roomPass = document.getElementById('admin-room-pass').value.trim();
+    if(!roomId || !roomPass){
+      showToast('کد روم و پسورد را وارد کنید.', 'err');
+      return;
+    }
+    try {
+      const { error } = await supabaseClient.from('tournament_settings').upsert({
+        id: SETTINGS_ROW_ID,
+        room_id: roomId,
+        room_password: roomPass,
+        published: true
+      });
+      if(error){ showToast('خطا در ذخیره کد روم', 'err'); console.error(error); return; }
+      showToast('کد روم برای همه منتشر شد ✅', 'ok');
+    } catch(err){ console.error(err); showToast('خطای غیرمنتظره', 'err'); }
+  });
+
+  // تغییر زمان شروع
+  document.getElementById('admin-save-time').addEventListener('click', async () => {
+    const val = document.getElementById('admin-start-time').value;
+    if(!val){ showToast('یک تاریخ و ساعت انتخاب کنید.', 'err'); return; }
+    const newDate = new Date(val);
+    try {
+      const { error } = await supabaseClient.from('tournament_settings').upsert({
+        id: SETTINGS_ROW_ID,
+        start_time: newDate.toISOString()
+      });
+      if(error){ showToast('خطا در ذخیره زمان', 'err'); console.error(error); return; }
+      tournamentStart = newDate;
+      updateCountdown();
+      showToast('زمان شروع تورنمنت به‌روزرسانی شد ✅', 'ok');
+    } catch(err){ console.error(err); showToast('خطای غیرمنتظره', 'err'); }
+  });
+
+  // ===================================================================
+  // نمایش کد روم برای عموم
+  // ===================================================================
+  function applyRoomSettings(row){
+    if(!row) return;
+    if(row.start_time){
+      tournamentStart = new Date(row.start_time);
+      updateCountdown();
+    }
+    if(row.published && row.room_id && row.room_password){
+      roomPublished = true;
+      document.getElementById('room-id-val').textContent = row.room_id;
+      document.getElementById('room-pass-val').textContent = row.room_password;
+      document.getElementById('room-locked-overlay').style.display = 'none';
+    } else {
+      roomPublished = false;
+      document.getElementById('room-locked-overlay').style.display = 'flex';
+    }
+  }
+
+  document.querySelectorAll('.copy-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const targetId = btn.dataset.copyTarget;
+      const text = document.getElementById(targetId).textContent;
+      if(text === '—') return;
+      navigator.clipboard?.writeText(text).then(() => showToast('کپی شد!', 'ok')).catch(() => showToast('خطا در کپی', 'err'));
+    });
+  });
+
+  // ===================================================================
+  // اتصال به Supabase
+  // ===================================================================
+  const SUPABASE_URL = "YOUR_SUPABASE_URL";           // <-- آدرس پروژه Supabase خودتان را اینجا قرار دهید
+  const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY"; // <-- کلید anon public خودتان را اینجا قرار دهید
+
+  let supabaseClient = null;
+
+  async function initSupabase(){
+    if(!window.supabase || SUPABASE_URL === "YOUR_SUPABASE_URL"){
+      showToast('⚠️ کلیدهای Supabase تنظیم نشده‌اند — انتهای فایل JS را ویرایش کنید', 'err');
+      console.warn('SUPABASE_URL / SUPABASE_ANON_KEY را در انتهای اسکریپت تنظیم کنید.');
+      return;
+    }
+
+    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    await fetchAllSlots();
+    await fetchSettings();
+
+    // اشتراک Realtime روی جدول slots
+    supabaseClient
+      .channel('public:slots')
+      .on('postgres_changes', { event:'INSERT', schema:'public', table:'slots' }, (payload) => {
+        const row = payload.new; if(!row) return;
+        const isNewFromOther = !slotsState[row.slot_number];
+        slotsState[row.slot_number] = { player_name: row.player_name, phone_number: row.phone_number, social_id: row.social_id };
+        renderSlotTaken(row.slot_number, slotsState[row.slot_number], { animate: isNewFromOther });
+        updateStats();
+      })
+      .on('postgres_changes', { event:'DELETE', schema:'public', table:'slots' }, (payload) => {
+        const row = payload.old; if(!row) return;
+        delete slotsState[row.slot_number];
+        renderSlotEmpty(row.slot_number);
+        updateStats();
+      })
+      .on('postgres_changes', { event:'UPDATE', schema:'public', table:'slots' }, (payload) => {
+        const row = payload.new; if(!row) return;
+        slotsState[row.slot_number] = { player_name: row.player_name, phone_number: row.phone_number, social_id: row.social_id };
+        renderSlotTaken(row.slot_number, slotsState[row.slot_number]);
+        updateStats();
+      })
+      .subscribe();
+
+    // اشتراک Realtime روی جدول tournament_settings (کد روم / زمان)
+    supabaseClient
+      .channel('public:tournament_settings')
+      .on('postgres_changes', { event:'*', schema:'public', table:'tournament_settings' }, (payload) => {
+        applyRoomSettings(payload.new);
+      })
+      .subscribe();
+  }
+
+  async function fetchAllSlots(){
+    try {
+      const { data, error } = await supabaseClient.from('slots').select('slot_number, player_name, phone_number, social_id');
+      if(error){ console.error(error); showToast('خطا در بارگذاری صندلی‌ها', 'err'); return; }
+      slotsState = {};
+      (data || []).forEach(row => {
+        slotsState[row.slot_number] = { player_name: row.player_name, phone_number: row.phone_number, social_id: row.social_id };
+      });
+      Object.keys(slotsState).forEach(n => renderSlotTaken(Number(n), slotsState[n]));
+      updateStats();
+    } catch(err){ console.error(err); showToast('خطا در اتصال به دیتابیس', 'err'); }
+  }
+
+  async function fetchSettings(){
+    try {
+      const { data, error } = await supabaseClient.from('tournament_settings').select('*').eq('id', SETTINGS_ROW_ID).maybeSingle();
+      if(error){ console.error(error); return; }
+      applyRoomSettings(data);
+    } catch(err){ console.error(err); }
+  }
+
+  initSupabase();
+
+})();
+</script>
+</body>
+</html>
