@@ -237,6 +237,8 @@
   .btn-mini.primary:hover{filter:brightness(1.1);}
   .btn-mini.ghost{background:rgba(255,255,255,0.06); color:var(--text); border:1px solid var(--border);}
   .btn-mini.purple{background:linear-gradient(135deg, var(--purple), #6d28d9); color:#fff;}
+  .btn-mini.danger{background:linear-gradient(135deg, var(--red), #9c0f30); color:#fff;}
+  .btn-mini.danger:hover{filter:brightness(1.1);}
 
   /* ===== SQUADS ===== */
   .squads-section h2{
@@ -522,8 +524,11 @@
     </div>
     <div class="admin-actions-row">
       <button class="btn-mini primary" id="admin-publish-room">انتشار کد روم برای همه</button>
+      <button class="btn-mini danger" id="admin-clear-room">🗑️ حذف کد روم</button>
       <button class="btn-mini primary" id="admin-save-time">ذخیره زمان شروع</button>
       <button class="btn-mini purple" id="admin-open-table">📋 لیست کامل بازیکنان</button>
+      <button class="btn-mini ghost" id="admin-toggle-registration">⏸️ بستن ثبت‌نام</button>
+      <button class="btn-mini danger" id="admin-reset-all">♻️ ریست کامل تورنمنت</button>
       <button class="btn-mini ghost" id="admin-logout">خروج از حالت ادمین</button>
     </div>
   </div>
@@ -708,6 +713,7 @@
   let tournamentStart = DEFAULT_START;
   let adminMoveSource = null;   // slot number currently being moved by admin
   let ignoreDeleteSlots = new Set(); // guards against localStorage being cleared during a self-move
+  let registrationOpen = true;  // admin can pause new registrations
 
   // ===================================================================
   // localStorage — تشخیص صندلی خودِ کاربر
@@ -849,6 +855,10 @@
     if(isAdmin){ openRegModal(n, {self:false}); return; }
     const my = getMySeat();
     if(my){ openChoiceModal(n); return; }
+    if(!registrationOpen){
+      showToast('ثبت‌نام برای این تورنمنت موقتاً بسته است ⏸️', 'err');
+      return;
+    }
     openRegModal(n, {self:true});
   }
 
@@ -1038,6 +1048,10 @@
     const target = choiceTargetSlot;
     closeChoiceModal();
     if(target === null) return;
+    if(!registrationOpen){
+      showToast('ثبت‌نام برای این تورنمنت موقتاً بسته است ⏸️', 'err');
+      return;
+    }
     openRegModal(target, {self:false});
   });
 
@@ -1312,6 +1326,67 @@
     } catch(err){ console.error(err); showToast('خطای غیرمنتظره', 'err'); }
   });
 
+  // حذف کد روم منتشرشده (رفع مشکل نبود دکمه حذف)
+  document.getElementById('admin-clear-room').addEventListener('click', async () => {
+    if(!confirm('کد روم و پسورد فعلی برای همه حذف شود؟')) return;
+    try {
+      const { error } = await supabaseClient.from('tournament_settings').upsert({
+        id: SETTINGS_ROW_ID,
+        room_id: null,
+        room_password: null,
+        published: false
+      });
+      if(error){ showToast('خطا در حذف کد روم', 'err'); console.error(error); return; }
+      document.getElementById('admin-room-id').value = '';
+      document.getElementById('admin-room-pass').value = '';
+      document.getElementById('room-id-val').textContent = '—';
+      document.getElementById('room-pass-val').textContent = '—';
+      document.getElementById('room-locked-overlay').style.display = 'flex';
+      showToast('کد روم حذف شد ✅', 'ok');
+    } catch(err){ console.error(err); showToast('خطای غیرمنتظره', 'err'); }
+  });
+
+  // باز/بسته کردن ثبت‌نام برای بازیکنان جدید
+  function updateRegistrationToggleUI(){
+    const btn = document.getElementById('admin-toggle-registration');
+    if(!btn) return;
+    if(registrationOpen){
+      btn.textContent = '⏸️ بستن ثبت‌نام';
+      btn.classList.remove('danger'); btn.classList.add('ghost');
+    } else {
+      btn.textContent = '▶️ باز کردن ثبت‌نام';
+      btn.classList.remove('ghost'); btn.classList.add('danger');
+    }
+  }
+  document.getElementById('admin-toggle-registration').addEventListener('click', async () => {
+    const newState = !registrationOpen;
+    try {
+      const { error } = await supabaseClient.from('tournament_settings').upsert({
+        id: SETTINGS_ROW_ID,
+        registration_open: newState
+      });
+      if(error){ showToast('خطا در تغییر وضعیت ثبت‌نام', 'err'); console.error(error); return; }
+      registrationOpen = newState;
+      updateRegistrationToggleUI();
+      showToast(newState ? 'ثبت‌نام دوباره باز شد ✅' : 'ثبت‌نام موقتاً بسته شد ⏸️', 'ok');
+    } catch(err){ console.error(err); showToast('خطای غیرمنتظره', 'err'); }
+  });
+
+  // ریست کامل تورنمنت (پاک کردن همه صندلی‌ها برای دوره‌ی بعدی)
+  document.getElementById('admin-reset-all').addEventListener('click', async () => {
+    if(!confirm('⚠️ این عملیات تمام ۱۰۰ صندلی را برای همیشه پاک می‌کند. ادامه می‌دهید؟')) return;
+    if(!confirm('تأیید نهایی: واقعاً همه‌ی صندلی‌ها حذف شوند؟')) return;
+    try {
+      const { error } = await supabaseClient.from('slots').delete().gt('slot_number', 0);
+      if(error){ showToast('خطا در ریست تورنمنت', 'err'); console.error(error); return; }
+      slotsState = {};
+      for(let i = 1; i <= TOTAL_SLOTS; i++) renderSlotEmpty(i);
+      updateStats();
+      clearMySeat();
+      showToast('تمام صندلی‌ها ریست شدند ✅', 'ok');
+    } catch(err){ console.error(err); showToast('خطای غیرمنتظره', 'err'); }
+  });
+
   // تغییر زمان شروع
   document.getElementById('admin-save-time').addEventListener('click', async () => {
     const val = document.getElementById('admin-start-time').value;
@@ -1343,8 +1418,12 @@
       document.getElementById('room-pass-val').textContent = row.room_password;
       document.getElementById('room-locked-overlay').style.display = 'none';
     } else {
+      document.getElementById('room-id-val').textContent = '—';
+      document.getElementById('room-pass-val').textContent = '—';
       document.getElementById('room-locked-overlay').style.display = 'flex';
     }
+    registrationOpen = (typeof row.registration_open === 'boolean') ? row.registration_open : true;
+    updateRegistrationToggleUI();
   }
 
   document.querySelectorAll('.copy-btn').forEach(btn => {
@@ -1414,6 +1493,7 @@
 
     await fetchAllSlots();
     await fetchSettings();
+    updateRegistrationToggleUI();
     refreshDrawerSeatCard();
 
     supabaseClient
