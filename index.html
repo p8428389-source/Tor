@@ -18,6 +18,10 @@
     --cyan-soft:rgba(0,240,255,0.4);
     --red:#FF2050;
     --red-soft:rgba(255,32,80,0.4);
+    --green:#22FF95;
+    --green-soft:rgba(34,255,149,0.42);
+    --tg:#2EA6E0;
+    --tg-soft:rgba(46,166,224,0.4);
     --text:#EDEBFC;
     --text-dim:#8b87a3;
     --radius:16px;
@@ -33,6 +37,7 @@
     color:var(--text);
     font-family:'Vazirmatn','Rajdhani',sans-serif;
     min-height:100vh;
+    overflow-x:hidden;
   }
   body::before{
     content:"";
@@ -44,22 +49,35 @@
   ::-webkit-scrollbar{width:8px;}
   ::-webkit-scrollbar-thumb{background:var(--purple-soft); border-radius:10px;}
 
-  /* ===== TOP BAR (lock icon) ===== */
-  .topbar{display:flex; justify-content:flex-end; margin-bottom:6px;}
-  .lock-btn{
+  a{color:inherit;}
+
+  /* ===== HUD corner accents ===== */
+  .hud{position:relative;}
+  .hud::before, .hud::after{
+    content:""; position:absolute; width:18px; height:18px; pointer-events:none;
+    border:2px solid var(--cyan-soft);
+  }
+  .hud::before{top:-1px; right:-1px; border-left:none; border-bottom:none; border-top-right-radius:6px;}
+  .hud::after{bottom:-1px; left:-1px; border-right:none; border-top:none; border-bottom-left-radius:6px;}
+
+  /* ===== TOP BAR ===== */
+  .topbar{display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; gap:10px;}
+  .icon-btn{
     width:40px;height:40px;border-radius:10px;
     background:var(--panel); border:1px solid var(--border);
     display:flex;align-items:center;justify-content:center;
-    cursor:pointer; font-size:18px;
+    cursor:pointer; font-size:17px; color:var(--text);
     transition:box-shadow .2s ease, transform .15s ease;
+    flex-shrink:0;
   }
-  .lock-btn:hover{box-shadow:0 0 16px var(--purple-soft); transform:translateY(-1px);}
+  .icon-btn:hover{box-shadow:0 0 16px var(--purple-soft); transform:translateY(-1px);}
+  .topbar-right{display:flex; align-items:center; gap:10px;}
   .admin-badge{
     display:none;
     align-items:center; gap:6px;
     font-size:12px; font-weight:700; color:var(--cyan);
     background:rgba(0,240,255,0.08); border:1px solid var(--cyan-soft);
-    padding:6px 12px; border-radius:20px; margin-left:10px;
+    padding:6px 12px; border-radius:20px;
   }
   .admin-badge.active{display:flex;}
 
@@ -94,19 +112,37 @@
   h1.title{
     font-family:'Rajdhani',sans-serif; font-weight:700;
     font-size:clamp(26px,5vw,44px); line-height:1.15; margin:0 0 8px;
+    position:relative; display:inline-block;
   }
   h1.title .grad{
     background:linear-gradient(90deg, var(--purple), var(--cyan));
     -webkit-background-clip:text; background-clip:text; color:transparent;
+    position:relative;
+  }
+  h1.title .grad::before{
+    content:attr(data-text);
+    position:absolute; inset:0; color:var(--red);
+    background:none; -webkit-text-fill-color:var(--red);
+    clip-path:inset(0 0 92% 0);
+    animation:glitchLine 5.5s steps(1) infinite;
+    opacity:.75;
+  }
+  @keyframes glitchLine{
+    0%,88%,100%{clip-path:inset(0 0 92% 0); transform:translateX(0);}
+    89%{clip-path:inset(20% 0 60% 0); transform:translateX(-2px);}
+    90%{clip-path:inset(70% 0 5% 0); transform:translateX(2px);}
+    91%{clip-path:inset(40% 0 45% 0); transform:translateX(-1px);}
+    92%{clip-path:inset(0 0 92% 0); transform:translateX(0);}
   }
   .subtitle{color:var(--text-dim); font-size:15px; max-width:620px; line-height:1.8; margin:0 0 22px;}
 
+  .hero-actions{display:flex; flex-wrap:wrap; gap:12px; margin-bottom:26px;}
   .join-btn{
     display:inline-flex; align-items:center; gap:10px;
     background:linear-gradient(135deg, var(--purple), #6d28d9);
     color:#fff; font-weight:700; font-size:15px;
     border:none; border-radius:14px; padding:15px 28px;
-    cursor:pointer; margin-bottom:26px;
+    cursor:pointer;
     box-shadow:0 0 20px var(--purple-soft), 0 0 50px rgba(168,85,247,0.15);
     animation:joinGlow 2s ease-in-out infinite;
     transition:transform .15s ease;
@@ -116,6 +152,14 @@
     0%,100%{box-shadow:0 0 20px var(--purple-soft), 0 0 50px rgba(168,85,247,0.12);}
     50%{box-shadow:0 0 32px var(--purple-soft), 0 0 70px rgba(168,85,247,0.28);}
   }
+  .tg-btn{
+    display:inline-flex; align-items:center; gap:9px;
+    background:rgba(46,166,224,0.08); color:var(--tg);
+    font-weight:700; font-size:14px; text-decoration:none;
+    border:1px solid var(--tg-soft); border-radius:14px; padding:14px 22px;
+    transition:transform .15s ease, background .2s ease;
+  }
+  .tg-btn:hover{transform:translateY(-2px); background:rgba(46,166,224,0.15);}
 
   /* countdown */
   .countdown-row{display:flex; flex-wrap:wrap; gap:12px; margin-bottom:20px;}
@@ -192,6 +236,7 @@
   .btn-mini.primary{background:linear-gradient(135deg, var(--cyan), #0891b2); color:#031418;}
   .btn-mini.primary:hover{filter:brightness(1.1);}
   .btn-mini.ghost{background:rgba(255,255,255,0.06); color:var(--text); border:1px solid var(--border);}
+  .btn-mini.purple{background:linear-gradient(135deg, var(--purple), #6d28d9); color:#fff;}
 
   /* ===== SQUADS ===== */
   .squads-section h2{
@@ -233,24 +278,24 @@
   .slot:hover:not(.taken) .num{color:var(--purple);}
 
   .slot.taken{
-    cursor:default;
+    cursor:pointer;
     background:linear-gradient(160deg, rgba(255,32,80,0.14), rgba(20,8,14,0.6));
     border-color:var(--red-soft);
   }
   .slot.taken .num{color:rgba(255,255,255,0.35); font-size:10.5px;}
-  .slot.taken .x-mark{font-size:18px; color:var(--red); text-shadow:0 0 10px var(--red-soft); line-height:1;}
+  .slot.taken .mark{font-size:18px; color:var(--red); text-shadow:0 0 10px var(--red-soft); line-height:1;}
   .slot.taken .player-name{
     font-size:8.8px; color:#ffb2c2; margin-top:2px; max-width:100%;
     overflow:hidden; text-overflow:ellipsis; white-space:nowrap; padding:0 2px;
   }
-  .slot .kick-btn{
-    display:none;
-    position:absolute; top:2px; left:2px;
-    background:rgba(0,0,0,0.6); color:var(--red);
-    border:1px solid var(--red-soft); border-radius:6px;
-    font-size:9px; padding:2px 4px; cursor:pointer; z-index:5;
+  .slot.taken.mine{
+    background:linear-gradient(160deg, rgba(34,255,149,0.16), rgba(8,20,14,0.6));
+    border-color:var(--green-soft);
   }
-  .slot.taken.admin-mode .kick-btn{display:block;}
+  .slot.taken.mine .mark{color:var(--green); text-shadow:0 0 10px var(--green-soft);}
+  .slot.taken.mine .player-name{color:#b7ffdf;}
+  .slot.taken.admin-mode{box-shadow:0 0 0 2px var(--cyan-soft) inset;}
+  .slot.taken.admin-mode:hover{transform:translateY(-2px); box-shadow:0 0 16px var(--cyan-soft);}
 
   @keyframes flashTaken{
     0%{background:rgba(168,85,247,0.55); border-color:var(--purple);}
@@ -268,12 +313,35 @@
     50%{box-shadow:0 0 26px var(--cyan-soft);}
   }
 
+  /* ===== FOOTER ===== */
+  footer{
+    display:flex; flex-direction:column; align-items:center; gap:14px;
+    text-align:center; color:var(--text-dim); font-size:12.5px; margin-top:40px;
+    border-top:1px solid var(--border); padding-top:24px;
+  }
+
+  /* ===== MOVE-MODE BANNER ===== */
+  .move-banner{
+    position:fixed; bottom:20px; left:50%; transform:translateX(-50%) translateY(120%);
+    display:flex; align-items:center; gap:14px;
+    background:var(--panel-solid); border:1px solid var(--cyan-soft);
+    color:var(--cyan); padding:12px 18px; border-radius:12px; font-size:13.5px;
+    z-index:310; box-shadow:0 0 24px rgba(0,240,255,0.15);
+    transition:transform .25s ease;
+  }
+  .move-banner.show{transform:translateX(-50%) translateY(0);}
+  .move-banner button{
+    background:rgba(255,255,255,0.08); border:1px solid var(--border); color:var(--text);
+    border-radius:8px; padding:6px 12px; font-size:12.5px; cursor:pointer;
+  }
+
   /* toast */
   .toast{
     position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(20px);
     background:var(--panel-solid); border:1px solid var(--border); color:var(--text);
     padding:12px 20px; border-radius:10px; font-size:14px; z-index:300;
     opacity:0; transition:opacity .25s ease, transform .25s ease; box-shadow:0 8px 30px rgba(0,0,0,0.5);
+    max-width:90vw;
   }
   .toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
   .toast.err{border-color:var(--red-soft); color:#ffb2c2;}
@@ -282,7 +350,7 @@
   /* modal generic */
   .modal-overlay{
     position:fixed; inset:0; background:rgba(4,4,7,0.78); backdrop-filter:blur(3px);
-    display:flex; align-items:center; justify-content:center; z-index:400;
+    display:flex; align-items:center; justify-content:center; z-index:400; padding:16px;
     opacity:0; pointer-events:none; transition:opacity .2s ease;
   }
   .modal-overlay.open{opacity:1; pointer-events:auto;}
@@ -293,6 +361,7 @@
     box-shadow:0 0 0 1px rgba(168,85,247,0.15), 0 20px 60px rgba(0,0,0,0.6);
     max-height:88vh; overflow-y:auto;
   }
+  .modal-box.wide{width:min(94vw, 720px);}
   .modal-overlay.open .modal-box{transform:scale(1) translateY(0);}
   .modal-box h3{font-family:'Rajdhani',sans-serif; font-size:21px; margin:0 0 4px;}
   .modal-box h3 b{color:var(--purple);}
@@ -306,9 +375,9 @@
   }
   .modal-box input:focus{border-color:var(--purple); box-shadow:0 0 0 3px rgba(168,85,247,0.14);}
   .err-msg{color:var(--red); font-size:12.5px; margin-top:8px; min-height:16px;}
-  .modal-actions{display:flex; gap:10px; margin-top:18px;}
+  .modal-actions{display:flex; gap:10px; margin-top:18px; flex-wrap:wrap;}
   .btn{
-    flex:1; border:none; border-radius:10px; padding:12px 14px; font-family:'Vazirmatn',sans-serif;
+    flex:1; min-width:120px; border:none; border-radius:10px; padding:12px 14px; font-family:'Vazirmatn',sans-serif;
     font-weight:600; font-size:14px; cursor:pointer; transition:filter .2s ease, transform .1s ease;
     display:flex; align-items:center; justify-content:center; gap:8px;
   }
@@ -316,12 +385,61 @@
   .btn-confirm{background:linear-gradient(135deg, var(--purple), #6d28d9); color:#fff; box-shadow:0 0 18px var(--purple-soft);}
   .btn-confirm:hover{filter:brightness(1.1);}
   .btn-confirm:disabled{opacity:.6; cursor:not-allowed; filter:none;}
+  .btn-cyan{background:linear-gradient(135deg, var(--cyan), #0891b2); color:#031418;}
+  .btn-cyan:hover{filter:brightness(1.1);}
+  .btn-danger{background:linear-gradient(135deg, var(--red), #9c0f30); color:#fff;}
+  .btn-danger:hover{filter:brightness(1.1);}
   .btn-cancel{background:rgba(255,255,255,0.06); color:var(--text); border:1px solid var(--border);}
   .btn-cancel:hover{background:rgba(255,255,255,0.1);}
   .spinner{width:15px;height:15px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;}
   @keyframes spin{to{transform:rotate(360deg);}}
 
-  footer{text-align:center; color:var(--text-dim); font-size:12px; margin-top:40px; opacity:.6;}
+  .detail-box{
+    background:rgba(0,0,0,0.3); border:1px solid var(--border); border-radius:10px;
+    padding:14px 16px; font-size:13.5px; line-height:2;
+  }
+  .detail-box b{color:var(--cyan); font-weight:700;}
+
+  /* admin table modal */
+  .table-search{margin-bottom:14px;}
+  .table-scroll{max-height:48vh; overflow:auto; border:1px solid var(--border); border-radius:10px;}
+  table.players-table{width:100%; border-collapse:collapse; font-size:13px;}
+  table.players-table th{
+    position:sticky; top:0; background:#160f24; color:var(--cyan); text-align:right;
+    padding:9px 10px; font-weight:700; border-bottom:1px solid var(--border);
+  }
+  table.players-table td{padding:8px 10px; border-bottom:1px solid rgba(255,255,255,0.04); color:var(--text);}
+  table.players-table tr:hover td{background:rgba(168,85,247,0.06);}
+  .table-empty{padding:20px; text-align:center; color:var(--text-dim); font-size:13px;}
+  .table-actions{display:flex; gap:10px; margin-top:14px; flex-wrap:wrap;}
+
+  /* ===== DRAWER ===== */
+  .drawer-backdrop{
+    position:fixed; inset:0; background:rgba(4,4,7,0.7); backdrop-filter:blur(2px);
+    z-index:390; opacity:0; pointer-events:none; transition:opacity .25s ease;
+  }
+  .drawer-backdrop.open{opacity:1; pointer-events:auto;}
+  .drawer{
+    position:fixed; top:0; right:0; height:100%; width:min(86vw, 340px);
+    background:var(--panel-solid); border-left:1px solid var(--border);
+    z-index:395; padding:22px 20px; overflow-y:auto;
+    transform:translateX(100%); transition:transform .3s cubic-bezier(.4,0,.2,1);
+    box-shadow:-20px 0 60px rgba(0,0,0,0.5);
+  }
+  .drawer.open{transform:translateX(0);}
+  .drawer-head{display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;}
+  .drawer-head h3{font-family:'Rajdhani',sans-serif; font-size:19px; margin:0; color:var(--cyan);}
+  .drawer-section{margin-bottom:22px;}
+  .drawer-section h4{font-size:12.5px; color:var(--text-dim); margin:0 0 10px; letter-spacing:.3px;}
+  .my-seat-card{
+    background:linear-gradient(160deg, rgba(34,255,149,0.10), transparent); border:1px solid var(--green-soft);
+    border-radius:12px; padding:14px; font-size:13.5px; line-height:1.9;
+  }
+  .my-seat-card.empty{
+    background:rgba(255,255,255,0.03); border:1px solid var(--border); color:var(--text-dim);
+  }
+  .rules-list{margin:0; padding-right:18px; font-size:13px; line-height:2; color:var(--text-dim);}
+  .rules-list li::marker{color:var(--purple);}
 </style>
 </head>
 <body>
@@ -329,17 +447,23 @@
 <div class="wrap">
 
   <div class="topbar">
-    <span class="admin-badge" id="admin-badge">🛡️ حالت ادمین فعال</span>
-    <div class="lock-btn" id="lock-btn" title="ورود ادمین">🔒</div>
+    <div class="icon-btn" id="hamburger-btn" title="منو">☰</div>
+    <div class="topbar-right">
+      <span class="admin-badge" id="admin-badge">🛡️ حالت ادمین فعال</span>
+      <div class="icon-btn" id="lock-btn" title="ورود ادمین">🔒</div>
+    </div>
   </div>
 
   <!-- ===== HERO ===== -->
-  <header class="hero">
+  <header class="hero hud">
     <div class="free-banner">⚡ ورودی تورنمنت ۱۰۰٪ رایگان است و نیاز به پرداخت هیچ هزینه‌ای نیست</div>
-    <h1 class="title">تورنمنت <span class="grad">Call of Duty Mobile</span> — بتل رویال</h1>
+    <h1 class="title">تورنمنت <span class="grad" data-text="Call of Duty Mobile">Call of Duty Mobile</span> — بتل رویال</h1>
     <p class="subtitle">۱۰۰ صندلی در قالب ۲۵ اسکواد ۴ نفره. جایگاهت رو رزرو کن، منتظر کد روم بمون و وارد میدون جنگ شو.</p>
 
-    <button class="join-btn" id="join-btn">🎮 من هم می‌خواهم شرکت کنم!</button>
+    <div class="hero-actions">
+      <button class="join-btn" id="join-btn">🎮 من هم می‌خواهم شرکت کنم!</button>
+      <a class="tg-btn" href="https://t.me/cmd_tor" target="_blank" rel="noopener">📣 کانال تلگرام تورنمنت</a>
+    </div>
 
     <div class="countdown-row" id="countdown">
       <div class="cd-box"><div class="num" id="cd-days">00</div><div class="lbl">روز</div></div>
@@ -355,7 +479,7 @@
   </header>
 
   <!-- ===== ROOM CREDENTIALS ===== -->
-  <div class="room-box" id="room-box">
+  <div class="room-box hud" id="room-box">
     <h3>اطلاعات روم بازی</h3>
     <div class="room-grid">
       <div class="room-field">
@@ -399,6 +523,7 @@
     <div class="admin-actions-row">
       <button class="btn-mini primary" id="admin-publish-room">انتشار کد روم برای همه</button>
       <button class="btn-mini primary" id="admin-save-time">ذخیره زمان شروع</button>
+      <button class="btn-mini purple" id="admin-open-table">📋 لیست کامل بازیکنان</button>
       <button class="btn-mini ghost" id="admin-logout">خروج از حالت ادمین</button>
     </div>
   </div>
@@ -409,14 +534,48 @@
     <div id="squads-container"></div>
   </section>
 
-  <footer>COD Mobile Tournament &copy; 2026 — سایبرپانک ادیشن</footer>
+  <footer>
+    <a class="tg-btn" href="https://t.me/cmd_tor" target="_blank" rel="noopener">📣 عضویت در کانال تلگرام تورنمنت</a>
+    <div>COD Mobile Tournament &copy; 2026 — سایبرپانک ادیشن</div>
+  </footer>
+</div>
+
+<!-- ===== SIDEBAR DRAWER ===== -->
+<div class="drawer-backdrop" id="drawer-backdrop"></div>
+<div class="drawer" id="drawer">
+  <div class="drawer-head">
+    <h3>منوی بازیکن</h3>
+    <div class="icon-btn" id="drawer-close-btn">✕</div>
+  </div>
+
+  <div class="drawer-section">
+    <h4>صندلی شما</h4>
+    <div class="my-seat-card" id="my-seat-card">در حال بررسی...</div>
+    <button class="btn btn-cyan" id="drawer-goto-btn" style="width:100%; margin-top:10px; display:none;">🎯 برو به صندلی من</button>
+  </div>
+
+  <div class="drawer-section">
+    <h4>ارتباط با ما</h4>
+    <a class="tg-btn" style="width:100%; justify-content:center;" href="https://t.me/cmd_tor" target="_blank" rel="noopener">📣 کانال تلگرام تورنمنت</a>
+  </div>
+
+  <div class="drawer-section">
+    <h4>قوانین و راهنمای تورنمنت</h4>
+    <ul class="rules-list">
+      <li>ورود به روم بازی حداقل ۱۰ دقیقه قبل از شروع الزامی است.</li>
+      <li>استفاده از هک، چیت یا هرگونه نرم‌افزار غیرمجاز باعث حذف فوری از تورنمنت می‌شود.</li>
+      <li>هر نفر تنها مسئول صندلی خودش است؛ رزرو برای دوستان با اطلاع و رضایت خودشان انجام شود.</li>
+      <li>کد روم و پسورد را با افراد خارج از تورنمنت به اشتراک نگذارید.</li>
+      <li>تصمیم مدیریت تورنمنت درباره‌ی تخلفات، نهایی و غیرقابل اعتراض است.</li>
+    </ul>
+  </div>
 </div>
 
 <!-- ===== REGISTRATION MODAL ===== -->
 <div class="modal-overlay" id="modal-overlay">
   <div class="modal-box">
-    <h3>ثبت‌نام برای صندلی شماره <b id="modal-slot-num">-</b></h3>
-    <p class="sub">اطلاعاتت رو کامل وارد کن تا جایگاهت قطعی بشه.</p>
+    <h3 id="modal-title">ثبت‌نام برای صندلی شماره <b id="modal-slot-num">-</b></h3>
+    <p class="sub" id="modal-sub">اطلاعاتت رو کامل وارد کن تا جایگاهت قطعی بشه.</p>
 
     <label>نام درون‌بازی (IGN)</label>
     <input type="text" id="reg-ign" placeholder="مثلاً: Ghost_99" maxlength="24" autocomplete="off">
@@ -450,6 +609,76 @@
   </div>
 </div>
 
+<!-- ===== SEAT CHOICE MODAL (user already has a seat, clicked another empty slot) ===== -->
+<div class="modal-overlay" id="choice-modal-overlay">
+  <div class="modal-box">
+    <h3>صندلی شماره <b id="choice-slot-num">-</b></h3>
+    <p class="sub">شما قبلاً یک صندلی رزرو کرده‌اید. می‌خواهید چه کاری انجام دهید؟</p>
+    <div class="modal-actions" style="flex-direction:column;">
+      <button class="btn btn-cyan" id="choice-move-btn" style="width:100%;">🔁 جابه‌جایی صندلی من به اینجا</button>
+      <button class="btn btn-confirm" id="choice-friend-btn" style="width:100%;">➕ رزرو صندلی جدید برای دوست</button>
+      <button class="btn btn-cancel" id="choice-cancel-btn" style="width:100%;">انصراف</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== OWN SEAT ACTION MODAL ===== -->
+<div class="modal-overlay" id="own-modal-overlay">
+  <div class="modal-box">
+    <h3>صندلی شما — شماره <b id="own-slot-num">-</b></h3>
+    <p class="sub">این صندلی متعلق به شماست.</p>
+    <div class="detail-box" id="own-detail-box"></div>
+    <div class="modal-actions">
+      <button class="btn btn-cancel" id="own-close-btn">بستن</button>
+      <button class="btn btn-danger" id="own-cancel-seat-btn">لغو صندلی من</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== ADMIN SLOT ACTION MODAL ===== -->
+<div class="modal-overlay" id="admin-slot-modal-overlay">
+  <div class="modal-box">
+    <h3>مدیریت صندلی <b id="admin-slot-num">-</b></h3>
+    <p class="sub">مشخصات بازیکن و عملیات مدیریتی</p>
+    <div class="detail-box" id="admin-slot-detail"></div>
+    <div class="modal-actions">
+      <button class="btn btn-cyan" id="admin-slot-move-btn">🔁 جابه‌جایی</button>
+      <button class="btn btn-danger" id="admin-slot-kick-btn">❌ حذف (Kick)</button>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-cancel" id="admin-slot-close-btn" style="width:100%;">بستن</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== ADMIN PLAYERS TABLE MODAL ===== -->
+<div class="modal-overlay" id="admin-table-modal-overlay">
+  <div class="modal-box wide">
+    <h3>لیست کامل <b>بازیکنان</b></h3>
+    <p class="sub">جستجو بر اساس شماره صندلی، نام، موبایل یا آیدی</p>
+    <input class="table-search" type="text" id="table-search-input" placeholder="جستجو...">
+    <div class="table-scroll">
+      <table class="players-table" id="players-table">
+        <thead>
+          <tr><th>#</th><th>نام (IGN)</th><th>موبایل</th><th>آیدی</th></tr>
+        </thead>
+        <tbody id="players-table-body"></tbody>
+      </table>
+      <div class="table-empty" id="players-table-empty" style="display:none;">صندلی پری یافت نشد.</div>
+    </div>
+    <div class="table-actions">
+      <button class="btn-mini primary" id="table-copy-btn">کپی لیست</button>
+      <button class="btn-mini purple" id="table-csv-btn">خروجی CSV</button>
+      <button class="btn-mini ghost" id="table-close-btn">بستن</button>
+    </div>
+  </div>
+</div>
+
+<div class="move-banner" id="move-banner">
+  <span>حالت جابه‌جایی فعال است — یک صندلی خالی برای مقصد انتخاب کنید</span>
+  <button id="move-cancel-btn">لغو</button>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -464,18 +693,43 @@
   const TOTAL_SQUADS = TOTAL_SLOTS / SLOTS_PER_SQUAD; // 25
   const ADMIN_PASSWORD = "22412";
   const SETTINGS_ROW_ID = 1;
+  const MY_SEAT_KEY = 'cod_tournament_my_seat';
 
   let DEFAULT_START = new Date(2026, 9, 15, 20, 0, 0);
 
   // ===================================================================
   // وضعیت داخلی
   // ===================================================================
-  let slotsState = {};
+  let slotsState = {};      // { slot_number: {player_name, phone_number, social_id} }
   let pendingSlot = null;
+  let pendingIsSelf = false;
   let isSubmitting = false;
   let isAdmin = false;
   let tournamentStart = DEFAULT_START;
-  let roomPublished = false;
+  let adminMoveSource = null;   // slot number currently being moved by admin
+  let ignoreDeleteSlots = new Set(); // guards against localStorage being cleared during a self-move
+
+  // ===================================================================
+  // localStorage — تشخیص صندلی خودِ کاربر
+  // ===================================================================
+  function getMySeat(){
+    try{
+      const raw = localStorage.getItem(MY_SEAT_KEY);
+      return raw ? JSON.parse(raw) : null;
+    }catch(e){ return null; }
+  }
+  function setMySeat(obj){
+    try{ localStorage.setItem(MY_SEAT_KEY, JSON.stringify(obj)); }catch(e){}
+    refreshDrawerSeatCard();
+  }
+  function clearMySeat(){
+    try{ localStorage.removeItem(MY_SEAT_KEY); }catch(e){}
+    refreshDrawerSeatCard();
+  }
+  function isMine(n){
+    const my = getMySeat();
+    return !!(my && Number(my.slot) === Number(n));
+  }
 
   // ===================================================================
   // ساخت چیدمان اسکوادی
@@ -506,11 +760,8 @@
         const slotEl = document.createElement('div');
         slotEl.className = 'slot';
         slotEl.dataset.slot = n;
-        slotEl.innerHTML = `<div class="num">#${n}</div><button class="kick-btn" data-kick="${n}">حذف</button>`;
-        slotEl.addEventListener('click', (e) => {
-          if(e.target.closest('.kick-btn')) return;
-          onSlotClick(n);
-        });
+        slotEl.innerHTML = `<div class="num">#${n}</div>`;
+        slotEl.addEventListener('click', () => onSlotClick(n));
         if(i < 2) groupA.appendChild(slotEl); else groupB.appendChild(slotEl);
       }
 
@@ -533,17 +784,14 @@
     if(!el) return;
     const alreadyTaken = el.classList.contains('taken');
     el.classList.add('taken');
-    if(isAdmin) el.classList.add('admin-mode');
+    const mine = isMine(n);
+    el.classList.toggle('mine', mine);
+    if(isAdmin) el.classList.add('admin-mode'); else el.classList.remove('admin-mode');
     el.innerHTML = `
-      <div class="x-mark">❌</div>
+      <div class="mark">${mine ? '✅' : '❌'}</div>
       <div class="num">#${n}</div>
       <div class="player-name" title="${escapeHtml(info.player_name)}">${escapeHtml(info.player_name)}</div>
-      <button class="kick-btn" data-kick="${n}">حذف</button>
     `;
-    el.querySelector('.kick-btn').addEventListener('click', (e) => {
-      e.stopPropagation();
-      kickPlayer(n);
-    });
     if(animate && !alreadyTaken){
       el.classList.add('just-taken');
       setTimeout(() => el.classList.remove('just-taken'), 850);
@@ -553,8 +801,8 @@
   function renderSlotEmpty(n){
     const el = getSlotEl(n);
     if(!el) return;
-    el.classList.remove('taken', 'admin-mode');
-    el.innerHTML = `<div class="num">#${n}</div><button class="kick-btn" data-kick="${n}">حذف</button>`;
+    el.classList.remove('taken', 'admin-mode', 'mine');
+    el.innerHTML = `<div class="num">#${n}</div>`;
   }
 
   function escapeHtml(str){
@@ -569,16 +817,50 @@
     document.getElementById('progress-fill').style.width = (filled / TOTAL_SLOTS * 100) + '%';
   }
 
-  function refreshAdminModeOnSlots(){
+  function refreshAllSlotAdminMode(){
     squadsContainer.querySelectorAll('.slot.taken').forEach(el => {
       el.classList.toggle('admin-mode', isAdmin);
     });
   }
 
   // ===================================================================
-  // دکمه شرکت در تورنمنت
+  // کلیک روی صندلی — منطق هوشمند
+  // ===================================================================
+  function onSlotClick(n){
+    if(adminMoveSource !== null){
+      if(slotsState[n]){
+        showToast('صندلی مقصد باید خالی باشد', 'err');
+        return;
+      }
+      const source = adminMoveSource;
+      cancelMoveMode();
+      performMove(source, n, { self:false });
+      return;
+    }
+
+    if(slotsState[n]){
+      if(isAdmin){ openAdminSlotModal(n); return; }
+      if(isMine(n)){ openOwnSeatModal(n); return; }
+      showToast(`صندلی شماره ${n} قبلاً پر شده است ❌`, 'err');
+      return;
+    }
+
+    // صندلی خالی
+    if(isAdmin){ openRegModal(n, {self:false}); return; }
+    const my = getMySeat();
+    if(my){ openChoiceModal(n); return; }
+    openRegModal(n, {self:true});
+  }
+
+  // ===================================================================
+  // دکمه "من هم می‌خواهم شرکت کنم"
   // ===================================================================
   document.getElementById('join-btn').addEventListener('click', () => {
+    const my = getMySeat();
+    if(my && slotsState[my.slot]){
+      scrollToSlot(my.slot, true);
+      return;
+    }
     let firstEmpty = null;
     for(let i = 1; i <= TOTAL_SLOTS; i++){
       if(!slotsState[i]){ firstEmpty = i; break; }
@@ -587,13 +869,18 @@
       showToast('همه‌ی صندلی‌ها پر شده‌اند! 🔥', 'err');
       return;
     }
-    const el = getSlotEl(firstEmpty);
-    if(el){
-      el.scrollIntoView({ behavior:'smooth', block:'center' });
+    scrollToSlot(firstEmpty, true);
+  });
+
+  function scrollToSlot(n, pulse){
+    const el = getSlotEl(n);
+    if(!el) return;
+    el.scrollIntoView({ behavior:'smooth', block:'center' });
+    if(pulse){
       el.classList.add('highlight-pulse');
       setTimeout(() => el.classList.remove('highlight-pulse'), 3000);
     }
-  });
+  }
 
   // ===================================================================
   // تایمر معکوس
@@ -627,9 +914,11 @@
   }
 
   // ===================================================================
-  // مودال ثبت‌نام
+  // مودال ثبت‌نام بازیکن (برای خود کاربر / دوست / ثبت دستی ادمین)
   // ===================================================================
   const overlay = document.getElementById('modal-overlay');
+  const modalTitle = document.getElementById('modal-title');
+  const modalSub = document.getElementById('modal-sub');
   const modalSlotNum = document.getElementById('modal-slot-num');
   const ignInput = document.getElementById('reg-ign');
   const phoneInput = document.getElementById('reg-phone');
@@ -639,13 +928,14 @@
   const btnCancel = document.getElementById('btn-cancel');
   const confirmLabel = document.getElementById('confirm-label');
 
-  function onSlotClick(n){
-    if(slotsState[n]){
-      showToast(`صندلی شماره ${n} قبلاً پر شده است ❌`, 'err');
-      return;
-    }
+  function openRegModal(n, {self}){
     pendingSlot = n;
+    pendingIsSelf = !!self;
     modalSlotNum.textContent = n;
+    modalTitle.innerHTML = `ثبت‌نام برای صندلی شماره <b id="modal-slot-num">${n}</b>`;
+    modalSub.textContent = self
+      ? 'اطلاعاتت رو کامل وارد کن تا جایگاهت قطعی بشه.'
+      : 'اطلاعات دوستت را وارد کن تا صندلی برایش رزرو شود.';
     ignInput.value = ''; phoneInput.value = ''; socialInput.value = '';
     modalErr.textContent = '';
     overlay.classList.add('open');
@@ -684,8 +974,10 @@
     setSubmitting(true);
 
     try {
+      const slotNum = pendingSlot;
+      const wasSelf = pendingIsSelf;
       const { error } = await supabaseClient.from('slots').insert([{
-        slot_number: pendingSlot,
+        slot_number: slotNum,
         player_name: ign,
         phone_number: phone,
         social_id: social
@@ -704,10 +996,11 @@
       }
 
       const info = { player_name: ign, phone_number: phone, social_id: social };
-      slotsState[pendingSlot] = info;
-      renderSlotTaken(pendingSlot, info, {animate:true});
+      slotsState[slotNum] = info;
+      if(wasSelf) setMySeat({ slot: slotNum, ...info });
+      renderSlotTaken(slotNum, info, {animate:true});
       updateStats();
-      showToast(`✅ صندلی شماره ${pendingSlot} با نام «${ign}» ثبت شد`, 'ok');
+      showToast(`✅ صندلی شماره ${slotNum} با نام «${ign}» ثبت شد`, 'ok');
       setSubmitting(false);
       closeModal();
 
@@ -719,29 +1012,236 @@
   });
 
   // ===================================================================
-  // حذف بازیکن توسط ادمین
+  // مودال انتخاب هوشمند (کاربری که قبلاً صندلی دارد، روی صندلی خالی دیگر کلیک می‌کند)
   // ===================================================================
-  async function kickPlayer(n){
-    if(!isAdmin) return;
-    if(!confirm(`آیا مطمئنید می‌خواهید بازیکن صندلی #${n} را حذف کنید؟`)) return;
-    try {
+  const choiceOverlay = document.getElementById('choice-modal-overlay');
+  const choiceSlotNum = document.getElementById('choice-slot-num');
+  let choiceTargetSlot = null;
+
+  function openChoiceModal(n){
+    choiceTargetSlot = n;
+    choiceSlotNum.textContent = n;
+    choiceOverlay.classList.add('open');
+  }
+  function closeChoiceModal(){ choiceOverlay.classList.remove('open'); choiceTargetSlot = null; }
+  document.getElementById('choice-cancel-btn').addEventListener('click', closeChoiceModal);
+  choiceOverlay.addEventListener('click', (e) => { if(e.target === choiceOverlay) closeChoiceModal(); });
+
+  document.getElementById('choice-move-btn').addEventListener('click', () => {
+    const my = getMySeat();
+    const target = choiceTargetSlot;
+    closeChoiceModal();
+    if(!my || target === null) return;
+    performMove(my.slot, target, { self:true });
+  });
+  document.getElementById('choice-friend-btn').addEventListener('click', () => {
+    const target = choiceTargetSlot;
+    closeChoiceModal();
+    if(target === null) return;
+    openRegModal(target, {self:false});
+  });
+
+  // ===================================================================
+  // مودال صندلی خودِ کاربر
+  // ===================================================================
+  const ownOverlay = document.getElementById('own-modal-overlay');
+  const ownSlotNum = document.getElementById('own-slot-num');
+  const ownDetailBox = document.getElementById('own-detail-box');
+  let ownActiveSlot = null;
+
+  function openOwnSeatModal(n){
+    ownActiveSlot = n;
+    ownSlotNum.textContent = n;
+    const info = slotsState[n] || {};
+    ownDetailBox.innerHTML = `
+      <div><b>نام:</b> ${escapeHtml(info.player_name)}</div>
+      <div><b>موبایل:</b> ${escapeHtml(info.phone_number)}</div>
+      <div><b>آیدی:</b> ${escapeHtml(info.social_id)}</div>
+    `;
+    ownOverlay.classList.add('open');
+  }
+  function closeOwnModal(){ ownOverlay.classList.remove('open'); ownActiveSlot = null; }
+  document.getElementById('own-close-btn').addEventListener('click', closeOwnModal);
+  ownOverlay.addEventListener('click', (e) => { if(e.target === ownOverlay) closeOwnModal(); });
+
+  document.getElementById('own-cancel-seat-btn').addEventListener('click', async () => {
+    if(ownActiveSlot === null) return;
+    if(!confirm(`آیا مطمئنید می‌خواهید صندلی شماره ${ownActiveSlot} را لغو کنید؟`)) return;
+    const n = ownActiveSlot;
+    closeOwnModal();
+    try{
       const { error } = await supabaseClient.from('slots').delete().eq('slot_number', n);
-      if(error){
-        showToast('خطا در حذف بازیکن', 'err');
-        return;
-      }
+      if(error){ showToast('خطا در لغو صندلی', 'err'); return; }
       delete slotsState[n];
       renderSlotEmpty(n);
       updateStats();
-      showToast(`صندلی #${n} خالی شد`, 'ok');
-    } catch(err){
+      clearMySeat();
+      showToast('صندلی شما با موفقیت لغو شد', 'ok');
+    }catch(err){ console.error(err); showToast('خطای غیرمنتظره', 'err'); }
+  });
+
+  // ===================================================================
+  // جابه‌جایی صندلی (هم برای خودِ کاربر، هم برای ادمین)
+  // ===================================================================
+  async function performMove(fromSlot, toSlot, {self}){
+    const info = slotsState[fromSlot];
+    if(!info){ showToast('اطلاعات صندلی مبدا یافت نشد', 'err'); return; }
+    if(slotsState[toSlot]){ showToast('صندلی مقصد باید خالی باشد', 'err'); return; }
+
+    ignoreDeleteSlots.add(fromSlot);
+    try{
+      const del = await supabaseClient.from('slots').delete().eq('slot_number', fromSlot);
+      if(del.error){ showToast('خطا در جابه‌جایی (حذف مبدا)', 'err'); return; }
+
+      const ins = await supabaseClient.from('slots').insert([{
+        slot_number: toSlot, player_name: info.player_name, phone_number: info.phone_number, social_id: info.social_id
+      }]);
+      if(ins.error){ showToast('خطا در جابه‌جایی (ثبت مقصد)', 'err'); return; }
+
+      delete slotsState[fromSlot];
+      renderSlotEmpty(fromSlot);
+      slotsState[toSlot] = info;
+      renderSlotTaken(toSlot, info, {animate:true});
+      updateStats();
+
+      if(self){ setMySeat({ slot: toSlot, ...info }); }
+      showToast(`صندلی به شماره ${toSlot} منتقل شد ✅`, 'ok');
+    }catch(err){
       console.error(err);
-      showToast('خطای غیرمنتظره در حذف', 'err');
+      showToast('خطای غیرمنتظره در جابه‌جایی', 'err');
+    }finally{
+      setTimeout(() => ignoreDeleteSlots.delete(fromSlot), 3000);
     }
   }
 
   // ===================================================================
-  // پنل ادمین
+  // مودال مدیریت صندلی (فقط ادمین)
+  // ===================================================================
+  const adminSlotOverlay = document.getElementById('admin-slot-modal-overlay');
+  const adminSlotNumEl = document.getElementById('admin-slot-num');
+  const adminSlotDetail = document.getElementById('admin-slot-detail');
+  let adminActiveSlot = null;
+
+  function openAdminSlotModal(n){
+    adminActiveSlot = n;
+    adminSlotNumEl.textContent = n;
+    const info = slotsState[n] || {};
+    adminSlotDetail.innerHTML = `
+      <div><b>نام:</b> ${escapeHtml(info.player_name)}</div>
+      <div><b>موبایل:</b> ${escapeHtml(info.phone_number)}</div>
+      <div><b>آیدی:</b> ${escapeHtml(info.social_id)}</div>
+      <div><b>وضعیت:</b> ${isMine(n) ? 'صندلی همین دستگاه' : 'بازیکن دیگر'}</div>
+    `;
+    adminSlotOverlay.classList.add('open');
+  }
+  function closeAdminSlotModal(){ adminSlotOverlay.classList.remove('open'); adminActiveSlot = null; }
+  document.getElementById('admin-slot-close-btn').addEventListener('click', closeAdminSlotModal);
+  adminSlotOverlay.addEventListener('click', (e) => { if(e.target === adminSlotOverlay) closeAdminSlotModal(); });
+
+  document.getElementById('admin-slot-kick-btn').addEventListener('click', async () => {
+    if(adminActiveSlot === null) return;
+    if(!confirm(`آیا مطمئنید می‌خواهید بازیکن صندلی #${adminActiveSlot} را حذف کنید؟`)) return;
+    const n = adminActiveSlot;
+    closeAdminSlotModal();
+    try{
+      const { error } = await supabaseClient.from('slots').delete().eq('slot_number', n);
+      if(error){ showToast('خطا در حذف بازیکن', 'err'); return; }
+      delete slotsState[n];
+      renderSlotEmpty(n);
+      updateStats();
+      showToast(`صندلی #${n} خالی شد`, 'ok');
+    }catch(err){ console.error(err); showToast('خطای غیرمنتظره در حذف', 'err'); }
+  });
+
+  document.getElementById('admin-slot-move-btn').addEventListener('click', () => {
+    if(adminActiveSlot === null) return;
+    const n = adminActiveSlot;
+    closeAdminSlotModal();
+    enterMoveMode(n);
+  });
+
+  const moveBanner = document.getElementById('move-banner');
+  function enterMoveMode(sourceSlot){
+    adminMoveSource = sourceSlot;
+    moveBanner.classList.add('show');
+    showToast(`صندلی خالی مقصد برای انتقال #${sourceSlot} را انتخاب کنید`, 'ok');
+  }
+  function cancelMoveMode(){
+    adminMoveSource = null;
+    moveBanner.classList.remove('show');
+  }
+  document.getElementById('move-cancel-btn').addEventListener('click', cancelMoveMode);
+
+  // ===================================================================
+  // مودال لیست کامل بازیکنان (ادمین)
+  // ===================================================================
+  const tableOverlay = document.getElementById('admin-table-modal-overlay');
+  const tableSearchInput = document.getElementById('table-search-input');
+  const tableBody = document.getElementById('players-table-body');
+  const tableEmptyEl = document.getElementById('players-table-empty');
+
+  function buildPlayersArray(){
+    return Object.keys(slotsState)
+      .map(Number)
+      .sort((a,b) => a - b)
+      .map(n => ({ slot:n, ...slotsState[n] }));
+  }
+
+  function renderPlayersTable(filterTerm=''){
+    const term = filterTerm.trim().toLowerCase();
+    const players = buildPlayersArray().filter(p => {
+      if(!term) return true;
+      return String(p.slot).includes(term)
+        || (p.player_name || '').toLowerCase().includes(term)
+        || (p.phone_number || '').toLowerCase().includes(term)
+        || (p.social_id || '').toLowerCase().includes(term);
+    });
+    tableBody.innerHTML = players.map(p => `
+      <tr>
+        <td>#${p.slot}</td>
+        <td>${escapeHtml(p.player_name)}</td>
+        <td>${escapeHtml(p.phone_number)}</td>
+        <td>${escapeHtml(p.social_id)}</td>
+      </tr>
+    `).join('');
+    tableEmptyEl.style.display = players.length ? 'none' : 'block';
+  }
+
+  document.getElementById('admin-open-table').addEventListener('click', () => {
+    tableSearchInput.value = '';
+    renderPlayersTable();
+    tableOverlay.classList.add('open');
+  });
+  document.getElementById('table-close-btn').addEventListener('click', () => tableOverlay.classList.remove('open'));
+  tableOverlay.addEventListener('click', (e) => { if(e.target === tableOverlay) tableOverlay.classList.remove('open'); });
+  tableSearchInput.addEventListener('input', () => renderPlayersTable(tableSearchInput.value));
+
+  document.getElementById('table-copy-btn').addEventListener('click', () => {
+    const players = buildPlayersArray();
+    if(!players.length){ showToast('لیستی برای کپی وجود ندارد', 'err'); return; }
+    const text = 'صندلی\tنام\tموبایل\tآیدی\n' + players.map(p => `#${p.slot}\t${p.player_name}\t${p.phone_number}\t${p.social_id}`).join('\n');
+    navigator.clipboard?.writeText(text)
+      .then(() => showToast('لیست کپی شد ✅', 'ok'))
+      .catch(() => showToast('خطا در کپی لیست', 'err'));
+  });
+
+  document.getElementById('table-csv-btn').addEventListener('click', () => {
+    const players = buildPlayersArray();
+    if(!players.length){ showToast('لیستی برای خروجی وجود ندارد', 'err'); return; }
+    const escapeCsv = (v) => `"${String(v ?? '').replace(/"/g, '""')}"`;
+    const rows = [['slot','player_name','phone_number','social_id'], ...players.map(p => [p.slot, p.player_name, p.phone_number, p.social_id])];
+    const csv = rows.map(r => r.map(escapeCsv).join(',')).join('\n');
+    const blob = new Blob(['\uFEFF' + csv], { type:'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'players.csv';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast('فایل CSV دانلود شد ✅', 'ok');
+  });
+
+  // ===================================================================
+  // ورود ادمین
   // ===================================================================
   const lockBtn = document.getElementById('lock-btn');
   const adminModalOverlay = document.getElementById('admin-modal-overlay');
@@ -772,7 +1272,7 @@
       adminModalOverlay.classList.remove('open');
       adminBadge.classList.add('active');
       adminPanel.classList.add('open');
-      refreshAdminModeOnSlots();
+      refreshAllSlotAdminMode();
       document.getElementById('admin-room-id').value = document.getElementById('room-id-val').textContent === '—' ? '' : document.getElementById('room-id-val').textContent;
       document.getElementById('admin-room-pass').value = document.getElementById('room-pass-val').textContent === '—' ? '' : document.getElementById('room-pass-val').textContent;
       const localTime = new Date(tournamentStart.getTime() - tournamentStart.getTimezoneOffset()*60000).toISOString().slice(0,16);
@@ -785,12 +1285,14 @@
 
   document.getElementById('admin-logout').addEventListener('click', () => {
     isAdmin = false;
+    cancelMoveMode();
     adminBadge.classList.remove('active');
     adminPanel.classList.remove('open');
-    refreshAdminModeOnSlots();
+    refreshAllSlotAdminMode();
     showToast('از حالت ادمین خارج شدید.', 'ok');
   });
 
+  // انتشار کد روم
   document.getElementById('admin-publish-room').addEventListener('click', async () => {
     const roomId = document.getElementById('admin-room-id').value.trim();
     const roomPass = document.getElementById('admin-room-pass').value.trim();
@@ -810,6 +1312,7 @@
     } catch(err){ console.error(err); showToast('خطای غیرمنتظره', 'err'); }
   });
 
+  // تغییر زمان شروع
   document.getElementById('admin-save-time').addEventListener('click', async () => {
     const val = document.getElementById('admin-start-time').value;
     if(!val){ showToast('یک تاریخ و ساعت انتخاب کنید.', 'err'); return; }
@@ -826,6 +1329,9 @@
     } catch(err){ console.error(err); showToast('خطای غیرمنتظره', 'err'); }
   });
 
+  // ===================================================================
+  // نمایش کد روم برای عموم
+  // ===================================================================
   function applyRoomSettings(row){
     if(!row) return;
     if(row.start_time){
@@ -833,12 +1339,10 @@
       updateCountdown();
     }
     if(row.published && row.room_id && row.room_password){
-      roomPublished = true;
       document.getElementById('room-id-val').textContent = row.room_id;
       document.getElementById('room-pass-val').textContent = row.room_password;
       document.getElementById('room-locked-overlay').style.display = 'none';
     } else {
-      roomPublished = false;
       document.getElementById('room-locked-overlay').style.display = 'flex';
     }
   }
@@ -853,7 +1357,47 @@
   });
 
   // ===================================================================
-  // تنظیمات اتصال به Supabase (متصل به پروژه شما)
+  // منوی کشویی (Sidebar Drawer)
+  // ===================================================================
+  const drawer = document.getElementById('drawer');
+  const drawerBackdrop = document.getElementById('drawer-backdrop');
+  const mySeatCard = document.getElementById('my-seat-card');
+  const drawerGotoBtn = document.getElementById('drawer-goto-btn');
+
+  function refreshDrawerSeatCard(){
+    const my = getMySeat();
+    if(my){
+      mySeatCard.classList.remove('empty');
+      mySeatCard.innerHTML = `<div><b style="color:var(--green)">صندلی #${my.slot}</b></div><div>نام: ${escapeHtml(my.player_name)}</div>`;
+      drawerGotoBtn.style.display = 'block';
+    } else {
+      mySeatCard.classList.add('empty');
+      mySeatCard.textContent = 'شما هنوز صندلی‌ای رزرو نکرده‌اید.';
+      drawerGotoBtn.style.display = 'none';
+    }
+  }
+
+  function openDrawer(){
+    refreshDrawerSeatCard();
+    drawer.classList.add('open');
+    drawerBackdrop.classList.add('open');
+  }
+  function closeDrawer(){
+    drawer.classList.remove('open');
+    drawerBackdrop.classList.remove('open');
+  }
+  document.getElementById('hamburger-btn').addEventListener('click', openDrawer);
+  document.getElementById('drawer-close-btn').addEventListener('click', closeDrawer);
+  drawerBackdrop.addEventListener('click', closeDrawer);
+  drawerGotoBtn.addEventListener('click', () => {
+    const my = getMySeat();
+    if(!my) return;
+    closeDrawer();
+    setTimeout(() => scrollToSlot(my.slot, true), 200);
+  });
+
+  // ===================================================================
+  // اتصال به Supabase
   // ===================================================================
   const SUPABASE_URL = "https://vpjhtozjrtdtkdtgmmwa.supabase.co";
   const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZwamh0b3pqcnRkdGtkdGdtbXdhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg1Mzc0NDUsImV4cCI6MjEwNDExMzQ0NX0.jQd6BfCCtwHIuFOgxqyECplW4D47oJHkGKh0zut_aec";
@@ -870,8 +1414,8 @@
 
     await fetchAllSlots();
     await fetchSettings();
+    refreshDrawerSeatCard();
 
-    // هم‌زمانی زنده (Realtime) برای ثبت‌نام‌ها
     supabaseClient
       .channel('public:slots')
       .on('postgres_changes', { event:'INSERT', schema:'public', table:'slots' }, (payload) => {
@@ -886,16 +1430,23 @@
         delete slotsState[row.slot_number];
         renderSlotEmpty(row.slot_number);
         updateStats();
+        const my = getMySeat();
+        if(my && Number(my.slot) === Number(row.slot_number) && !ignoreDeleteSlots.has(row.slot_number)){
+          clearMySeat();
+          showToast('صندلی شما توسط مدیریت حذف شد', 'err');
+        }
       })
       .on('postgres_changes', { event:'UPDATE', schema:'public', table:'slots' }, (payload) => {
         const row = payload.new; if(!row) return;
         slotsState[row.slot_number] = { player_name: row.player_name, phone_number: row.phone_number, social_id: row.social_id };
         renderSlotTaken(row.slot_number, slotsState[row.slot_number]);
         updateStats();
+        if(isMine(row.slot_number)){
+          setMySeat({ slot: row.slot_number, ...slotsState[row.slot_number] });
+        }
       })
       .subscribe();
 
-    // هم‌زمانی زنده (Realtime) برای تنظیمات روم
     supabaseClient
       .channel('public:tournament_settings')
       .on('postgres_changes', { event:'*', schema:'public', table:'tournament_settings' }, (payload) => {
@@ -907,14 +1458,14 @@
   async function fetchAllSlots(){
     try {
       const { data, error } = await supabaseClient.from('slots').select('slot_number, player_name, phone_number, social_id');
-      if(error){ console.error(error); return; }
+      if(error){ console.error(error); showToast('خطا در بارگذاری صندلی‌ها', 'err'); return; }
       slotsState = {};
       (data || []).forEach(row => {
         slotsState[row.slot_number] = { player_name: row.player_name, phone_number: row.phone_number, social_id: row.social_id };
       });
       Object.keys(slotsState).forEach(n => renderSlotTaken(Number(n), slotsState[n]));
       updateStats();
-    } catch(err){ console.error(err); }
+    } catch(err){ console.error(err); showToast('خطا در اتصال به دیتابیس', 'err'); }
   }
 
   async function fetchSettings(){
