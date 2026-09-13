@@ -3,208 +3,175 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>COD Mobile | تورنمنت بتل رویال — سایبرپانک ادیشن</title>
+<title>COD Mobile | تورنمنت بتل رویال — لیکوئید گلس</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#08090C;
-    --panel:rgba(18,16,28,0.55);
-    --panel-solid:#100e18;
-    --border:rgba(168,85,247,0.18);
-    --purple:#A855F7;
-    --purple-soft:rgba(168,85,247,0.4);
-    --cyan:#00F0FF;
-    --cyan-soft:rgba(0,240,255,0.4);
-    --red:#FF2050;
-    --red-soft:rgba(255,32,80,0.4);
-    --green:#22FF95;
-    --green-soft:rgba(34,255,149,0.42);
-    --tg:#2EA6E0;
-    --tg-soft:rgba(46,166,224,0.4);
-    --text:#EDEBFC;
-    --text-dim:#8b87a3;
-    --radius:16px;
+    --bg:#0A0A0E;
+    --glass:rgba(255,255,255,0.055);
+    --glass-strong:rgba(255,255,255,0.10);
+    --glass-border:rgba(255,255,255,0.14);
+    --accent1:#9AA9FF;
+    --accent2:#C9D3FF;
+    --accent-soft:rgba(154,169,255,0.38);
+    --red:#FF6B81;
+    --red-soft:rgba(255,107,129,0.35);
+    --green:#7CF7C4;
+    --green-soft:rgba(124,247,196,0.4);
+    --tg:#6FC1F0;
+    --tg-soft:rgba(111,193,240,0.35);
+    --text:#F5F5F8;
+    --text-dim:rgba(245,245,248,0.56);
+    --radius:26px;
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0; scroll-behavior:smooth;}
   body{
     background:
-      radial-gradient(circle at 15% 0%, rgba(168,85,247,0.16), transparent 42%),
-      radial-gradient(circle at 90% 15%, rgba(0,240,255,0.10), transparent 40%),
-      radial-gradient(circle at 50% 100%, rgba(255,32,80,0.08), transparent 45%),
+      radial-gradient(circle at 12% 8%, rgba(154,169,255,0.16), transparent 46%),
+      radial-gradient(circle at 88% 20%, rgba(124,247,196,0.08), transparent 42%),
+      radial-gradient(circle at 55% 95%, rgba(255,107,129,0.07), transparent 48%),
       var(--bg);
     color:var(--text);
     font-family:'Vazirmatn','Rajdhani',sans-serif;
     min-height:100vh;
     overflow-x:hidden;
   }
-  body::before{
-    content:"";
-    position:fixed; inset:0; z-index:1; pointer-events:none;
-    background-image:repeating-linear-gradient(0deg, rgba(255,255,255,0.012) 0px, rgba(255,255,255,0.012) 1px, transparent 1px, transparent 3px);
-  }
   .wrap{position:relative; z-index:2; max-width:1100px; margin:0 auto; padding:20px 16px 70px;}
-
   ::-webkit-scrollbar{width:8px;}
-  ::-webkit-scrollbar-thumb{background:var(--purple-soft); border-radius:10px;}
-
+  ::-webkit-scrollbar-thumb{background:var(--glass-strong); border-radius:10px;}
   a{color:inherit;}
 
-  /* ===== HUD corner accents ===== */
-  .hud{position:relative;}
-  .hud::before, .hud::after{
-    content:""; position:absolute; width:18px; height:18px; pointer-events:none;
-    border:2px solid var(--cyan-soft);
+  /* ===== glass panel base ===== */
+  .glass{
+    background:linear-gradient(160deg, var(--glass-strong), var(--glass));
+    backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px);
+    border:1px solid var(--glass-border);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.12), inset 0 -14px 30px rgba(0,0,0,0.25), 0 14px 40px rgba(0,0,0,0.35);
   }
-  .hud::before{top:-1px; right:-1px; border-left:none; border-bottom:none; border-top-right-radius:6px;}
-  .hud::after{bottom:-1px; left:-1px; border-right:none; border-top:none; border-bottom-left-radius:6px;}
 
   /* ===== TOP BAR ===== */
-  .topbar{display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; gap:10px;}
+  .topbar{display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; gap:10px;}
   .icon-btn{
-    width:40px;height:40px;border-radius:10px;
-    background:var(--panel); border:1px solid var(--border);
+    width:42px;height:42px;border-radius:16px;
     display:flex;align-items:center;justify-content:center;
     cursor:pointer; font-size:17px; color:var(--text);
-    transition:box-shadow .2s ease, transform .15s ease;
+    transition:transform .15s ease, box-shadow .2s ease;
     flex-shrink:0;
   }
-  .icon-btn:hover{box-shadow:0 0 16px var(--purple-soft); transform:translateY(-1px);}
+  .icon-btn:hover{transform:translateY(-2px); box-shadow: inset 0 1px 0 rgba(255,255,255,0.16), inset 0 -14px 26px rgba(0,0,0,0.28), 0 10px 26px rgba(154,169,255,0.18);}
   .topbar-right{display:flex; align-items:center; gap:10px;}
   .admin-badge{
-    display:none;
-    align-items:center; gap:6px;
-    font-size:12px; font-weight:700; color:var(--cyan);
-    background:rgba(0,240,255,0.08); border:1px solid var(--cyan-soft);
-    padding:6px 12px; border-radius:20px;
+    display:none; align-items:center; gap:6px;
+    font-size:12px; font-weight:700; color:var(--accent2);
+    padding:8px 14px; border-radius:999px;
   }
   .admin-badge.active{display:flex;}
 
   /* ===== HERO ===== */
   header.hero{
     position:relative; overflow:hidden;
-    border:1px solid var(--border); border-radius:var(--radius);
-    background:linear-gradient(160deg, rgba(168,85,247,0.10), rgba(0,240,255,0.04) 60%), var(--panel-solid);
-    padding:30px 24px; margin-bottom:22px;
+    border-radius:32px;
+    padding:30px 26px; margin-bottom:22px;
   }
-  header.hero::after{
-    content:""; position:absolute; top:-50%; left:-15%;
-    width:380px;height:380px; border-radius:50%;
-    background:radial-gradient(circle, var(--purple-soft), transparent 70%);
-    filter:blur(20px); pointer-events:none;
+  .hero-inner{display:flex; align-items:center; gap:26px; flex-wrap:wrap-reverse;}
+  .hero-text{flex:1 1 280px; min-width:260px;}
+  .hero-image-wrap{
+    flex-shrink:0; width:200px; display:flex; justify-content:center; align-items:center;
+    position:relative; margin:0 auto;
+  }
+  .hero-image-wrap::before{
+    content:""; position:absolute; inset:-26px; border-radius:50%;
+    background:radial-gradient(circle, rgba(154,169,255,0.4), transparent 68%);
+    filter:blur(28px); z-index:0;
+  }
+  .hero-image{
+    position:relative; z-index:1; width:100%; max-width:210px;
+    filter:drop-shadow(0 22px 34px rgba(0,0,0,0.55));
+    animation:floatSoft 5.5s ease-in-out infinite;
+    border-radius:24px;
+  }
+  @keyframes floatSoft{
+    0%,100%{transform:translateY(0) rotate(0deg);}
+    50%{transform:translateY(-14px) rotate(-1deg);}
   }
   .free-banner{
     display:inline-flex; align-items:center; gap:8px;
     font-size:12.5px; font-weight:700; letter-spacing:.2px;
-    color:var(--cyan);
-    background:rgba(0,240,255,0.06);
-    border:1px solid var(--cyan-soft);
-    padding:6px 14px; border-radius:20px;
-    text-shadow:0 0 10px var(--cyan-soft);
+    color:var(--accent2);
+    padding:7px 16px; border-radius:999px;
     margin-bottom:16px;
-    animation:softpulse 2.4s ease-in-out infinite;
-  }
-  @keyframes softpulse{
-    0%,100%{box-shadow:0 0 8px var(--cyan-soft);}
-    50%{box-shadow:0 0 20px var(--cyan-soft);}
   }
   h1.title{
     font-family:'Rajdhani',sans-serif; font-weight:700;
-    font-size:clamp(26px,5vw,44px); line-height:1.15; margin:0 0 8px;
-    position:relative; display:inline-block;
+    font-size:clamp(26px,4.6vw,42px); line-height:1.2; margin:0 0 10px;
   }
   h1.title .grad{
-    background:linear-gradient(90deg, var(--purple), var(--cyan));
+    background:linear-gradient(90deg, var(--accent2), var(--accent1));
     -webkit-background-clip:text; background-clip:text; color:transparent;
-    position:relative;
   }
-  h1.title .grad::before{
-    content:attr(data-text);
-    position:absolute; inset:0; color:var(--red);
-    background:none; -webkit-text-fill-color:var(--red);
-    clip-path:inset(0 0 92% 0);
-    animation:glitchLine 5.5s steps(1) infinite;
-    opacity:.75;
-  }
-  @keyframes glitchLine{
-    0%,88%,100%{clip-path:inset(0 0 92% 0); transform:translateX(0);}
-    89%{clip-path:inset(20% 0 60% 0); transform:translateX(-2px);}
-    90%{clip-path:inset(70% 0 5% 0); transform:translateX(2px);}
-    91%{clip-path:inset(40% 0 45% 0); transform:translateX(-1px);}
-    92%{clip-path:inset(0 0 92% 0); transform:translateX(0);}
-  }
-  .subtitle{color:var(--text-dim); font-size:15px; max-width:620px; line-height:1.8; margin:0 0 22px;}
+  .subtitle{color:var(--text-dim); font-size:15px; max-width:560px; line-height:1.85; margin:0 0 22px;}
 
   .hero-actions{display:flex; flex-wrap:wrap; gap:12px; margin-bottom:26px;}
   .join-btn{
     display:inline-flex; align-items:center; gap:10px;
-    background:linear-gradient(135deg, var(--purple), #6d28d9);
-    color:#fff; font-weight:700; font-size:15px;
-    border:none; border-radius:14px; padding:15px 28px;
+    background:linear-gradient(135deg, var(--accent1), #6f7fe8);
+    color:#0c0c14; font-weight:700; font-size:15px;
+    border:none; border-radius:999px; padding:15px 30px;
     cursor:pointer;
-    box-shadow:0 0 20px var(--purple-soft), 0 0 50px rgba(168,85,247,0.15);
-    animation:joinGlow 2s ease-in-out infinite;
-    transition:transform .15s ease;
+    box-shadow: inset 0 1px 1px rgba(255,255,255,0.55), inset 0 -8px 14px rgba(0,0,0,0.18), 0 10px 30px rgba(154,169,255,0.35);
+    transition:transform .15s ease, box-shadow .2s ease;
   }
-  .join-btn:hover{transform:translateY(-2px) scale(1.02);}
-  @keyframes joinGlow{
-    0%,100%{box-shadow:0 0 20px var(--purple-soft), 0 0 50px rgba(168,85,247,0.12);}
-    50%{box-shadow:0 0 32px var(--purple-soft), 0 0 70px rgba(168,85,247,0.28);}
-  }
+  .join-btn:hover{transform:translateY(-2px) scale(1.015);}
+  .join-btn:active{transform:scale(.97);}
   .tg-btn{
     display:inline-flex; align-items:center; gap:9px;
-    background:rgba(46,166,224,0.08); color:var(--tg);
+    background:rgba(111,193,240,0.10); color:var(--tg);
     font-weight:700; font-size:14px; text-decoration:none;
-    border:1px solid var(--tg-soft); border-radius:14px; padding:14px 22px;
+    border:1px solid var(--tg-soft); border-radius:999px; padding:14px 24px;
     transition:transform .15s ease, background .2s ease;
   }
-  .tg-btn:hover{transform:translateY(-2px); background:rgba(46,166,224,0.15);}
+  .tg-btn:hover{transform:translateY(-2px); background:rgba(111,193,240,0.16);}
 
   /* countdown */
   .countdown-row{display:flex; flex-wrap:wrap; gap:12px; margin-bottom:20px;}
   .cd-box{
-    background:rgba(0,0,0,0.4); border:1px solid var(--border);
-    border-radius:12px; padding:12px 18px; min-width:74px; text-align:center;
+    border-radius:18px; padding:12px 18px; min-width:74px; text-align:center;
   }
   .cd-box .num{
-    font-family:'Rajdhani',monospace; font-size:30px; font-weight:700;
-    color:var(--cyan); text-shadow:0 0 14px var(--cyan-soft);
-    line-height:1; font-variant-numeric:tabular-nums;
+    font-family:'Rajdhani',monospace; font-size:29px; font-weight:700;
+    color:var(--text); line-height:1; font-variant-numeric:tabular-nums;
   }
   .cd-box .lbl{font-size:11px; color:var(--text-dim); margin-top:6px;}
 
   .stats-bar{display:flex; align-items:center; gap:16px; flex-wrap:wrap;}
-  .stats-text{font-size:14px;}
-  .stats-text b{color:var(--purple); font-size:18px; text-shadow:0 0 10px var(--purple-soft);}
-  .progress-track{flex:1; min-width:160px; height:10px; border-radius:20px; background:rgba(255,255,255,0.06); overflow:hidden; border:1px solid var(--border);}
-  .progress-fill{height:100%; background:linear-gradient(90deg, var(--purple), var(--cyan)); box-shadow:0 0 10px var(--purple-soft); transition:width .5s ease;}
+  .stats-text{font-size:14px; color:var(--text-dim);}
+  .stats-text b{color:var(--text); font-size:18px;}
+  .progress-track{flex:1; min-width:160px; height:10px; border-radius:20px; background:rgba(255,255,255,0.07); overflow:hidden;}
+  .progress-fill{height:100%; background:linear-gradient(90deg, var(--accent1), var(--green)); transition:width .5s ease;}
 
   /* ===== ROOM CREDENTIALS ===== */
-  .room-box{
-    position:relative; border:1px solid var(--border); border-radius:var(--radius);
-    background:linear-gradient(160deg, rgba(0,240,255,0.06), rgba(168,85,247,0.04)), var(--panel-solid);
-    padding:22px 24px; margin-bottom:22px; overflow:hidden;
-  }
-  .room-box h3{font-family:'Rajdhani',sans-serif; font-size:16px; margin:0 0 14px; color:var(--text-dim); letter-spacing:.3px;}
+  .room-box{position:relative; border-radius:var(--radius); padding:22px 24px; margin-bottom:22px; overflow:hidden;}
+  .room-box h3{font-family:'Rajdhani',sans-serif; font-size:16px; margin:0 0 14px; color:var(--text-dim); letter-spacing:.3px; font-weight:600;}
   .room-grid{display:flex; gap:16px; flex-wrap:wrap;}
   .room-field{flex:1; min-width:180px;}
   .room-field .lbl2{font-size:12px; color:var(--text-dim); margin-bottom:6px;}
   .room-field .val-row{display:flex; align-items:center; gap:10px;}
   .room-field .val{
     font-family:'Rajdhani',monospace; font-size:24px; font-weight:700;
-    color:var(--cyan); text-shadow:0 0 12px var(--cyan-soft); letter-spacing:1px;
+    color:var(--text); letter-spacing:1px;
   }
   .copy-btn{
-    background:rgba(255,255,255,0.06); border:1px solid var(--border);
-    color:var(--text); border-radius:8px; padding:6px 10px; font-size:12px; cursor:pointer;
+    background:rgba(255,255,255,0.08); border:1px solid var(--glass-border);
+    color:var(--text); border-radius:999px; padding:7px 14px; font-size:12px; cursor:pointer;
   }
-  .copy-btn:hover{background:rgba(255,255,255,0.12);}
+  .copy-btn:hover{background:rgba(255,255,255,0.14);}
 
   .room-locked-overlay{
     position:absolute; inset:0;
-    background:rgba(8,9,12,0.88);
-    backdrop-filter:blur(6px);
+    background:rgba(10,10,14,0.82);
+    backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
     display:flex; flex-direction:column; align-items:center; justify-content:center;
     text-align:center; gap:8px; padding:20px;
   }
@@ -212,240 +179,227 @@
   .room-locked-overlay .msg{color:var(--text-dim); font-size:13.5px; max-width:340px; line-height:1.7;}
 
   /* ===== ADMIN PANEL ===== */
-  .admin-panel{
-    display:none;
-    border:1px solid var(--cyan-soft); border-radius:var(--radius);
-    background:linear-gradient(160deg, rgba(0,240,255,0.06), transparent), var(--panel-solid);
-    padding:20px 22px; margin-bottom:22px;
-  }
+  .admin-panel{display:none; border-radius:var(--radius); padding:20px 22px; margin-bottom:22px;}
   .admin-panel.open{display:block;}
-  .admin-panel h3{font-family:'Rajdhani',sans-serif; font-size:17px; margin:0 0 14px; color:var(--cyan);}
+  .admin-panel h3{font-family:'Rajdhani',sans-serif; font-size:17px; margin:0 0 14px; color:var(--accent2); font-weight:700;}
   .admin-grid{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
   @media (max-width:640px){.admin-grid{grid-template-columns:1fr;}}
   .field label{font-size:12px; color:var(--text-dim); display:block; margin-bottom:5px;}
   .field input{
-    width:100%; background:rgba(0,0,0,0.4); border:1px solid var(--border);
-    border-radius:9px; padding:10px 12px; color:var(--text); font-family:'Vazirmatn',sans-serif; font-size:13.5px; outline:none;
+    width:100%; background:rgba(0,0,0,0.28); border:1px solid var(--glass-border);
+    border-radius:14px; padding:11px 14px; color:var(--text); font-family:'Vazirmatn',sans-serif; font-size:13.5px; outline:none;
   }
-  .field input:focus{border-color:var(--cyan);}
+  .field input:focus{border-color:var(--accent1);}
   .admin-actions-row{display:flex; gap:10px; margin-top:16px; flex-wrap:wrap;}
   .btn-mini{
-    border:none; border-radius:9px; padding:10px 18px; font-size:13px; font-weight:700;
-    cursor:pointer; transition:filter .2s ease;
+    border:none; border-radius:999px; padding:10px 20px; font-size:13px; font-weight:700;
+    cursor:pointer; transition:filter .2s ease, transform .12s ease;
   }
-  .btn-mini.primary{background:linear-gradient(135deg, var(--cyan), #0891b2); color:#031418;}
-  .btn-mini.primary:hover{filter:brightness(1.1);}
-  .btn-mini.ghost{background:rgba(255,255,255,0.06); color:var(--text); border:1px solid var(--border);}
-  .btn-mini.purple{background:linear-gradient(135deg, var(--purple), #6d28d9); color:#fff;}
-  .btn-mini.danger{background:linear-gradient(135deg, var(--red), #9c0f30); color:#fff;}
-  .btn-mini.danger:hover{filter:brightness(1.1);}
+  .btn-mini:active{transform:scale(.96);}
+  .btn-mini.primary{background:linear-gradient(135deg, var(--accent1), #6f7fe8); color:#0c0c14;}
+  .btn-mini.primary:hover{filter:brightness(1.08);}
+  .btn-mini.ghost{background:rgba(255,255,255,0.08); color:var(--text); border:1px solid var(--glass-border);}
+  .btn-mini.purple{background:linear-gradient(135deg, #C9A6FF, #8f6fe0); color:#140c1e;}
+  .btn-mini.danger{background:linear-gradient(135deg, var(--red), #c23a56); color:#1c0509;}
+  .btn-mini.danger:hover{filter:brightness(1.08);}
 
   /* ===== SQUADS ===== */
   .squads-section h2{
     font-family:'Rajdhani',sans-serif; font-size:20px; font-weight:700; margin:0 0 16px;
     display:flex; align-items:center; gap:10px;
   }
-  .squads-section h2::before{content:""; width:4px;height:18px;background:var(--purple);border-radius:2px;display:inline-block;}
+  .squads-section h2::before{content:""; width:5px;height:18px;background:var(--accent1);border-radius:4px;display:inline-block;}
 
-  .squad{
-    margin-bottom:18px;
-    content-visibility:auto;
-    contain-intrinsic-size:220px 130px;
-  }
+  .squad{ margin-bottom:18px; content-visibility:auto; contain-intrinsic-size:220px 140px; }
   .squad-label{
     font-family:'Rajdhani',sans-serif; font-size:12.5px; font-weight:700; letter-spacing:.5px;
     color:var(--text-dim); margin-bottom:8px; text-align:center;
   }
-  .squad-row{
-    display:flex; align-items:stretch; justify-content:center; gap:34px;
-  }
+  .squad-row{display:flex; align-items:stretch; justify-content:center; gap:30px;}
   .squad-group{display:flex; gap:10px;}
-  .squad-divider{width:1px; background:linear-gradient(180deg, transparent, var(--border), transparent); align-self:stretch;}
+  .squad-divider{width:1px; background:linear-gradient(180deg, transparent, var(--glass-border), transparent); align-self:stretch;}
 
   .slot{
-    width:82px; aspect-ratio:1/1;
-    border-radius:12px; border:1px solid var(--border);
-    background:#141020;
+    width:84px; aspect-ratio:1/1;
+    border-radius:22px;
+    background:linear-gradient(160deg, rgba(255,255,255,0.10), rgba(255,255,255,0.02));
+    border:1px solid var(--glass-border);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.16), inset 0 -8px 14px rgba(0,0,0,0.28), 0 6px 16px rgba(0,0,0,0.3);
     display:flex; flex-direction:column; align-items:center; justify-content:center;
     cursor:pointer; position:relative; padding:4px; overflow:hidden;
-    transition:transform .15s ease, border-color .2s ease, box-shadow .2s ease;
+    transition:transform .15s ease, box-shadow .2s ease;
   }
   @media (max-width:520px){
-    .slot{width:60px;}
-    .squad-row{gap:18px;}
+    .slot{width:62px; border-radius:18px;}
+    .squad-row{gap:16px;}
     .squad-group{gap:6px;}
   }
   .slot .num{font-family:'Rajdhani',monospace; font-weight:700; font-size:15px; color:var(--text-dim);}
-  .slot:hover:not(.taken){
-    transform:translateY(-2px);
-    border-color:var(--purple);
-    box-shadow:0 0 16px var(--purple-soft), inset 0 0 14px rgba(168,85,247,0.08);
-  }
-  .slot:hover:not(.taken) .num{color:var(--purple);}
+  .slot:hover:not(.taken){ transform:translateY(-3px); box-shadow: inset 0 1px 0 rgba(255,255,255,0.22), inset 0 -8px 14px rgba(0,0,0,0.25), 0 12px 26px rgba(154,169,255,0.28);}
+  .slot:hover:not(.taken) .num{color:var(--accent2);}
 
   .slot.taken{
     cursor:pointer;
-    background:linear-gradient(160deg, rgba(255,32,80,0.14), rgba(20,8,14,0.6));
-    border-color:var(--red-soft);
+    background:linear-gradient(160deg, rgba(255,107,129,0.16), rgba(30,10,16,0.55));
   }
-  .slot.taken .num{color:rgba(255,255,255,0.35); font-size:10.5px;}
-  .slot.taken .mark{font-size:18px; color:var(--red); text-shadow:0 0 10px var(--red-soft); line-height:1;}
+  .slot.taken .num{color:rgba(255,255,255,0.32); font-size:10px;}
+  .slot.taken .mark{font-size:16px; color:var(--red); line-height:1;}
+  .slot.taken .avatar-emoji{font-size:15px; line-height:1;}
   .slot.taken .player-name{
-    font-size:8.8px; color:#ffb2c2; margin-top:2px; max-width:100%;
+    font-size:8.6px; color:#ffd3da; margin-top:2px; max-width:100%;
     overflow:hidden; text-overflow:ellipsis; white-space:nowrap; padding:0 2px;
   }
-  .slot.taken.mine{
-    background:linear-gradient(160deg, rgba(34,255,149,0.16), rgba(8,20,14,0.6));
-    border-color:var(--green-soft);
-  }
-  .slot.taken.mine .mark{color:var(--green); text-shadow:0 0 10px var(--green-soft);}
-  .slot.taken.mine .player-name{color:#b7ffdf;}
-  .slot.taken.admin-mode{box-shadow:0 0 0 2px var(--cyan-soft) inset;}
-  .slot.taken.admin-mode:hover{transform:translateY(-2px); box-shadow:0 0 16px var(--cyan-soft);}
+  .slot.taken.mine{ background:linear-gradient(160deg, rgba(124,247,196,0.20), rgba(6,26,20,0.55)); }
+  .slot.taken.mine .mark{color:var(--green);}
+  .slot.taken.mine .player-name{color:#c9ffe9;}
+  .slot.taken.admin-mode{box-shadow: inset 0 0 0 2px rgba(154,169,255,0.5);}
+  .slot.taken.admin-mode:hover{transform:translateY(-2px);}
 
   @keyframes flashTaken{
-    0%{background:rgba(168,85,247,0.55); border-color:var(--purple);}
-    100%{background:linear-gradient(160deg, rgba(255,32,80,0.14), rgba(20,8,14,0.6)); border-color:var(--red-soft);}
+    0%{background:rgba(154,169,255,0.5);}
+    100%{background:linear-gradient(160deg, rgba(255,107,129,0.16), rgba(30,10,16,0.55));}
   }
-  .slot.just-taken{animation:flashTaken .8s ease-out, shakeSlot .4s ease-out;}
-  @keyframes shakeSlot{
-    0%,100%{transform:translateX(0);}
-    20%{transform:translateX(-3px);} 40%{transform:translateX(3px);}
-    60%{transform:translateX(-2px);} 80%{transform:translateX(2px);}
-  }
+  .slot.just-taken{animation:flashTaken .8s ease-out;}
   .slot.highlight-pulse{animation:highlightPulse 1.4s ease-in-out 2;}
   @keyframes highlightPulse{
-    0%,100%{box-shadow:0 0 0 var(--cyan-soft);}
-    50%{box-shadow:0 0 26px var(--cyan-soft);}
+    0%,100%{box-shadow: inset 0 1px 0 rgba(255,255,255,0.16), inset 0 -8px 14px rgba(0,0,0,0.28), 0 6px 16px rgba(0,0,0,0.3);}
+    50%{box-shadow: inset 0 1px 0 rgba(255,255,255,0.2), 0 0 30px rgba(154,169,255,0.55);}
   }
 
   /* ===== FOOTER ===== */
   footer{
     display:flex; flex-direction:column; align-items:center; gap:14px;
     text-align:center; color:var(--text-dim); font-size:12.5px; margin-top:40px;
-    border-top:1px solid var(--border); padding-top:24px;
+    padding-top:24px; border-top:1px solid var(--glass-border);
   }
 
   /* ===== MOVE-MODE BANNER ===== */
   .move-banner{
-    position:fixed; bottom:20px; left:50%; transform:translateX(-50%) translateY(120%);
+    position:fixed; bottom:20px; left:50%; transform:translateX(-50%) translateY(140%);
     display:flex; align-items:center; gap:14px;
-    background:var(--panel-solid); border:1px solid var(--cyan-soft);
-    color:var(--cyan); padding:12px 18px; border-radius:12px; font-size:13.5px;
-    z-index:310; box-shadow:0 0 24px rgba(0,240,255,0.15);
-    transition:transform .25s ease;
+    border-radius:999px; color:var(--accent2); padding:12px 20px; font-size:13.5px;
+    z-index:310; transition:transform .25s ease;
   }
   .move-banner.show{transform:translateX(-50%) translateY(0);}
   .move-banner button{
-    background:rgba(255,255,255,0.08); border:1px solid var(--border); color:var(--text);
-    border-radius:8px; padding:6px 12px; font-size:12.5px; cursor:pointer;
+    background:rgba(255,255,255,0.1); border:1px solid var(--glass-border); color:var(--text);
+    border-radius:999px; padding:6px 14px; font-size:12.5px; cursor:pointer;
   }
 
   /* toast */
   .toast{
     position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(20px);
-    background:var(--panel-solid); border:1px solid var(--border); color:var(--text);
-    padding:12px 20px; border-radius:10px; font-size:14px; z-index:300;
-    opacity:0; transition:opacity .25s ease, transform .25s ease; box-shadow:0 8px 30px rgba(0,0,0,0.5);
-    max-width:90vw;
+    color:var(--text); padding:13px 22px; border-radius:999px; font-size:14px; z-index:300;
+    opacity:0; transition:opacity .25s ease, transform .25s ease; max-width:90vw;
   }
   .toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
-  .toast.err{border-color:var(--red-soft); color:#ffb2c2;}
-  .toast.ok{border-color:var(--cyan-soft); color:var(--cyan);}
+  .toast.err{color:#ffc4cc;}
+  .toast.ok{color:var(--green);}
 
   /* modal generic */
   .modal-overlay{
-    position:fixed; inset:0; background:rgba(4,4,7,0.78); backdrop-filter:blur(3px);
+    position:fixed; inset:0; background:rgba(6,6,10,0.6); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px);
     display:flex; align-items:center; justify-content:center; z-index:400; padding:16px;
     opacity:0; pointer-events:none; transition:opacity .2s ease;
   }
   .modal-overlay.open{opacity:1; pointer-events:auto;}
   .modal-box{
-    width:min(92vw, 400px); background:var(--panel-solid); border:1px solid var(--border);
-    border-radius:16px; padding:26px 22px; position:relative;
-    transform:scale(.9) translateY(10px); transition:transform .25s cubic-bezier(.34,1.56,.64,1);
-    box-shadow:0 0 0 1px rgba(168,85,247,0.15), 0 20px 60px rgba(0,0,0,0.6);
+    width:min(92vw, 420px); border-radius:30px; padding:28px 24px; position:relative;
+    transform:scale(.92) translateY(10px); transition:transform .28s cubic-bezier(.34,1.56,.64,1);
     max-height:88vh; overflow-y:auto;
   }
-  .modal-box.wide{width:min(94vw, 720px);}
+  .modal-box.wide{width:min(94vw, 740px);}
   .modal-overlay.open .modal-box{transform:scale(1) translateY(0);}
-  .modal-box h3{font-family:'Rajdhani',sans-serif; font-size:21px; margin:0 0 4px;}
-  .modal-box h3 b{color:var(--purple);}
+  .modal-box h3{font-family:'Rajdhani',sans-serif; font-size:21px; margin:0 0 4px; font-weight:700;}
+  .modal-box h3 b{color:var(--accent2);}
   .modal-box p.sub{color:var(--text-dim); font-size:13px; margin:0 0 18px;}
-  .modal-box label{font-size:12.5px; color:var(--text-dim); display:block; margin:12px 0 6px;}
+  .modal-box label{font-size:12.5px; color:var(--text-dim); display:block; margin:14px 0 7px;}
   .modal-box label:first-of-type{margin-top:0;}
   .modal-box input{
-    width:100%; background:rgba(0,0,0,0.35); border:1px solid var(--border); border-radius:10px;
-    padding:12px 14px; color:var(--text); font-family:'Vazirmatn',sans-serif; font-size:14px; outline:none;
+    width:100%; background:rgba(0,0,0,0.28); border:1px solid var(--glass-border); border-radius:16px;
+    padding:13px 15px; color:var(--text); font-family:'Vazirmatn',sans-serif; font-size:14px; outline:none;
     transition:border-color .2s ease, box-shadow .2s ease;
   }
-  .modal-box input:focus{border-color:var(--purple); box-shadow:0 0 0 3px rgba(168,85,247,0.14);}
+  .modal-box input:focus{border-color:var(--accent1); box-shadow:0 0 0 3px rgba(154,169,255,0.16);}
   .err-msg{color:var(--red); font-size:12.5px; margin-top:8px; min-height:16px;}
-  .modal-actions{display:flex; gap:10px; margin-top:18px; flex-wrap:wrap;}
+  .modal-actions{display:flex; gap:10px; margin-top:20px; flex-wrap:wrap;}
   .btn{
-    flex:1; min-width:120px; border:none; border-radius:10px; padding:12px 14px; font-family:'Vazirmatn',sans-serif;
+    flex:1; min-width:120px; border:none; border-radius:999px; padding:13px 16px; font-family:'Vazirmatn',sans-serif;
     font-weight:600; font-size:14px; cursor:pointer; transition:filter .2s ease, transform .1s ease;
     display:flex; align-items:center; justify-content:center; gap:8px;
   }
-  .btn:active{transform:scale(.97);}
-  .btn-confirm{background:linear-gradient(135deg, var(--purple), #6d28d9); color:#fff; box-shadow:0 0 18px var(--purple-soft);}
-  .btn-confirm:hover{filter:brightness(1.1);}
+  .btn:active{transform:scale(.96);}
+  .btn-confirm{background:linear-gradient(135deg, var(--accent1), #6f7fe8); color:#0c0c14; box-shadow: inset 0 1px 1px rgba(255,255,255,0.5);}
+  .btn-confirm:hover{filter:brightness(1.08);}
   .btn-confirm:disabled{opacity:.6; cursor:not-allowed; filter:none;}
-  .btn-cyan{background:linear-gradient(135deg, var(--cyan), #0891b2); color:#031418;}
-  .btn-cyan:hover{filter:brightness(1.1);}
-  .btn-danger{background:linear-gradient(135deg, var(--red), #9c0f30); color:#fff;}
-  .btn-danger:hover{filter:brightness(1.1);}
-  .btn-cancel{background:rgba(255,255,255,0.06); color:var(--text); border:1px solid var(--border);}
-  .btn-cancel:hover{background:rgba(255,255,255,0.1);}
-  .spinner{width:15px;height:15px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;}
+  .btn-cyan{background:linear-gradient(135deg, #8fe0d8, #4fb8ac); color:#041512;}
+  .btn-cyan:hover{filter:brightness(1.08);}
+  .btn-danger{background:linear-gradient(135deg, var(--red), #c23a56); color:#1c0509;}
+  .btn-danger:hover{filter:brightness(1.08);}
+  .btn-cancel{background:rgba(255,255,255,0.08); color:var(--text); border:1px solid var(--glass-border);}
+  .btn-cancel:hover{background:rgba(255,255,255,0.14);}
+  .spinner{width:15px;height:15px;border:2px solid rgba(0,0,0,0.25);border-top-color:#0c0c14;border-radius:50%;animation:spin .6s linear infinite;}
   @keyframes spin{to{transform:rotate(360deg);}}
 
   .detail-box{
-    background:rgba(0,0,0,0.3); border:1px solid var(--border); border-radius:10px;
-    padding:14px 16px; font-size:13.5px; line-height:2;
+    background:rgba(0,0,0,0.25); border:1px solid var(--glass-border); border-radius:18px;
+    padding:15px 17px; font-size:13.5px; line-height:2;
   }
-  .detail-box b{color:var(--cyan); font-weight:700;}
+  .detail-box b{color:var(--accent2); font-weight:700;}
+
+  /* avatar chips */
+  .avatar-chip-row{display:flex; gap:8px; flex-wrap:wrap;}
+  .avatar-chip{
+    display:flex; flex-direction:column; align-items:center; gap:4px;
+    padding:11px 8px; border-radius:18px; border:1px solid var(--glass-border);
+    background:rgba(255,255,255,0.05); cursor:pointer; font-size:10.5px; color:var(--text-dim);
+    flex:1; min-width:72px; text-align:center; transition:all .2s ease;
+  }
+  .avatar-chip input{display:none;}
+  .avatar-chip span{font-size:22px;}
+  .avatar-chip.active{
+    border-color:var(--accent1);
+    background:linear-gradient(160deg, rgba(154,169,255,0.24), rgba(154,169,255,0.06));
+    color:var(--text);
+  }
 
   /* admin table modal */
   .table-search{margin-bottom:14px;}
-  .table-scroll{max-height:48vh; overflow:auto; border:1px solid var(--border); border-radius:10px;}
+  .table-scroll{max-height:48vh; overflow:auto; border:1px solid var(--glass-border); border-radius:18px;}
   table.players-table{width:100%; border-collapse:collapse; font-size:13px;}
   table.players-table th{
-    position:sticky; top:0; background:#160f24; color:var(--cyan); text-align:right;
-    padding:9px 10px; font-weight:700; border-bottom:1px solid var(--border);
+    position:sticky; top:0; background:#17171f; color:var(--accent2); text-align:right;
+    padding:10px 12px; font-weight:700; border-bottom:1px solid var(--glass-border);
   }
-  table.players-table td{padding:8px 10px; border-bottom:1px solid rgba(255,255,255,0.04); color:var(--text);}
-  table.players-table tr:hover td{background:rgba(168,85,247,0.06);}
+  table.players-table td{padding:9px 12px; border-bottom:1px solid rgba(255,255,255,0.05); color:var(--text);}
+  table.players-table tr:hover td{background:rgba(154,169,255,0.06);}
   .table-empty{padding:20px; text-align:center; color:var(--text-dim); font-size:13px;}
   .table-actions{display:flex; gap:10px; margin-top:14px; flex-wrap:wrap;}
 
   /* ===== DRAWER ===== */
   .drawer-backdrop{
-    position:fixed; inset:0; background:rgba(4,4,7,0.7); backdrop-filter:blur(2px);
+    position:fixed; inset:0; background:rgba(6,6,10,0.55); backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px);
     z-index:390; opacity:0; pointer-events:none; transition:opacity .25s ease;
   }
   .drawer-backdrop.open{opacity:1; pointer-events:auto;}
   .drawer{
     position:fixed; top:0; right:0; height:100%; width:min(86vw, 340px);
-    background:var(--panel-solid); border-left:1px solid var(--border);
-    z-index:395; padding:22px 20px; overflow-y:auto;
-    transform:translateX(100%); transition:transform .3s cubic-bezier(.4,0,.2,1);
-    box-shadow:-20px 0 60px rgba(0,0,0,0.5);
+    border-radius:28px 0 0 28px;
+    z-index:395; padding:24px 20px; overflow-y:auto;
+    transform:translateX(100%); transition:transform .32s cubic-bezier(.4,0,.2,1);
   }
   .drawer.open{transform:translateX(0);}
   .drawer-head{display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;}
-  .drawer-head h3{font-family:'Rajdhani',sans-serif; font-size:19px; margin:0; color:var(--cyan);}
+  .drawer-head h3{font-family:'Rajdhani',sans-serif; font-size:19px; margin:0; color:var(--accent2); font-weight:700;}
   .drawer-section{margin-bottom:22px;}
   .drawer-section h4{font-size:12.5px; color:var(--text-dim); margin:0 0 10px; letter-spacing:.3px;}
   .my-seat-card{
-    background:linear-gradient(160deg, rgba(34,255,149,0.10), transparent); border:1px solid var(--green-soft);
-    border-radius:12px; padding:14px; font-size:13.5px; line-height:1.9;
+    background:linear-gradient(160deg, rgba(124,247,196,0.14), transparent); border:1px solid var(--green-soft);
+    border-radius:18px; padding:15px; font-size:13.5px; line-height:1.95;
   }
-  .my-seat-card.empty{
-    background:rgba(255,255,255,0.03); border:1px solid var(--border); color:var(--text-dim);
-  }
+  .my-seat-card.empty{ background:rgba(255,255,255,0.04); border:1px solid var(--glass-border); color:var(--text-dim); }
   .rules-list{margin:0; padding-right:18px; font-size:13px; line-height:2; color:var(--text-dim);}
-  .rules-list li::marker{color:var(--purple);}
+  .rules-list li::marker{color:var(--accent1);}
 </style>
 </head>
 <body>
@@ -453,29 +407,35 @@
 <div class="wrap">
 
   <div class="topbar">
-    <div class="icon-btn" id="hamburger-btn" title="منو">☰</div>
+    <div class="icon-btn glass" id="hamburger-btn" title="منو">☰</div>
     <div class="topbar-right">
-      <span class="admin-badge" id="admin-badge">🛡️ حالت ادمین فعال</span>
-      <div class="icon-btn" id="lock-btn" title="ورود ادمین">🔒</div>
+      <span class="admin-badge glass" id="admin-badge">🛡️ حالت ادمین فعال</span>
+      <div class="icon-btn glass" id="lock-btn" title="ورود ادمین">🔒</div>
     </div>
   </div>
 
   <!-- ===== HERO ===== -->
-  <header class="hero hud">
-    <div class="free-banner">⚡ ورودی تورنمنت ۱۰۰٪ رایگان است و نیاز به پرداخت هیچ هزینه‌ای نیست</div>
-    <h1 class="title">تورنمنت <span class="grad" data-text="Call of Duty Mobile">Call of Duty Mobile</span> — بتل رویال</h1>
-    <p class="subtitle">۱۰۰ صندلی در قالب ۲۵ اسکواد ۴ نفره. جایگاهت رو رزرو کن، منتظر کد روم بمون و وارد میدون جنگ شو.</p>
-
-    <div class="hero-actions">
-      <button class="join-btn" id="join-btn">🎮 من هم می‌خواهم شرکت کنم!</button>
-      <a class="tg-btn" href="https://t.me/cmd_tor" target="_blank" rel="noopener">📣 کانال تلگرام تورنمنت</a>
+  <header class="hero glass">
+    <div class="hero-inner">
+      <div class="hero-text">
+        <div class="free-banner glass">⚡ ورودی تورنمنت ۱۰۰٪ رایگان است و نیاز به پرداخت هیچ هزینه‌ای نیست</div>
+        <h1 class="title">تورنمنت <span class="grad">Call of Duty Mobile</span> — بتل رویال</h1>
+        <p class="subtitle">۱۰۰ صندلی در قالب ۲۵ اسکواد ۴ نفره. جایگاهت رو رزرو کن، منتظر کد روم بمون و وارد میدون جنگ شو.</p>
+        <div class="hero-actions">
+          <button class="join-btn" id="join-btn">🎮 من هم می‌خواهم شرکت کنم!</button>
+          <a class="tg-btn" href="https://t.me/cmd_tor" target="_blank" rel="noopener">📣 کانال تلگرام تورنمنت</a>
+        </div>
+      </div>
+      <div class="hero-image-wrap">
+        <img src="ghost-mythic.png" alt="Ghost Mythic" class="hero-image">
+      </div>
     </div>
 
     <div class="countdown-row" id="countdown">
-      <div class="cd-box"><div class="num" id="cd-days">00</div><div class="lbl">روز</div></div>
-      <div class="cd-box"><div class="num" id="cd-hours">00</div><div class="lbl">ساعت</div></div>
-      <div class="cd-box"><div class="num" id="cd-mins">00</div><div class="lbl">دقیقه</div></div>
-      <div class="cd-box"><div class="num" id="cd-secs">00</div><div class="lbl">ثانیه</div></div>
+      <div class="cd-box glass"><div class="num" id="cd-days">00</div><div class="lbl">روز</div></div>
+      <div class="cd-box glass"><div class="num" id="cd-hours">00</div><div class="lbl">ساعت</div></div>
+      <div class="cd-box glass"><div class="num" id="cd-mins">00</div><div class="lbl">دقیقه</div></div>
+      <div class="cd-box glass"><div class="num" id="cd-secs">00</div><div class="lbl">ثانیه</div></div>
     </div>
 
     <div class="stats-bar">
@@ -485,7 +445,7 @@
   </header>
 
   <!-- ===== ROOM CREDENTIALS ===== -->
-  <div class="room-box hud" id="room-box">
+  <div class="room-box glass" id="room-box">
     <h3>اطلاعات روم بازی</h3>
     <div class="room-grid">
       <div class="room-field">
@@ -510,7 +470,7 @@
   </div>
 
   <!-- ===== ADMIN PANEL ===== -->
-  <div class="admin-panel" id="admin-panel">
+  <div class="admin-panel glass" id="admin-panel">
     <h3>پنل مدیریت</h3>
     <div class="admin-grid">
       <div class="field">
@@ -545,13 +505,13 @@
 
   <footer>
     <a class="tg-btn" href="https://t.me/cmd_tor" target="_blank" rel="noopener">📣 عضویت در کانال تلگرام تورنمنت</a>
-    <div>COD Mobile Tournament &copy; 2026 — سایبرپانک ادیشن</div>
+    <div>COD Mobile Tournament &copy; 2026 — لیکوئید گلس ادیشن</div>
   </footer>
 </div>
 
 <!-- ===== SIDEBAR DRAWER ===== -->
 <div class="drawer-backdrop" id="drawer-backdrop"></div>
-<div class="drawer" id="drawer">
+<div class="drawer glass" id="drawer">
   <div class="drawer-head">
     <h3>منوی بازیکن</h3>
     <div class="icon-btn" id="drawer-close-btn">✕</div>
@@ -582,9 +542,17 @@
 
 <!-- ===== REGISTRATION MODAL ===== -->
 <div class="modal-overlay" id="modal-overlay">
-  <div class="modal-box">
+  <div class="modal-box glass">
     <h3 id="modal-title">ثبت‌نام برای صندلی شماره <b id="modal-slot-num">-</b></h3>
     <p class="sub" id="modal-sub">اطلاعاتت رو کامل وارد کن تا جایگاهت قطعی بشه.</p>
+
+    <label>انتخاب آواتار کاراکتر</label>
+    <div class="avatar-chip-row" id="avatar-chip-row">
+      <label class="avatar-chip active" data-avatar="ghost"><input type="radio" name="avatar-choice" value="ghost" checked><span>💀</span><small>Ghost Mythic</small></label>
+      <label class="avatar-chip" data-avatar="price"><input type="radio" name="avatar-choice" value="price"><span>🎯</span><small>Price</small></label>
+      <label class="avatar-chip" data-avatar="tracker"><input type="radio" name="avatar-choice" value="tracker"><span>🌲</span><small>Urban Tracker</small></label>
+      <label class="avatar-chip" data-avatar="manta"><input type="radio" name="avatar-choice" value="manta"><span>🌊</span><small>Manta Ray</small></label>
+    </div>
 
     <label>نام درون‌بازی (IGN)</label>
     <input type="text" id="reg-ign" placeholder="مثلاً: Ghost_99" maxlength="24" autocomplete="off">
@@ -605,7 +573,7 @@
 
 <!-- ===== ADMIN LOGIN MODAL ===== -->
 <div class="modal-overlay" id="admin-modal-overlay">
-  <div class="modal-box">
+  <div class="modal-box glass">
     <h3>ورود <b>ادمین</b></h3>
     <p class="sub">برای دسترسی به پنل مدیریت، رمز عبور را وارد کنید.</p>
     <label>رمز عبور</label>
@@ -618,9 +586,9 @@
   </div>
 </div>
 
-<!-- ===== SEAT CHOICE MODAL (user already has a seat, clicked another empty slot) ===== -->
+<!-- ===== SEAT CHOICE MODAL ===== -->
 <div class="modal-overlay" id="choice-modal-overlay">
-  <div class="modal-box">
+  <div class="modal-box glass">
     <h3>صندلی شماره <b id="choice-slot-num">-</b></h3>
     <p class="sub">شما قبلاً یک صندلی رزرو کرده‌اید. می‌خواهید چه کاری انجام دهید؟</p>
     <div class="modal-actions" style="flex-direction:column;">
@@ -633,7 +601,7 @@
 
 <!-- ===== OWN SEAT ACTION MODAL ===== -->
 <div class="modal-overlay" id="own-modal-overlay">
-  <div class="modal-box">
+  <div class="modal-box glass">
     <h3>صندلی شما — شماره <b id="own-slot-num">-</b></h3>
     <p class="sub">این صندلی متعلق به شماست.</p>
     <div class="detail-box" id="own-detail-box"></div>
@@ -646,7 +614,7 @@
 
 <!-- ===== ADMIN SLOT ACTION MODAL ===== -->
 <div class="modal-overlay" id="admin-slot-modal-overlay">
-  <div class="modal-box">
+  <div class="modal-box glass">
     <h3>مدیریت صندلی <b id="admin-slot-num">-</b></h3>
     <p class="sub">مشخصات بازیکن و عملیات مدیریتی</p>
     <div class="detail-box" id="admin-slot-detail"></div>
@@ -662,14 +630,14 @@
 
 <!-- ===== ADMIN PLAYERS TABLE MODAL ===== -->
 <div class="modal-overlay" id="admin-table-modal-overlay">
-  <div class="modal-box wide">
+  <div class="modal-box wide glass">
     <h3>لیست کامل <b>بازیکنان</b></h3>
     <p class="sub">جستجو بر اساس شماره صندلی، نام، موبایل یا آیدی</p>
     <input class="table-search" type="text" id="table-search-input" placeholder="جستجو...">
     <div class="table-scroll">
       <table class="players-table" id="players-table">
         <thead>
-          <tr><th>#</th><th>نام (IGN)</th><th>موبایل</th><th>آیدی</th></tr>
+          <tr><th>#</th><th>آواتار</th><th>نام (IGN)</th><th>موبایل</th><th>آیدی</th></tr>
         </thead>
         <tbody id="players-table-body"></tbody>
       </table>
@@ -683,12 +651,12 @@
   </div>
 </div>
 
-<div class="move-banner" id="move-banner">
+<div class="move-banner glass" id="move-banner">
   <span>حالت جابه‌جایی فعال است — یک صندلی خالی برای مقصد انتخاب کنید</span>
   <button id="move-cancel-btn">لغو</button>
 </div>
 
-<div class="toast" id="toast"></div>
+<div class="toast glass" id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
@@ -704,29 +672,35 @@
   const SETTINGS_ROW_ID = 1;
   const MY_SEAT_KEY = 'cod_tournament_my_seat';
 
+  const AVATARS = {
+    ghost:   { emoji:'💀', label:'Ghost Mythic' },
+    price:   { emoji:'🎯', label:'Price' },
+    tracker: { emoji:'🌲', label:'Urban Tracker' },
+    manta:   { emoji:'🌊', label:'Manta Ray' }
+  };
+  function avatarEmoji(id){ return (AVATARS[id] || AVATARS.ghost).emoji; }
+  function avatarLabel(id){ return (AVATARS[id] || AVATARS.ghost).label; }
+
   let DEFAULT_START = new Date(2026, 9, 15, 20, 0, 0);
 
   // ===================================================================
   // وضعیت داخلی
   // ===================================================================
-  let slotsState = {};      // { slot_number: {player_name, phone_number, social_id} }
+  let slotsState = {};      // { slot_number: {player_name, phone_number, social_id, avatar} }
   let pendingSlot = null;
   let pendingIsSelf = false;
   let isSubmitting = false;
   let isAdmin = false;
   let tournamentStart = DEFAULT_START;
-  let adminMoveSource = null;   // slot number currently being moved by admin
-  let ignoreDeleteSlots = new Set(); // guards against localStorage being cleared during a self-move
-  let registrationOpen = true;  // admin can pause new registrations
+  let adminMoveSource = null;
+  let ignoreDeleteSlots = new Set();
+  let registrationOpen = true;
 
   // ===================================================================
   // localStorage — تشخیص صندلی خودِ کاربر
   // ===================================================================
   function getMySeat(){
-    try{
-      const raw = localStorage.getItem(MY_SEAT_KEY);
-      return raw ? JSON.parse(raw) : null;
-    }catch(e){ return null; }
+    try{ const raw = localStorage.getItem(MY_SEAT_KEY); return raw ? JSON.parse(raw) : null; }catch(e){ return null; }
   }
   function setMySeat(obj){
     try{ localStorage.setItem(MY_SEAT_KEY, JSON.stringify(obj)); }catch(e){}
@@ -799,7 +773,7 @@
     if(isAdmin) el.classList.add('admin-mode'); else el.classList.remove('admin-mode');
     el.innerHTML = `
       <div class="mark">${mine ? '✅' : '❌'}</div>
-      <div class="num">#${n}</div>
+      <div class="avatar-emoji">${avatarEmoji(info.avatar)}</div>
       <div class="player-name" title="${escapeHtml(info.player_name)}">${escapeHtml(info.player_name)}</div>
     `;
     if(animate && !alreadyTaken){
@@ -834,14 +808,11 @@
   }
 
   // ===================================================================
-  // کلیک روی صندلی — منطق هوشمند
+  // کلیک روی صندلی
   // ===================================================================
   function onSlotClick(n){
     if(adminMoveSource !== null){
-      if(slotsState[n]){
-        showToast('صندلی مقصد باید خالی باشد', 'err');
-        return;
-      }
+      if(slotsState[n]){ showToast('صندلی مقصد باید خالی باشد', 'err'); return; }
       const source = adminMoveSource;
       cancelMoveMode();
       performMove(source, n, { self:false });
@@ -855,34 +826,19 @@
       return;
     }
 
-    // صندلی خالی
     if(isAdmin){ openRegModal(n, {self:false}); return; }
     const my = getMySeat();
     if(my){ openChoiceModal(n); return; }
-    if(!registrationOpen){
-      showToast('ثبت‌نام برای این تورنمنت موقتاً بسته است ⏸️', 'err');
-      return;
-    }
+    if(!registrationOpen){ showToast('ثبت‌نام برای این تورنمنت موقتاً بسته است ⏸️', 'err'); return; }
     openRegModal(n, {self:true});
   }
 
-  // ===================================================================
-  // دکمه "من هم می‌خواهم شرکت کنم"
-  // ===================================================================
   document.getElementById('join-btn').addEventListener('click', () => {
     const my = getMySeat();
-    if(my && slotsState[my.slot]){
-      scrollToSlot(my.slot, true);
-      return;
-    }
+    if(my && slotsState[my.slot]){ scrollToSlot(my.slot, true); return; }
     let firstEmpty = null;
-    for(let i = 1; i <= TOTAL_SLOTS; i++){
-      if(!slotsState[i]){ firstEmpty = i; break; }
-    }
-    if(!firstEmpty){
-      showToast('همه‌ی صندلی‌ها پر شده‌اند! 🔥', 'err');
-      return;
-    }
+    for(let i = 1; i <= TOTAL_SLOTS; i++){ if(!slotsState[i]){ firstEmpty = i; break; } }
+    if(!firstEmpty){ showToast('همه‌ی صندلی‌ها پر شده‌اند! 🔥', 'err'); return; }
     scrollToSlot(firstEmpty, true);
   });
 
@@ -890,10 +846,7 @@
     const el = getSlotEl(n);
     if(!el) return;
     el.scrollIntoView({ behavior:'smooth', block:'center' });
-    if(pulse){
-      el.classList.add('highlight-pulse');
-      setTimeout(() => el.classList.remove('highlight-pulse'), 3000);
-    }
+    if(pulse){ el.classList.add('highlight-pulse'); setTimeout(() => el.classList.remove('highlight-pulse'), 3000); }
   }
 
   // ===================================================================
@@ -922,18 +875,19 @@
   function showToast(msg, type=''){
     const t = document.getElementById('toast');
     t.textContent = msg;
-    t.className = 'toast show' + (type ? ' ' + type : '');
+    t.className = 'toast glass show' + (type ? ' ' + type : '');
     clearTimeout(toastTimeout);
     toastTimeout = setTimeout(() => t.classList.remove('show'), 2800);
   }
 
   // ===================================================================
-  // مودال ثبت‌نام بازیکن (برای خود کاربر / دوست / ثبت دستی ادمین)
+  // مودال ثبت‌نام (شامل انتخاب آواتار)
   // ===================================================================
   const overlay = document.getElementById('modal-overlay');
   const modalTitle = document.getElementById('modal-title');
   const modalSub = document.getElementById('modal-sub');
   const modalSlotNum = document.getElementById('modal-slot-num');
+  const avatarChipRow = document.getElementById('avatar-chip-row');
   const ignInput = document.getElementById('reg-ign');
   const phoneInput = document.getElementById('reg-phone');
   const socialInput = document.getElementById('reg-social');
@@ -941,6 +895,24 @@
   const btnConfirm = document.getElementById('btn-confirm');
   const btnCancel = document.getElementById('btn-cancel');
   const confirmLabel = document.getElementById('confirm-label');
+
+  avatarChipRow.querySelectorAll('.avatar-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      avatarChipRow.querySelectorAll('.avatar-chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      chip.querySelector('input').checked = true;
+    });
+  });
+  function getSelectedAvatar(){
+    const checked = avatarChipRow.querySelector('input:checked');
+    return checked ? checked.value : 'ghost';
+  }
+  function resetAvatarChips(){
+    avatarChipRow.querySelectorAll('.avatar-chip').forEach((c, idx) => {
+      c.classList.toggle('active', idx === 0);
+      c.querySelector('input').checked = idx === 0;
+    });
+  }
 
   function openRegModal(n, {self}){
     pendingSlot = n;
@@ -950,6 +922,7 @@
     modalSub.textContent = self
       ? 'اطلاعاتت رو کامل وارد کن تا جایگاهت قطعی بشه.'
       : 'اطلاعات دوستت را وارد کن تا صندلی برایش رزرو شود.';
+    resetAvatarChips();
     ignInput.value = ''; phoneInput.value = ''; socialInput.value = '';
     modalErr.textContent = '';
     overlay.classList.add('open');
@@ -972,6 +945,7 @@
     const ign = ignInput.value.trim();
     const phone = phoneInput.value.trim();
     const social = socialInput.value.trim();
+    const avatar = getSelectedAvatar();
 
     if(!ign || ign.length < 2){ modalErr.textContent = 'نام درون‌بازی را وارد کنید (حداقل ۲ کاراکتر).'; return; }
     if(!phone || phone.length < 8){ modalErr.textContent = 'شماره موبایل معتبر وارد کنید.'; return; }
@@ -994,7 +968,8 @@
         slot_number: slotNum,
         player_name: ign,
         phone_number: phone,
-        social_id: social
+        social_id: social,
+        avatar: avatar
       }]);
 
       if(error){
@@ -1009,7 +984,7 @@
         return;
       }
 
-      const info = { player_name: ign, phone_number: phone, social_id: social };
+      const info = { player_name: ign, phone_number: phone, social_id: social, avatar: avatar };
       slotsState[slotNum] = info;
       if(wasSelf) setMySeat({ slot: slotNum, ...info });
       renderSlotTaken(slotNum, info, {animate:true});
@@ -1026,7 +1001,7 @@
   });
 
   // ===================================================================
-  // مودال انتخاب هوشمند (کاربری که قبلاً صندلی دارد، روی صندلی خالی دیگر کلیک می‌کند)
+  // مودال انتخاب هوشمند
   // ===================================================================
   const choiceOverlay = document.getElementById('choice-modal-overlay');
   const choiceSlotNum = document.getElementById('choice-slot-num');
@@ -1052,10 +1027,7 @@
     const target = choiceTargetSlot;
     closeChoiceModal();
     if(target === null) return;
-    if(!registrationOpen){
-      showToast('ثبت‌نام برای این تورنمنت موقتاً بسته است ⏸️', 'err');
-      return;
-    }
+    if(!registrationOpen){ showToast('ثبت‌نام برای این تورنمنت موقتاً بسته است ⏸️', 'err'); return; }
     openRegModal(target, {self:false});
   });
 
@@ -1072,6 +1044,7 @@
     ownSlotNum.textContent = n;
     const info = slotsState[n] || {};
     ownDetailBox.innerHTML = `
+      <div><b>آواتار:</b> ${avatarEmoji(info.avatar)} ${avatarLabel(info.avatar)}</div>
       <div><b>نام:</b> ${escapeHtml(info.player_name)}</div>
       <div><b>موبایل:</b> ${escapeHtml(info.phone_number)}</div>
       <div><b>آیدی:</b> ${escapeHtml(info.social_id)}</div>
@@ -1099,7 +1072,7 @@
   });
 
   // ===================================================================
-  // جابه‌جایی صندلی (هم برای خودِ کاربر، هم برای ادمین)
+  // جابه‌جایی صندلی
   // ===================================================================
   async function performMove(fromSlot, toSlot, {self}){
     const info = slotsState[fromSlot];
@@ -1112,7 +1085,8 @@
       if(del.error){ showToast('خطا در جابه‌جایی (حذف مبدا)', 'err'); return; }
 
       const ins = await supabaseClient.from('slots').insert([{
-        slot_number: toSlot, player_name: info.player_name, phone_number: info.phone_number, social_id: info.social_id
+        slot_number: toSlot, player_name: info.player_name, phone_number: info.phone_number,
+        social_id: info.social_id, avatar: info.avatar
       }]);
       if(ins.error){ showToast('خطا در جابه‌جایی (ثبت مقصد)', 'err'); return; }
 
@@ -1145,6 +1119,7 @@
     adminSlotNumEl.textContent = n;
     const info = slotsState[n] || {};
     adminSlotDetail.innerHTML = `
+      <div><b>آواتار:</b> ${avatarEmoji(info.avatar)} ${avatarLabel(info.avatar)}</div>
       <div><b>نام:</b> ${escapeHtml(info.player_name)}</div>
       <div><b>موبایل:</b> ${escapeHtml(info.phone_number)}</div>
       <div><b>آیدی:</b> ${escapeHtml(info.social_id)}</div>
@@ -1217,6 +1192,7 @@
     tableBody.innerHTML = players.map(p => `
       <tr>
         <td>#${p.slot}</td>
+        <td>${avatarEmoji(p.avatar)} ${avatarLabel(p.avatar)}</td>
         <td>${escapeHtml(p.player_name)}</td>
         <td>${escapeHtml(p.phone_number)}</td>
         <td>${escapeHtml(p.social_id)}</td>
@@ -1237,7 +1213,7 @@
   document.getElementById('table-copy-btn').addEventListener('click', () => {
     const players = buildPlayersArray();
     if(!players.length){ showToast('لیستی برای کپی وجود ندارد', 'err'); return; }
-    const text = 'صندلی\tنام\tموبایل\tآیدی\n' + players.map(p => `#${p.slot}\t${p.player_name}\t${p.phone_number}\t${p.social_id}`).join('\n');
+    const text = 'صندلی\tآواتار\tنام\tموبایل\tآیدی\n' + players.map(p => `#${p.slot}\t${avatarLabel(p.avatar)}\t${p.player_name}\t${p.phone_number}\t${p.social_id}`).join('\n');
     navigator.clipboard?.writeText(text)
       .then(() => showToast('لیست کپی شد ✅', 'ok'))
       .catch(() => showToast('خطا در کپی لیست', 'err'));
@@ -1247,7 +1223,7 @@
     const players = buildPlayersArray();
     if(!players.length){ showToast('لیستی برای خروجی وجود ندارد', 'err'); return; }
     const escapeCsv = (v) => `"${String(v ?? '').replace(/"/g, '""')}"`;
-    const rows = [['slot','player_name','phone_number','social_id'], ...players.map(p => [p.slot, p.player_name, p.phone_number, p.social_id])];
+    const rows = [['slot','avatar','player_name','phone_number','social_id'], ...players.map(p => [p.slot, avatarLabel(p.avatar), p.player_name, p.phone_number, p.social_id])];
     const csv = rows.map(r => r.map(escapeCsv).join(',')).join('\n');
     const blob = new Blob(['\uFEFF' + csv], { type:'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
@@ -1271,10 +1247,7 @@
   const adminPanel = document.getElementById('admin-panel');
 
   lockBtn.addEventListener('click', () => {
-    if(isAdmin){
-      showToast('شما در حال حاضر ادمین هستید.', 'ok');
-      return;
-    }
+    if(isAdmin){ showToast('شما در حال حاضر ادمین هستید.', 'ok'); return; }
     adminPassInput.value = '';
     adminModalErr.textContent = '';
     adminModalOverlay.classList.add('open');
@@ -1310,35 +1283,24 @@
     showToast('از حالت ادمین خارج شدید.', 'ok');
   });
 
-  // انتشار کد روم
   document.getElementById('admin-publish-room').addEventListener('click', async () => {
     const roomId = document.getElementById('admin-room-id').value.trim();
     const roomPass = document.getElementById('admin-room-pass').value.trim();
-    if(!roomId || !roomPass){
-      showToast('کد روم و پسورد را وارد کنید.', 'err');
-      return;
-    }
+    if(!roomId || !roomPass){ showToast('کد روم و پسورد را وارد کنید.', 'err'); return; }
     try {
       const { error } = await supabaseClient.from('tournament_settings').upsert({
-        id: SETTINGS_ROW_ID,
-        room_id: roomId,
-        room_password: roomPass,
-        published: true
+        id: SETTINGS_ROW_ID, room_id: roomId, room_password: roomPass, published: true
       });
       if(error){ showToast('خطا در ذخیره کد روم', 'err'); console.error(error); return; }
       showToast('کد روم برای همه منتشر شد ✅', 'ok');
     } catch(err){ console.error(err); showToast('خطای غیرمنتظره', 'err'); }
   });
 
-  // حذف کد روم منتشرشده (رفع مشکل نبود دکمه حذف)
   document.getElementById('admin-clear-room').addEventListener('click', async () => {
     if(!confirm('کد روم و پسورد فعلی برای همه حذف شود؟')) return;
     try {
       const { error } = await supabaseClient.from('tournament_settings').upsert({
-        id: SETTINGS_ROW_ID,
-        room_id: null,
-        room_password: null,
-        published: false
+        id: SETTINGS_ROW_ID, room_id: null, room_password: null, published: false
       });
       if(error){ showToast('خطا در حذف کد روم', 'err'); console.error(error); return; }
       document.getElementById('admin-room-id').value = '';
@@ -1350,7 +1312,6 @@
     } catch(err){ console.error(err); showToast('خطای غیرمنتظره', 'err'); }
   });
 
-  // باز/بسته کردن ثبت‌نام برای بازیکنان جدید
   function updateRegistrationToggleUI(){
     const btn = document.getElementById('admin-toggle-registration');
     if(!btn) return;
@@ -1366,8 +1327,7 @@
     const newState = !registrationOpen;
     try {
       const { error } = await supabaseClient.from('tournament_settings').upsert({
-        id: SETTINGS_ROW_ID,
-        registration_open: newState
+        id: SETTINGS_ROW_ID, registration_open: newState
       });
       if(error){ showToast('خطا در تغییر وضعیت ثبت‌نام', 'err'); console.error(error); return; }
       registrationOpen = newState;
@@ -1376,7 +1336,6 @@
     } catch(err){ console.error(err); showToast('خطای غیرمنتظره', 'err'); }
   });
 
-  // ریست کامل تورنمنت (پاک کردن همه صندلی‌ها برای دوره‌ی بعدی)
   document.getElementById('admin-reset-all').addEventListener('click', async () => {
     if(!confirm('⚠️ این عملیات تمام ۱۰۰ صندلی را برای همیشه پاک می‌کند. ادامه می‌دهید؟')) return;
     if(!confirm('تأیید نهایی: واقعاً همه‌ی صندلی‌ها حذف شوند؟')) return;
@@ -1391,15 +1350,13 @@
     } catch(err){ console.error(err); showToast('خطای غیرمنتظره', 'err'); }
   });
 
-  // تغییر زمان شروع
   document.getElementById('admin-save-time').addEventListener('click', async () => {
     const val = document.getElementById('admin-start-time').value;
     if(!val){ showToast('یک تاریخ و ساعت انتخاب کنید.', 'err'); return; }
     const newDate = new Date(val);
     try {
       const { error } = await supabaseClient.from('tournament_settings').upsert({
-        id: SETTINGS_ROW_ID,
-        start_time: newDate.toISOString()
+        id: SETTINGS_ROW_ID, start_time: newDate.toISOString()
       });
       if(error){ showToast('خطا در ذخیره زمان', 'err'); console.error(error); return; }
       tournamentStart = newDate;
@@ -1413,10 +1370,7 @@
   // ===================================================================
   function applyRoomSettings(row){
     if(!row) return;
-    if(row.start_time){
-      tournamentStart = new Date(row.start_time);
-      updateCountdown();
-    }
+    if(row.start_time){ tournamentStart = new Date(row.start_time); updateCountdown(); }
     if(row.published && row.room_id && row.room_password){
       document.getElementById('room-id-val').textContent = row.room_id;
       document.getElementById('room-pass-val').textContent = row.room_password;
@@ -1440,7 +1394,7 @@
   });
 
   // ===================================================================
-  // منوی کشویی (Sidebar Drawer)
+  // منوی کشویی
   // ===================================================================
   const drawer = document.getElementById('drawer');
   const drawerBackdrop = document.getElementById('drawer-backdrop');
@@ -1451,7 +1405,7 @@
     const my = getMySeat();
     if(my){
       mySeatCard.classList.remove('empty');
-      mySeatCard.innerHTML = `<div><b style="color:var(--green)">صندلی #${my.slot}</b></div><div>نام: ${escapeHtml(my.player_name)}</div>`;
+      mySeatCard.innerHTML = `<div><b style="color:var(--green)">صندلی #${my.slot}</b></div><div>${avatarEmoji(my.avatar)} ${escapeHtml(my.player_name)}</div>`;
       drawerGotoBtn.style.display = 'block';
     } else {
       mySeatCard.classList.add('empty');
@@ -1488,10 +1442,7 @@
   let supabaseClient = null;
 
   async function initSupabase(){
-    if(!window.supabase){
-      showToast('⚠️ کتابخانه Supabase بارگذاری نشد', 'err');
-      return;
-    }
+    if(!window.supabase){ showToast('⚠️ کتابخانه Supabase بارگذاری نشد', 'err'); return; }
 
     supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -1505,7 +1456,7 @@
       .on('postgres_changes', { event:'INSERT', schema:'public', table:'slots' }, (payload) => {
         const row = payload.new; if(!row) return;
         const isNewFromOther = !slotsState[row.slot_number];
-        slotsState[row.slot_number] = { player_name: row.player_name, phone_number: row.phone_number, social_id: row.social_id };
+        slotsState[row.slot_number] = { player_name: row.player_name, phone_number: row.phone_number, social_id: row.social_id, avatar: row.avatar };
         renderSlotTaken(row.slot_number, slotsState[row.slot_number], { animate: isNewFromOther });
         updateStats();
       })
@@ -1522,12 +1473,10 @@
       })
       .on('postgres_changes', { event:'UPDATE', schema:'public', table:'slots' }, (payload) => {
         const row = payload.new; if(!row) return;
-        slotsState[row.slot_number] = { player_name: row.player_name, phone_number: row.phone_number, social_id: row.social_id };
+        slotsState[row.slot_number] = { player_name: row.player_name, phone_number: row.phone_number, social_id: row.social_id, avatar: row.avatar };
         renderSlotTaken(row.slot_number, slotsState[row.slot_number]);
         updateStats();
-        if(isMine(row.slot_number)){
-          setMySeat({ slot: row.slot_number, ...slotsState[row.slot_number] });
-        }
+        if(isMine(row.slot_number)){ setMySeat({ slot: row.slot_number, ...slotsState[row.slot_number] }); }
       })
       .subscribe();
 
@@ -1541,11 +1490,11 @@
 
   async function fetchAllSlots(){
     try {
-      const { data, error } = await supabaseClient.from('slots').select('slot_number, player_name, phone_number, social_id');
+      const { data, error } = await supabaseClient.from('slots').select('slot_number, player_name, phone_number, social_id, avatar');
       if(error){ console.error(error); showToast('خطا در بارگذاری صندلی‌ها', 'err'); return; }
       slotsState = {};
       (data || []).forEach(row => {
-        slotsState[row.slot_number] = { player_name: row.player_name, phone_number: row.phone_number, social_id: row.social_id };
+        slotsState[row.slot_number] = { player_name: row.player_name, phone_number: row.phone_number, social_id: row.social_id, avatar: row.avatar };
       });
       Object.keys(slotsState).forEach(n => renderSlotTaken(Number(n), slotsState[n]));
       updateStats();
