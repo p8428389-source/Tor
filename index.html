@@ -48,7 +48,7 @@
   ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.25); }
   a { color: inherit; text-decoration: none; }
 
-  /* Static panel for performance: eliminates jank on fast scroll */
+  /* Static panel for performance */
   .panel-static {
     background: linear-gradient(145deg, var(--bg-card), rgba(12, 14, 22, 0.85));
     border: 1px solid var(--glass-border);
@@ -56,7 +56,7 @@
     border-radius: var(--radius);
   }
 
-  /* Blurry glass reserved ONLY for fixed overlays/modals to maintain 60+ FPS */
+  /* Blurry glass for fixed overlays/modals */
   .glass-fixed {
     background: rgba(15, 18, 28, 0.82);
     backdrop-filter: blur(16px);
@@ -191,7 +191,7 @@
   .room-locked-overlay {
     position: absolute; inset: 0; background: rgba(10, 11, 16, 0.94);
     display: flex; flex-direction: column; align-items: center; justify-content: center;
-    text-align: center; gap: 8px; padding: 20px;
+    text-align: center; gap: 8px; padding: 20px; transition: opacity .3s ease;
   }
   .room-locked-overlay .icon { font-size: 28px; }
   .room-locked-overlay .msg { color: var(--text-dim); font-size: 13.5px; max-width: 380px; line-height: 1.7; }
@@ -230,7 +230,6 @@
   .squads-header h2::before { content: ""; width: 4px; height: 18px; background: var(--accent2); border-radius: 4px; }
   .squads-info-badge { font-size: 12.5px; color: var(--text-dim); background: rgba(255,255,255,0.04); padding: 5px 12px; border-radius: 999px; border: 1px solid var(--glass-border); }
 
-  /* Strict CSS performance optimizations for scrolling 100 squad items */
   .squad { 
     margin-bottom: 20px; 
     contain: content; 
@@ -383,7 +382,7 @@
     border-color: var(--accent2); background: rgba(6, 182, 212, 0.15); color: var(--text);
   }
 
-  .table-search { margin-bottom: 14px; }
+  .table-search { margin-bottom: 14px; width:100%; background:rgba(0,0,0,0.4); border:1px solid var(--glass-border); border-radius:12px; padding:10px 14px; color:var(--text); outline:none; }
   .table-scroll { max-height: 48vh; overflow: auto; border: 1px solid var(--glass-border); border-radius: 14px; }
   table.players-table { width: 100%; border-collapse: collapse; font-size: 13px; }
   table.players-table th {
@@ -697,7 +696,6 @@
   const SLOTS_PER_SQUAD = 4;
   const TOTAL_SQUADS = TOTAL_SLOTS / SLOTS_PER_SQUAD; // 25
   const ADMIN_PASSWORD = "22412";
-  const SETTINGS_ROW_ID = 1;
   const MY_SEAT_KEY = 'cod_tournament_my_seat';
 
   const AVATARS = {
@@ -709,859 +707,705 @@
   function avatarEmoji(id){ return (AVATARS[id] || AVATARS.ghost).emoji; }
   function avatarLabel(id){ return (AVATARS[id] || AVATARS.ghost).label; }
 
-  let DEFAULT_START = new Date(2026, 9, 15, 20, 0, 0);
+  let DEFAULT_START = new Date(2026, 8, 15, 20, 0, 0); // Default tournament start
 
-  let slotsState = {};      // { slot_number: {player_name, phone_number, social_id, avatar} }
-  let pendingSlot = null;
-  let pendingIsSelf = false;
-  let isSubmitting = false;
-  let isAdmin = false;
-  let tournamentStart = DEFAULT_START;
-  let adminMoveSource = null;
-  let ignoreDeleteSlots = new Set();
+  let slotsState = {};
+  let mySeatNum = null;
+  let roomCredentials = { id: '', pass: '' };
+  let tournamentStartTime = DEFAULT_START.getTime();
   let registrationOpen = true;
+  let isAdminLoggedIn = false;
 
-  function getMySeat(){
+  let moveSourceSlot = null; // For moving slots
+  let pendingSlotForReg = null;
+  let pendingConfirmCallback = null;
+
+  // Load Initial Local Storage Data
+  function loadState() {
     try {
-      const raw = localStorage.getItem(MY_SEAT_KEY);
-      if(!raw) return null;
-      const parsed = JSON.parse(raw);
-      // Validate that the local seat still exists in active db state
-      if(parsed && parsed.slot && Object.keys(slotsState).length > 0 && !slotsState[parsed.slot]){
-        clearMySeat();
-        return null;
+      slotsState = JSON.parse(localStorage.getItem('cod_tournament_slots') || '{}');
+      mySeatNum = JSON.parse(localStorage.getItem(MY_SEAT_KEY) || 'null');
+      roomCredentials = JSON.parse(localStorage.getItem('cod_tournament_room') || '{"id":"","pass":""}');
+      
+      const storedTime = localStorage.getItem('cod_tournament_start_time');
+      if (storedTime) tournamentStartTime = parseInt(storedTime, 10);
+
+      const storedReg = localStorage.getItem('cod_tournament_reg_open');
+      if (storedReg !== null) registrationOpen = storedReg === 'true';
+
+      isAdminLoggedIn = localStorage.getItem('cod_tournament_admin') === 'true';
+    } catch(e) {
+      console.error("Storage load error:", e);
+    }
+  }
+
+  function saveSlotsState() {
+    localStorage.setItem('cod_tournament_slots', JSON.stringify(slotsState));
+  }
+
+  function showToast(msg, type = 'info') {
+    const toast = document.getElementById('toast');
+    toast.textContent = msg;
+    toast.className = 'toast show ' + (type === 'error' ? 'err' : type === 'ok' ? 'ok' : '');
+    setTimeout(() => { toast.classList.remove('show'); }, 3500);
+  }
+
+  function showConfirmModal(title, desc, onConfirm) {
+    document.getElementById('confirm-modal-title').textContent = title;
+    document.getElementById('confirm-modal-desc').textContent = desc;
+    pendingConfirmCallback = onConfirm;
+    document.getElementById('confirm-modal-overlay').classList.add('open');
+  }
+
+  function hideConfirmModal() {
+    document.getElementById('confirm-modal-overlay').classList.remove('open');
+    pendingConfirmCallback = null;
+  }
+
+  document.getElementById('confirm-btn-ok').addEventListener('click', () => {
+    if (pendingConfirmCallback) pendingConfirmCallback();
+    hideConfirmModal();
+  });
+  document.getElementById('confirm-btn-cancel').addEventListener('click', hideConfirmModal);
+
+  function renderSquads() {
+    const container = document.getElementById('squads-container');
+    container.innerHTML = '';
+
+    for (let squadNum = 1; squadNum <= TOTAL_SQUADS; squadNum++) {
+      const squadElem = document.createElement('div');
+      squadElem.className = 'squad panel-static';
+
+      let filledInSquad = 0;
+      for (let i = 1; i <= SLOTS_PER_SQUAD; i++) {
+        const slotIdx = (squadNum - 1) * SLOTS_PER_SQUAD + i;
+        if (slotsState[slotIdx]) filledInSquad++;
       }
-      return parsed;
-    } catch(e) { return null; }
-  }
-  function setMySeat(obj){
-    try { localStorage.setItem(MY_SEAT_KEY, JSON.stringify(obj)); }catch(e){}
-    refreshDrawerSeatCard();
-  }
-  function clearMySeat(){
-    try { localStorage.removeItem(MY_SEAT_KEY); }catch(e){}
-    refreshDrawerSeatCard();
-  }
-  function isMine(n){
-    const my = getMySeat();
-    return !!(my && Number(my.slot) === Number(n));
-  }
 
-  const squadsContainer = document.getElementById('squads-container');
-  function buildSquads(){
-    squadsContainer.innerHTML = '';
-    let seatCounter = 1;
-    for(let s = 1; s <= TOTAL_SQUADS; s++){
-      const squadEl = document.createElement('div');
-      squadEl.className = 'squad panel-static';
+      const squadTopBar = document.createElement('div');
+      squadTopBar.className = 'squad-top-bar';
+      squadTopBar.innerHTML = `
+        <span class="squad-label">SQUAD #${squadNum.toString().padStart(2, '0')}</span>
+        <span class="squad-status">${filledInSquad} / 4 تکمیل</span>
+      `;
+      squadElem.appendChild(squadTopBar);
 
-      const topBar = document.createElement('div');
-      topBar.className = 'squad-top-bar';
+      const squadRow = document.createElement('div');
+      squadRow.className = 'squad-row';
 
-      const label = document.createElement('div');
-      label.className = 'squad-label';
-      label.textContent = `Squad #${s}`;
+      const group1 = document.createElement('div');
+      group1.className = 'squad-group';
+      const group2 = document.createElement('div');
+      group2.className = 'squad-group';
 
-      const status = document.createElement('div');
-      status.className = 'squad-status';
-      status.id = `squad-status-${s}`;
-      status.textContent = `0/4 رزرو شده`;
+      for (let i = 1; i <= SLOTS_PER_SQUAD; i++) {
+        const slotIdx = (squadNum - 1) * SLOTS_PER_SQUAD + i;
+        const slotData = slotsState[slotIdx];
+        const isMine = mySeatNum === slotIdx;
 
-      topBar.appendChild(label);
-      topBar.appendChild(status);
-      squadEl.appendChild(topBar);
+        const slotBtn = document.createElement('div');
+        slotBtn.className = 'slot';
+        slotBtn.setAttribute('data-slot', slotIdx);
 
-      const row = document.createElement('div');
-      row.className = 'squad-row';
+        if (slotData) {
+          slotBtn.classList.add('taken');
+          if (isMine) slotBtn.classList.add('mine');
+          if (isAdminLoggedIn) slotBtn.classList.add('admin-mode');
 
-      const groupA = document.createElement('div');
-      groupA.className = 'squad-group';
-      const groupB = document.createElement('div');
-      groupB.className = 'squad-group';
+          slotBtn.innerHTML = `
+            <span class="mark">${isMine ? '★' : '✕'}</span>
+            <span class="avatar-emoji">${avatarEmoji(slotData.avatar)}</span>
+            <span class="player-name">${escapeHtml(slotData.ign)}</span>
+          `;
+        } else {
+          slotBtn.innerHTML = `<span class="num">#${slotIdx}</span>`;
+        }
 
-      for(let i = 0; i < SLOTS_PER_SQUAD; i++){
-        const n = seatCounter++;
-        const slotEl = document.createElement('div');
-        slotEl.className = 'slot';
-        slotEl.dataset.slot = n;
-        slotEl.innerHTML = `<div class="num">#${n}</div>`;
-        slotEl.addEventListener('click', () => onSlotClick(n));
-        if(i < 2) groupA.appendChild(slotEl); else groupB.appendChild(slotEl);
+        slotBtn.addEventListener('click', () => handleSlotClick(slotIdx));
+
+        if (i <= 2) group1.appendChild(slotBtn);
+        else group2.appendChild(slotBtn);
       }
 
       const divider = document.createElement('div');
       divider.className = 'squad-divider';
 
-      row.appendChild(groupA);
-      row.appendChild(divider);
-      row.appendChild(groupB);
-      squadEl.appendChild(row);
-      squadsContainer.appendChild(squadEl);
+      squadRow.appendChild(group1);
+      squadRow.appendChild(divider);
+      squadRow.appendChild(group2);
+
+      squadElem.appendChild(squadRow);
+      container.appendChild(squadElem);
     }
-  }
-  try { buildSquads(); } catch(err){ console.error(err); }
 
-  function getSlotEl(n){ return squadsContainer.querySelector(`.slot[data-slot="${n}"]`); }
-
-  function renderSlotTaken(n, info, {animate=false} = {}){
-    const el = getSlotEl(n);
-    if(!el) return;
-    const alreadyTaken = el.classList.contains('taken');
-    el.classList.add('taken');
-    const mine = isMine(n);
-    el.classList.toggle('mine', mine);
-    if(isAdmin) el.classList.add('admin-mode'); else el.classList.remove('admin-mode');
-    
-    el.innerHTML = `
-      <div class="mark">${mine ? '✅' : '❌'}</div>
-      <div class="avatar-emoji">${avatarEmoji(info.avatar)}</div>
-      <div class="player-name" title="${escapeHtml(info.player_name)}">${escapeHtml(info.player_name)}</div>
-    `;
-    if(animate && !alreadyTaken){
-      el.classList.add('just-taken');
-      setTimeout(() => el.classList.remove('just-taken'), 850);
-    }
-    updateSquadStatusForSlot(n);
+    updateCapacityStats();
   }
 
-  function renderSlotEmpty(n){
-    const el = getSlotEl(n);
-    if(!el) return;
-    el.classList.remove('taken', 'admin-mode', 'mine');
-    el.innerHTML = `<div class="num">#${n}</div>`;
-    updateSquadStatusForSlot(n);
-  }
+  function handleSlotClick(slotNum) {
+    const slotData = slotsState[slotNum];
 
-  function updateSquadStatusForSlot(slotNum){
-    const squadIdx = Math.ceil(slotNum / SLOTS_PER_SQUAD);
-    const startSlot = (squadIdx - 1) * SLOTS_PER_SQUAD + 1;
-    let filled = 0;
-    for(let i = startSlot; i < startSlot + SLOTS_PER_SQUAD; i++){
-      if(slotsState[i]) filled++;
-    }
-    const statusEl = document.getElementById(`squad-status-${squadIdx}`);
-    if(statusEl){
-      statusEl.textContent = filled === 4 ? '🔥 تکمیل شد' : `${filled}/4 رزرو شده`;
-      statusEl.style.color = filled === 4 ? 'var(--green)' : 'var(--text-dim)';
-    }
-  }
-
-  function escapeHtml(str){
-    const d = document.createElement('div');
-    d.textContent = str == null ? '' : str;
-    return d.innerHTML;
-  }
-
-  function updateStats(){
-    const filled = Object.keys(slotsState).length;
-    document.getElementById('filled-count').textContent = filled;
-    document.getElementById('progress-fill').style.width = (filled / TOTAL_SLOTS * 100) + '%';
-  }
-
-  function refreshAllSlotAdminMode(){
-    squadsContainer.querySelectorAll('.slot.taken').forEach(el => {
-      el.classList.toggle('admin-mode', isAdmin);
-    });
-  }
-
-  function onSlotClick(n){
-    n = Number(n);
-    if(adminMoveSource !== null){
-      if(slotsState[n]){ showToast('صندلی مقصد باید خالی باشد', 'err'); return; }
-      const source = adminMoveSource;
-      cancelMoveMode();
-      performMove(source, n, { self:false });
+    // If Move Mode Active
+    if (moveSourceSlot !== null) {
+      if (slotData) {
+        showToast('این صندلی پر است. لطفاً یک صندلی خالی انتخاب کنید.', 'error');
+        return;
+      }
+      executeSlotMove(moveSourceSlot, slotNum);
       return;
     }
 
-    if(slotsState[n]){
-      if(isAdmin){ openAdminSlotModal(n); return; }
-      if(isMine(n)){ openOwnSeatModal(n); return; }
-      showToast(`صندلی شماره ${n} قبلاً پر شده است ❌`, 'err');
+    // Admin Mode Click on Taken Slot
+    if (isAdminLoggedIn && slotData) {
+      openAdminSlotModal(slotNum, slotData);
       return;
     }
 
-    if(isAdmin){ openRegModal(n, {self:false}); return; }
-    const my = getMySeat();
-    if(my && slotsState[my.slot]){ openChoiceModal(n); return; }
-    if(!registrationOpen){ showToast('ثبت‌نام برای این تورنمنت موقتاً بسته است ⏸️', 'err'); return; }
-    openRegModal(n, {self:true});
+    // User clicking their own seat
+    if (mySeatNum === slotNum && slotData) {
+      openOwnSeatModal(slotNum, slotData);
+      return;
+    }
+
+    // Clicking taken slot by another player
+    if (slotData) {
+      showToast(`صندلی شماره #${slotNum} توسط ${slotData.ign} رزرو شده است.`, 'info');
+      return;
+    }
+
+    // Registration Check
+    if (!registrationOpen && !isAdminLoggedIn) {
+      showToast('ثبت‌نام تورنمنت توسط ادمین موقتاً بسته شده است.', 'error');
+      return;
+    }
+
+    // If user already has a seat and clicks an empty slot
+    if (mySeatNum !== null && slotsState[mySeatNum]) {
+      openChoiceModal(slotNum);
+      return;
+    }
+
+    // Direct Registration
+    openRegistrationModal(slotNum);
   }
 
-  document.getElementById('join-btn').addEventListener('click', () => {
-    const my = getMySeat();
-    if(my && slotsState[my.slot]){ scrollToSlot(my.slot, true); return; }
-    let firstEmpty = null;
-    for(let i = 1; i <= TOTAL_SLOTS; i++){ if(!slotsState[i]){ firstEmpty = i; break; } }
-    if(!firstEmpty){ showToast('همه‌ی صندلی‌ها پر شده‌اند! 🔥', 'err'); return; }
-    scrollToSlot(firstEmpty, true);
-  });
-
-  function scrollToSlot(n, pulse){
-    const el = getSlotEl(n);
-    if(!el) return;
-    el.scrollIntoView({ behavior:'smooth', block:'center' });
-    if(pulse){ el.classList.add('highlight-pulse'); setTimeout(() => el.classList.remove('highlight-pulse'), 2500); }
+  function openRegistrationModal(slotNum) {
+    pendingSlotForReg = slotNum;
+    document.getElementById('modal-slot-num-text').textContent = slotNum;
+    document.getElementById('reg-ign').value = '';
+    document.getElementById('reg-phone').value = '';
+    document.getElementById('reg-social').value = '';
+    document.getElementById('modal-err').textContent = '';
+    document.getElementById('modal-overlay').classList.add('open');
   }
 
-  function updateCountdown(){
-    const now = new Date();
-    let diff = tournamentStart - now;
-    if(diff < 0) diff = 0;
-    const days = Math.floor(diff / (1000*60*60*24));
-    const hours = Math.floor((diff / (1000*60*60)) % 24);
-    const mins = Math.floor((diff / (1000*60)) % 60);
-    const secs = Math.floor((diff / 1000) % 60);
-    document.getElementById('cd-days').textContent = String(days).padStart(2,'0');
-    document.getElementById('cd-hours').textContent = String(hours).padStart(2,'0');
-    document.getElementById('cd-mins').textContent = String(mins).padStart(2,'0');
-    document.getElementById('cd-secs').textContent = String(secs).padStart(2,'0');
-  }
-  updateCountdown();
-  setInterval(updateCountdown, 1000);
-
-  const confirmOverlay = document.getElementById('confirm-modal-overlay');
-  const confirmTitleEl = document.getElementById('confirm-modal-title');
-  const confirmDescEl = document.getElementById('confirm-modal-desc');
-  const confirmBtnOk = document.getElementById('confirm-btn-ok');
-  const confirmBtnCancel = document.getElementById('confirm-btn-cancel');
-  let confirmCallback = null;
-
-  function showConfirmModal(title, desc, onOk){
-    confirmTitleEl.textContent = title;
-    confirmDescEl.textContent = desc;
-    confirmCallback = onOk;
-    confirmOverlay.classList.add('open');
-  }
-  function closeConfirmModal(){
-    confirmOverlay.classList.remove('open');
-    confirmCallback = null;
-  }
-  confirmBtnCancel.addEventListener('click', closeConfirmModal);
-  confirmBtnOk.addEventListener('click', () => {
-    if(typeof confirmCallback === 'function') confirmCallback();
-    closeConfirmModal();
-  });
-
-  let toastTimeout = null;
-  function showToast(msg, type=''){
-    const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.className = 'toast show' + (type ? ' ' + type : '');
-    clearTimeout(toastTimeout);
-    toastTimeout = setTimeout(() => t.classList.remove('show'), 2800);
+  function closeRegistrationModal() {
+    document.getElementById('modal-overlay').classList.remove('open');
+    pendingSlotForReg = null;
   }
 
-  const overlay = document.getElementById('modal-overlay');
-  const modalSub = document.getElementById('modal-sub');
-  const modalSlotNumText = document.getElementById('modal-slot-num-text');
-  const avatarChipRow = document.getElementById('avatar-chip-row');
-  const ignInput = document.getElementById('reg-ign');
-  const phoneInput = document.getElementById('reg-phone');
-  const socialInput = document.getElementById('reg-social');
-  const modalErr = document.getElementById('modal-err');
-  const btnConfirm = document.getElementById('btn-confirm');
-  const btnCancel = document.getElementById('btn-cancel');
-  const confirmLabel = document.getElementById('confirm-label');
+  document.getElementById('btn-cancel').addEventListener('click', closeRegistrationModal);
 
-  avatarChipRow.querySelectorAll('.avatar-chip').forEach(chip => {
+  // Avatar Selection Handler
+  const avatarChips = document.querySelectorAll('#avatar-chip-row .avatar-chip');
+  avatarChips.forEach(chip => {
     chip.addEventListener('click', () => {
-      avatarChipRow.querySelectorAll('.avatar-chip').forEach(c => c.classList.remove('active'));
+      avatarChips.forEach(c => c.classList.remove('active'));
       chip.classList.add('active');
-      chip.querySelector('input').checked = true;
+      const radio = chip.querySelector('input');
+      if (radio) radio.checked = true;
     });
   });
-  function getSelectedAvatar(){
-    const checked = avatarChipRow.querySelector('input:checked');
-    return checked ? checked.value : 'ghost';
-  }
-  function resetAvatarChips(){
-    avatarChipRow.querySelectorAll('.avatar-chip').forEach((c, idx) => {
-      c.classList.toggle('active', idx === 0);
-      c.querySelector('input').checked = idx === 0;
-    });
+
+  function getSelectedAvatar() {
+    const activeChip = document.querySelector('#avatar-chip-row .avatar-chip.active input');
+    return activeChip ? activeChip.value : 'ghost';
   }
 
-  function openRegModal(n, {self}){
-    pendingSlot = Number(n);
-    pendingIsSelf = !!self;
-    if(modalSlotNumText) modalSlotNumText.textContent = pendingSlot;
-    
-    modalSub.textContent = self
-      ? 'اطلاعات درون‌بازی خود را وارد کنید تا رزرو صندلی نهایی شود.'
-      : 'اطلاعات دوست خود را وارد کنید تا صندلی برای او رزرو شود.';
-    resetAvatarChips();
-    ignInput.value = ''; phoneInput.value = ''; socialInput.value = '';
-    modalErr.textContent = '';
-    overlay.classList.add('open');
-    setTimeout(() => ignInput.focus(), 150);
-  }
-  function closeModal(){ overlay.classList.remove('open'); pendingSlot = null; }
-  btnCancel.addEventListener('click', closeModal);
-  overlay.addEventListener('click', (e) => { if(e.target === overlay) closeModal(); });
+  // Registration Confirmation
+  document.getElementById('btn-confirm').addEventListener('click', () => {
+    if (!pendingSlotForReg) return;
 
-  function setSubmitting(state){
-    isSubmitting = state;
-    btnConfirm.disabled = state;
-    btnCancel.style.pointerEvents = state ? 'none' : 'auto';
-    confirmLabel.innerHTML = state ? '<span class="spinner"></span> در حال ثبت...' : 'تأیید و ثبت صندلی';
-  }
-
-  btnConfirm.addEventListener('click', async () => {
-    if(isSubmitting || pendingSlot === null) return;
-    const targetSlot = Number(pendingSlot);
-    const ign = ignInput.value.trim();
-    const phone = phoneInput.value.trim();
-    const social = socialInput.value.trim();
+    const ign = document.getElementById('reg-ign').value.trim();
+    const phone = document.getElementById('reg-phone').value.trim();
+    const social = document.getElementById('reg-social').value.trim();
     const avatar = getSelectedAvatar();
+    const modalErr = document.getElementById('modal-err');
 
-    if(!ign || ign.length < 2){ modalErr.textContent = 'نام درون‌بازی را وارد کنید (حداقل ۲ کاراکتر).'; return; }
-    if(!phone || phone.length < 8){ modalErr.textContent = 'شماره موبایل معتبر وارد کنید.'; return; }
-    if(!social){ modalErr.textContent = 'آیدی ارتباطی را وارد کنید.'; return; }
-
-    if(slotsState[targetSlot]){
-      modalErr.textContent = 'این صندلی لحظاتی پیش رزرو شد.';
-      renderSlotTaken(targetSlot, slotsState[targetSlot]);
-      updateStats();
+    if (!ign) {
+      modalErr.textContent = 'لطفاً نام درون‌بازی (IGN) خود را وارد کنید.';
       return;
     }
 
-    modalErr.textContent = '';
-    setSubmitting(true);
+    slotsState[pendingSlotForReg] = {
+      ign: ign,
+      phone: phone,
+      social: social,
+      avatar: avatar,
+      created_at: new Date().toISOString()
+    };
 
-    try {
-      const wasSelf = pendingIsSelf;
-      const { error } = await supabaseClient.from('slots').insert([{
-        slot_number: targetSlot,
-        player_name: ign,
-        phone_number: phone,
-        social_id: social,
-        avatar: avatar
-      }]);
+    if (mySeatNum === null) {
+      mySeatNum = pendingSlotForReg;
+      localStorage.setItem(MY_SEAT_KEY, JSON.stringify(mySeatNum));
+    }
 
-      if(error){
-        if(error.code === '23505' || /duplicate|unique/i.test(error.message || '')){
-          modalErr.textContent = 'این صندلی قبلاً رزرو شده است.';
-          showToast('این صندلی رزرو شده — صندلی دیگری را انتخاب کنید', 'err');
-        } else {
-          modalErr.textContent = 'خطا در ثبت صندلی. مجدداً تلاش کنید.';
-          showToast('خطا در اتصال به سرور', 'err');
+    saveSlotsState();
+    renderSquads();
+    closeRegistrationModal();
+    updateDrawerInfo();
+    showToast(`صندلی #${pendingSlotForReg} با موفقیت رزرو شد! 🎯`, 'ok');
+  });
+
+  function startMoveMode(fromSlot) {
+    moveSourceSlot = fromSlot;
+    document.getElementById('move-banner').classList.add('show');
+    showToast(`صندلی #${fromSlot} آماده جابه‌جایی است. صندلی خالی جدید را انتخاب کنید.`);
+  }
+
+  function cancelMoveMode() {
+    moveSourceSlot = null;
+    document.getElementById('move-banner').classList.remove('show');
+  }
+
+  document.getElementById('move-cancel-btn').addEventListener('click', cancelMoveMode);
+
+  function executeSlotMove(fromSlot, toSlot) {
+    if (!slotsState[fromSlot]) return;
+
+    slotsState[toSlot] = slotsState[fromSlot];
+    delete slotsState[fromSlot];
+
+    if (mySeatNum === fromSlot) {
+      mySeatNum = toSlot;
+      localStorage.setItem(MY_SEAT_KEY, JSON.stringify(mySeatNum));
+    }
+
+    saveSlotsState();
+    cancelMoveMode();
+    renderSquads();
+    updateDrawerInfo();
+    showToast(`صندلی با موفقیت به شماره #${toSlot} منتقل شد.`, 'ok');
+  }
+
+  function openChoiceModal(targetSlotNum) {
+    document.getElementById('choice-slot-num').textContent = targetSlotNum;
+    const overlay = document.getElementById('choice-modal-overlay');
+    overlay.classList.add('open');
+
+    const moveBtn = document.getElementById('choice-move-btn');
+    const friendBtn = document.getElementById('choice-friend-btn');
+    const cancelBtn = document.getElementById('choice-cancel-btn');
+
+    const cleanup = () => {
+      overlay.classList.remove('open');
+      moveBtn.replaceWith(moveBtn.cloneNode(true));
+      friendBtn.replaceWith(friendBtn.cloneNode(true));
+      cancelBtn.replaceWith(cancelBtn.cloneNode(true));
+    };
+
+    document.getElementById('choice-move-btn').addEventListener('click', () => {
+      const from = mySeatNum;
+      cleanup();
+      executeSlotMove(from, targetSlotNum);
+    });
+
+    document.getElementById('choice-friend-btn').addEventListener('click', () => {
+      cleanup();
+      openRegistrationModal(targetSlotNum);
+    });
+
+    document.getElementById('choice-cancel-btn').addEventListener('click', cleanup);
+  }
+
+  function openOwnSeatModal(slotNum, slotData) {
+    document.getElementById('own-slot-num').textContent = slotNum;
+    document.getElementById('own-detail-box').innerHTML = `
+      <b>نام (IGN):</b> ${escapeHtml(slotData.ign)}<br>
+      <b>کاراکتر:</b> ${avatarEmoji(slotData.avatar)} ${avatarLabel(slotData.avatar)}<br>
+      <b>موبایل:</b> ${escapeHtml(slotData.phone) || 'ثبت نشده'}<br>
+      <b>آیدی:</b> ${escapeHtml(slotData.social) || 'ثبت نشده'}
+    `;
+    const overlay = document.getElementById('own-modal-overlay');
+    overlay.classList.add('open');
+
+    document.getElementById('own-close-btn').onclick = () => overlay.classList.remove('open');
+    document.getElementById('own-cancel-seat-btn').onclick = () => {
+      overlay.classList.remove('open');
+      showConfirmModal('لغو رزرو صندلی', `آیا از انصراف صندلی شماره #${slotNum} اطمینان دارید؟`, () => {
+        delete slotsState[slotNum];
+        mySeatNum = null;
+        localStorage.removeItem(MY_SEAT_KEY);
+        saveSlotsState();
+        renderSquads();
+        updateDrawerInfo();
+        showToast('صندلی شما آزاد شد.', 'info');
+      });
+    };
+  }
+
+  function openAdminSlotModal(slotNum, slotData) {
+    document.getElementById('admin-slot-num').textContent = slotNum;
+    document.getElementById('admin-slot-detail').innerHTML = `
+      <b>نام بازیکن (IGN):</b> ${escapeHtml(slotData.ign)}<br>
+      <b>آواتار:</b> ${avatarEmoji(slotData.avatar)} ${avatarLabel(slotData.avatar)}<br>
+      <b>شماره تماس:</b> ${escapeHtml(slotData.phone) || 'نامشخص'}<br>
+      <b>شبکه اجتماعی:</b> ${escapeHtml(slotData.social) || 'نامشخص'}<br>
+      <b>زمان ثبت:</b> ${slotData.created_at ? new Date(slotData.created_at).toLocaleTimeString('fa-IR') : 'نامشخص'}
+    `;
+
+    const overlay = document.getElementById('admin-slot-modal-overlay');
+    overlay.classList.add('open');
+
+    document.getElementById('admin-slot-close-btn').onclick = () => overlay.classList.remove('open');
+
+    document.getElementById('admin-slot-kick-btn').onclick = () => {
+      overlay.classList.remove('open');
+      showConfirmModal('اخراج بازیکن', `آیا از حذف بازیکن صندلی #${slotNum} مطمئن هستید؟`, () => {
+        delete slotsState[slotNum];
+        if (mySeatNum === slotNum) {
+          mySeatNum = null;
+          localStorage.removeItem(MY_SEAT_KEY);
         }
-        setSubmitting(false);
+        saveSlotsState();
+        renderSquads();
+        showToast(`بازیکن صندلی #${slotNum} حذف شد.`, 'info');
+      });
+    };
+
+    document.getElementById('admin-slot-move-btn').onclick = () => {
+      overlay.classList.remove('open');
+      startMoveMode(slotNum);
+    };
+  }
+
+  function startCountdownTimer() {
+    function updateCD() {
+      const now = Date.now();
+      const diff = tournamentStartTime - now;
+
+      if (diff <= 0) {
+        document.getElementById('cd-days').textContent = '00';
+        document.getElementById('cd-hours').textContent = '00';
+        document.getElementById('cd-mins').textContent = '00';
+        document.getElementById('cd-secs').textContent = '00';
         return;
       }
 
-      const info = { player_name: ign, phone_number: phone, social_id: social, avatar: avatar };
-      slotsState[targetSlot] = info;
-      if(wasSelf) setMySeat({ slot: targetSlot, ...info });
+      const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
+      const m = Math.floor((diff / (1000 * 60)) % 60);
+      const s = Math.floor((diff / 1000) % 60);
+
+      document.getElementById('cd-days').textContent = d.toString().padStart(2, '0');
+      document.getElementById('cd-hours').textContent = h.toString().padStart(2, '0');
+      document.getElementById('cd-mins').textContent = m.toString().padStart(2, '0');
+      document.getElementById('cd-secs').textContent = s.toString().padStart(2, '0');
+    }
+    updateCD();
+    setInterval(updateCD, 1000);
+  }
+
+  function updateRoomDisplay() {
+    const overlay = document.getElementById('room-locked-overlay');
+    const idVal = document.getElementById('room-id-val');
+    const passVal = document.getElementById('room-pass-val');
+
+    if (roomCredentials.id && roomCredentials.pass) {
+      idVal.textContent = roomCredentials.id;
+      passVal.textContent = roomCredentials.pass;
+      overlay.style.opacity = '0';
+      overlay.style.pointerEvents = 'none';
+    } else {
+      idVal.textContent = '—';
+      passVal.textContent = '—';
+      overlay.style.opacity = '1';
+      overlay.style.pointerEvents = 'auto';
+    }
+  }
+
+  function updateCapacityStats() {
+    const takenCount = Object.keys(slotsState).length;
+    document.getElementById('filled-count').textContent = takenCount;
+    const percentage = Math.min(100, (takenCount / TOTAL_SLOTS) * 100);
+    document.getElementById('progress-fill').style.width = percentage + '%';
+  }
+
+  function toggleAdminPanel(show) {
+    isAdminLoggedIn = show;
+    localStorage.setItem('cod_tournament_admin', show ? 'true' : 'false');
+
+    const panel = document.getElementById('admin-panel');
+    const badge = document.getElementById('admin-badge');
+
+    if (show) {
+      panel.classList.add('open');
+      badge.classList.add('active');
+      document.getElementById('admin-room-id').value = roomCredentials.id || '';
+      document.getElementById('admin-room-pass').value = roomCredentials.pass || '';
       
-      renderSlotTaken(targetSlot, info, {animate:true});
-      updateStats();
-      showToast(`✅ صندلی شماره ${targetSlot} ثبت شد`, 'ok');
-      setSubmitting(false);
-      closeModal();
-
-    } catch(err){
-      console.error(err);
-      modalErr.textContent = 'خطای غیرمنتظره. دوباره تلاش کنید.';
-      setSubmitting(false);
-    }
-  });
-
-  const choiceOverlay = document.getElementById('choice-modal-overlay');
-  const choiceSlotNum = document.getElementById('choice-slot-num');
-  let choiceTargetSlot = null;
-
-  function openChoiceModal(n){
-    choiceTargetSlot = Number(n);
-    choiceSlotNum.textContent = n;
-    choiceOverlay.classList.add('open');
-  }
-  function closeChoiceModal(){ choiceOverlay.classList.remove('open'); choiceTargetSlot = null; }
-  document.getElementById('choice-cancel-btn').addEventListener('click', closeChoiceModal);
-  choiceOverlay.addEventListener('click', (e) => { if(e.target === choiceOverlay) closeChoiceModal(); });
-
-  document.getElementById('choice-move-btn').addEventListener('click', () => {
-    const my = getMySeat();
-    const target = choiceTargetSlot;
-    closeChoiceModal();
-    if(!my || target === null) return;
-    performMove(my.slot, target, { self:true });
-  });
-  document.getElementById('choice-friend-btn').addEventListener('click', () => {
-    const target = choiceTargetSlot;
-    closeChoiceModal();
-    if(target === null) return;
-    if(!registrationOpen){ showToast('ثبت‌نام برای این تورنمنت موقتاً بسته است ⏸️', 'err'); return; }
-    openRegModal(target, {self:false});
-  });
-
-  const ownOverlay = document.getElementById('own-modal-overlay');
-  const ownSlotNum = document.getElementById('own-slot-num');
-  const ownDetailBox = document.getElementById('own-detail-box');
-  let ownActiveSlot = null;
-
-  function openOwnSeatModal(n){
-    ownActiveSlot = Number(n);
-    ownSlotNum.textContent = n;
-    const info = slotsState[n] || {};
-    ownDetailBox.innerHTML = `
-      <div><b>آواتار:</b> ${avatarEmoji(info.avatar)} ${avatarLabel(info.avatar)}</div>
-      <div><b>نام:</b> ${escapeHtml(info.player_name)}</div>
-      <div><b>موبایل:</b> ${escapeHtml(info.phone_number)}</div>
-      <div><b>آیدی:</b> ${escapeHtml(info.social_id)}</div>
-    `;
-    ownOverlay.classList.add('open');
-  }
-  function closeOwnModal(){ ownOverlay.classList.remove('open'); ownActiveSlot = null; }
-  document.getElementById('own-close-btn').addEventListener('click', closeOwnModal);
-  ownOverlay.addEventListener('click', (e) => { if(e.target === ownOverlay) closeOwnModal(); });
-
-  document.getElementById('own-cancel-seat-btn').addEventListener('click', () => {
-    if(ownActiveSlot === null) return;
-    const n = ownActiveSlot;
-    showConfirmModal('لغو رزرو صندلی', `آیا از لغو صندلی شماره ${n} اطمینان دارید؟`, async () => {
-      closeOwnModal();
-      try{
-        const { error } = await supabaseClient.from('slots').delete().eq('slot_number', n);
-        if(error){ showToast('خطا در لغو صندلی', 'err'); return; }
-        delete slotsState[n];
-        renderSlotEmpty(n);
-        updateStats();
-        clearMySeat();
-        showToast('صندلی شما با موفقیت لغو شد', 'ok');
-      }catch(err){ console.error(err); showToast('خطای غیرمنتظره', 'err'); }
-    });
-  });
-
-  async function performMove(fromSlot, toSlot, {self}){
-    fromSlot = Number(fromSlot);
-    toSlot = Number(toSlot);
-    const info = slotsState[fromSlot];
-    if(!info){ showToast('اطلاعات صندلی مبدا یافت نشد', 'err'); return; }
-    if(slotsState[toSlot]){ showToast('صندلی مقصد باید خالی باشد', 'err'); return; }
-
-    ignoreDeleteSlots.add(fromSlot);
-    try {
-      const del = await supabaseClient.from('slots').delete().eq('slot_number', fromSlot);
-      if(del.error){ showToast('خطا در جابه‌جایی صندلی', 'err'); return; }
-
-      const ins = await supabaseClient.from('slots').insert([{
-        slot_number: toSlot, player_name: info.player_name, phone_number: info.phone_number,
-        social_id: info.social_id, avatar: info.avatar
-      }]);
-      if(ins.error){ showToast('خطا در ثبت صندلی جدید', 'err'); return; }
-
-      delete slotsState[fromSlot];
-      renderSlotEmpty(fromSlot);
-      slotsState[toSlot] = info;
-      renderSlotTaken(toSlot, info, {animate:true});
-      updateStats();
-
-      if(self){ setMySeat({ slot: toSlot, ...info }); }
-      showToast(`صندلی به شماره ${toSlot} منتقل شد ✅`, 'ok');
-    }catch(err){
-      console.error(err);
-      showToast('خطای غیرمنتظره در جابه‌جایی', 'err');
-    }finally{
-      setTimeout(() => ignoreDeleteSlots.delete(fromSlot), 3000);
-    }
-  }
-
-  const adminSlotOverlay = document.getElementById('admin-slot-modal-overlay');
-  const adminSlotNumEl = document.getElementById('admin-slot-num');
-  const adminSlotDetail = document.getElementById('admin-slot-detail');
-  let adminActiveSlot = null;
-
-  function openAdminSlotModal(n){
-    adminActiveSlot = Number(n);
-    adminSlotNumEl.textContent = n;
-    const info = slotsState[n] || {};
-    adminSlotDetail.innerHTML = `
-      <div><b>آواتار:</b> ${avatarEmoji(info.avatar)} ${avatarLabel(info.avatar)}</div>
-      <div><b>نام:</b> ${escapeHtml(info.player_name)}</div>
-      <div><b>موبایل:</b> ${escapeHtml(info.phone_number)}</div>
-      <div><b>آیدی:</b> ${escapeHtml(info.social_id)}</div>
-      <div><b>وضعیت:</b> ${isMine(n) ? 'صندلی دستگاه شما' : 'بازیکن دیگر'}</div>
-    `;
-    adminSlotOverlay.classList.add('open');
-  }
-  function closeAdminSlotModal(){ adminSlotOverlay.classList.remove('open'); adminActiveSlot = null; }
-  document.getElementById('admin-slot-close-btn').addEventListener('click', closeAdminSlotModal);
-  adminSlotOverlay.addEventListener('click', (e) => { if(e.target === adminSlotOverlay) closeAdminSlotModal(); });
-
-  document.getElementById('admin-slot-kick-btn').addEventListener('click', () => {
-    if(adminActiveSlot === null) return;
-    const n = adminActiveSlot;
-    showConfirmModal('حذف بازیکن', `آیا از حذف بازیکن صندلی شماره #${n} مطمئن هستید؟`, async () => {
-      closeAdminSlotModal();
-      try{
-        const { error } = await supabaseClient.from('slots').delete().eq('slot_number', n);
-        if(error){ showToast('خطا در حذف بازیکن', 'err'); return; }
-        delete slotsState[n];
-        renderSlotEmpty(n);
-        updateStats();
-        showToast(`صندلی #${n} خالی شد`, 'ok');
-      }catch(err){ console.error(err); showToast('خطای غیرمنتظره در حذف', 'err'); }
-    });
-  });
-
-  document.getElementById('admin-slot-move-btn').addEventListener('click', () => {
-    if(adminActiveSlot === null) return;
-    const n = adminActiveSlot;
-    closeAdminSlotModal();
-    enterMoveMode(n);
-  });
-
-  const moveBanner = document.getElementById('move-banner');
-  function enterMoveMode(sourceSlot){
-    adminMoveSource = Number(sourceSlot);
-    moveBanner.classList.add('show');
-    showToast(`صندلی خالی مقصد برای صندلی #${sourceSlot} را انتخاب کنید`, 'ok');
-  }
-  function cancelMoveMode(){
-    adminMoveSource = null;
-    moveBanner.classList.remove('show');
-  }
-  document.getElementById('move-cancel-btn').addEventListener('click', cancelMoveMode);
-
-  const tableOverlay = document.getElementById('admin-table-modal-overlay');
-  const tableSearchInput = document.getElementById('table-search-input');
-  const tableBody = document.getElementById('players-table-body');
-  const tableEmptyEl = document.getElementById('players-table-empty');
-
-  function buildPlayersArray(){
-    return Object.keys(slotsState)
-      .map(Number)
-      .sort((a,b) => a - b)
-      .map(n => ({ slot:n, ...slotsState[n] }));
-  }
-
-  function renderPlayersTable(filterTerm=''){
-    const term = filterTerm.trim().toLowerCase();
-    const players = buildPlayersArray().filter(p => {
-      if(!term) return true;
-      return String(p.slot).includes(term)
-        || (p.player_name || '').toLowerCase().includes(term)
-        || (p.phone_number || '').toLowerCase().includes(term)
-        || (p.social_id || '').toLowerCase().includes(term);
-    });
-    tableBody.innerHTML = players.map(p => `
-      <tr>
-        <td>#${p.slot}</td>
-        <td>${avatarEmoji(p.avatar)} ${avatarLabel(p.avatar)}</td>
-        <td>${escapeHtml(p.player_name)}</td>
-        <td>${escapeHtml(p.phone_number)}</td>
-        <td>${escapeHtml(p.social_id)}</td>
-      </tr>
-    `).join('');
-    tableEmptyEl.style.display = players.length ? 'none' : 'block';
-  }
-
-  document.getElementById('admin-open-table').addEventListener('click', () => {
-    tableSearchInput.value = '';
-    renderPlayersTable();
-    tableOverlay.classList.add('open');
-  });
-  document.getElementById('table-close-btn').addEventListener('click', () => tableOverlay.classList.remove('open'));
-  tableOverlay.addEventListener('click', (e) => { if(e.target === tableOverlay) tableOverlay.classList.remove('open'); });
-  tableSearchInput.addEventListener('input', () => renderPlayersTable(tableSearchInput.value));
-
-  document.getElementById('table-copy-btn').addEventListener('click', () => {
-    const players = buildPlayersArray();
-    if(!players.length){ showToast('لیستی برای کپی وجود ندارد', 'err'); return; }
-    const text = 'صندلی\tآواتار\tنام\tموبایل\tآیدی\n' + players.map(p => `#${p.slot}\t${avatarLabel(p.avatar)}\t${p.player_name}\t${p.phone_number}\t${p.social_id}`).join('\n');
-    navigator.clipboard?.writeText(text)
-      .then(() => showToast('لیست کپی شد ✅', 'ok'))
-      .catch(() => showToast('خطا در کپی لیست', 'err'));
-  });
-
-  document.getElementById('table-csv-btn').addEventListener('click', () => {
-    const players = buildPlayersArray();
-    if(!players.length){ showToast('لیستی برای خروجی وجود ندارد', 'err'); return; }
-    const escapeCsv = (v) => `"${String(v ?? '').replace(/"/g, '""')}"`;
-    const rows = [['slot','avatar','player_name','phone_number','social_id'], ...players.map(p => [p.slot, avatarLabel(p.avatar), p.player_name, p.phone_number, p.social_id])];
-    const csv = rows.map(r => r.map(escapeCsv).join(',')).join('\n');
-    const blob = new Blob(['\uFEFF' + csv], { type:'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url; a.download = 'codm_players.csv';
-    document.body.appendChild(a); a.click(); document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-    showToast('فایل CSV دانلود شد ✅', 'ok');
-  });
-
-  const lockBtn = document.getElementById('lock-btn');
-  const adminModalOverlay = document.getElementById('admin-modal-overlay');
-  const adminPassInput = document.getElementById('admin-pass-input');
-  const adminModalErr = document.getElementById('admin-modal-err');
-  const adminBtnConfirm = document.getElementById('admin-btn-confirm');
-  const adminBtnCancel = document.getElementById('admin-btn-cancel');
-  const adminBadge = document.getElementById('admin-badge');
-  const adminPanel = document.getElementById('admin-panel');
-
-  lockBtn.addEventListener('click', () => {
-    if(isAdmin){ showToast('حالت ادمین در حال حاضر فعال است', 'ok'); return; }
-    adminPassInput.value = '';
-    adminModalErr.textContent = '';
-    adminModalOverlay.classList.add('open');
-    setTimeout(() => adminPassInput.focus(), 150);
-  });
-  adminBtnCancel.addEventListener('click', () => adminModalOverlay.classList.remove('open'));
-  adminModalOverlay.addEventListener('click', (e) => { if(e.target === adminModalOverlay) adminModalOverlay.classList.remove('open'); });
-  adminPassInput.addEventListener('keydown', (e) => { if(e.key === 'Enter') adminBtnConfirm.click(); });
-
-  adminBtnConfirm.addEventListener('click', () => {
-    if(adminPassInput.value === ADMIN_PASSWORD){
-      isAdmin = true;
-      adminModalOverlay.classList.remove('open');
-      adminBadge.classList.add('active');
-      adminPanel.classList.add('open');
-      refreshAllSlotAdminMode();
-      document.getElementById('admin-room-id').value = document.getElementById('room-id-val').textContent === '—' ? '' : document.getElementById('room-id-val').textContent;
-      document.getElementById('admin-room-pass').value = document.getElementById('room-pass-val').textContent === '—' ? '' : document.getElementById('room-pass-val').textContent;
-      const localTime = new Date(tournamentStart.getTime() - tournamentStart.getTimezoneOffset()*60000).toISOString().slice(0,16);
-      document.getElementById('admin-start-time').value = localTime;
-      showToast('حالت ادمین فعال شد ✅', 'ok');
+      const dt = new Date(tournamentStartTime);
+      dt.setMinutes(dt.getMinutes() - dt.getTimezoneOffset());
+      document.getElementById('admin-start-time').value = dt.toISOString().slice(0, 16);
+      
+      updateAdminToggleBtnText();
     } else {
-      adminModalErr.textContent = 'رمز عبور اشتباه است.';
+      panel.classList.remove('open');
+      badge.classList.remove('active');
     }
-  });
-
-  document.getElementById('admin-logout').addEventListener('click', () => {
-    isAdmin = false;
-    cancelMoveMode();
-    adminBadge.classList.remove('active');
-    adminPanel.classList.remove('open');
-    refreshAllSlotAdminMode();
-    showToast('از حالت ادمین خارج شدید.', 'ok');
-  });
-
-  document.getElementById('admin-publish-room').addEventListener('click', async () => {
-    const roomId = document.getElementById('admin-room-id').value.trim();
-    const roomPass = document.getElementById('admin-room-pass').value.trim();
-    if(!roomId || !roomPass){ showToast('کد روم و پسورد را وارد کنید.', 'err'); return; }
-    try {
-      const { error } = await supabaseClient.from('tournament_settings').upsert({
-        id: SETTINGS_ROW_ID, room_id: roomId, room_password: roomPass, published: true
-      });
-      if(error){ showToast('خطا در ذخیره کد روم', 'err'); console.error(error); return; }
-      showToast('کد روم منتشر شد ✅', 'ok');
-    } catch(err){ console.error(err); showToast('خطای غیرمنتظره', 'err'); }
-  });
-
-  document.getElementById('admin-clear-room').addEventListener('click', () => {
-    showConfirmModal('حذف کد روم', 'کد روم و پسورد فعلی برای همه کاربران حذف شود؟', async () => {
-      try {
-        const { error } = await supabaseClient.from('tournament_settings').upsert({
-          id: SETTINGS_ROW_ID, room_id: null, room_password: null, published: false
-        });
-        if(error){ showToast('خطا در حذف کد روم', 'err'); return; }
-        document.getElementById('admin-room-id').value = '';
-        document.getElementById('admin-room-pass').value = '';
-        document.getElementById('room-id-val').textContent = '—';
-        document.getElementById('room-pass-val').textContent = '—';
-        document.getElementById('room-locked-overlay').style.display = 'flex';
-        showToast('کد روم حذف شد ✅', 'ok');
-      } catch(err){ console.error(err); showToast('خطای غیرمنتظره', 'err'); }
-    });
-  });
-
-  function updateRegistrationToggleUI(){
-    const btn = document.getElementById('admin-toggle-registration');
-    if(!btn) return;
-    if(registrationOpen){
-      btn.textContent = '⏸️ بستن ثبت‌نام';
-      btn.classList.remove('danger'); btn.classList.add('ghost');
-    } else {
-      btn.textContent = '▶️ باز کردن ثبت‌نام';
-      btn.classList.remove('ghost'); btn.classList.add('danger');
-    }
+    renderSquads();
   }
-  document.getElementById('admin-toggle-registration').addEventListener('click', async () => {
-    const newState = !registrationOpen;
-    try {
-      const { error } = await supabaseClient.from('tournament_settings').upsert({
-        id: SETTINGS_ROW_ID, registration_open: newState
-      });
-      if(error){ showToast('خطا در تغییر وضعیت ثبت‌نام', 'err'); return; }
-      registrationOpen = newState;
-      updateRegistrationToggleUI();
-      showToast(newState ? 'ثبت‌نام باز شد ✅' : 'ثبت‌نام بسته‌ شد ⏸️', 'ok');
-    } catch(err){ console.error(err); showToast('خطای غیرمنتظره', 'err'); }
+
+  document.getElementById('lock-btn').addEventListener('click', () => {
+    if (isAdminLoggedIn) {
+      showToast('شما در حالت ادمین هستید.', 'info');
+    } else {
+      document.getElementById('admin-pass-input').value = '';
+      document.getElementById('admin-modal-err').textContent = '';
+      document.getElementById('admin-modal-overlay').classList.add('open');
+    }
   });
 
-  document.getElementById('admin-reset-all').addEventListener('click', () => {
-    showConfirmModal('⚠️ ریست کامل تورنمنت', 'تمام ۱۰۰ صندلی ثبت‌شده پاک خواهند شد. آیا اطمینان دارید؟', async () => {
-      try {
-        const { error } = await supabaseClient.from('slots').delete().gt('slot_number', 0);
-        if(error){ showToast('خطا در ریست تورنمنت', 'err'); return; }
-        slotsState = {};
-        for(let i = 1; i <= TOTAL_SLOTS; i++) renderSlotEmpty(i);
-        updateStats();
-        clearMySeat();
-        showToast('تمام صندلی‌ها ریست شدند ✅', 'ok');
-      } catch(err){ console.error(err); showToast('خطای غیرمنتظره', 'err'); }
+  document.getElementById('admin-btn-cancel').onclick = () => document.getElementById('admin-modal-overlay').classList.remove('open');
+  document.getElementById('admin-btn-confirm').onclick = () => {
+    const pass = document.getElementById('admin-pass-input').value.trim();
+    if (pass === ADMIN_PASSWORD) {
+      document.getElementById('admin-modal-overlay').classList.remove('open');
+      toggleAdminPanel(true);
+      showToast('ورود ادمین موفقیت‌آمیز بود.', 'ok');
+    } else {
+      document.getElementById('admin-modal-err').textContent = 'رمز عبور اشتباه است.';
+    }
+  };
+
+  document.getElementById('admin-publish-room').onclick = () => {
+    const id = document.getElementById('admin-room-id').value.trim();
+    const pass = document.getElementById('admin-room-pass').value.trim();
+
+    if (!id || !pass) {
+      showToast('لطفاً آیدی و پسورد روم را وارد کنید.', 'error');
+      return;
+    }
+
+    roomCredentials = { id, pass };
+    localStorage.setItem('cod_tournament_room', JSON.stringify(roomCredentials));
+    updateRoomDisplay();
+    showToast('اطلاعات روم برای تمام کاربران منتشر شد.', 'ok');
+  };
+
+  document.getElementById('admin-clear-room').onclick = () => {
+    showConfirmModal('حذف اطلاعات روم', 'آیا از حذف کد روم اطمینان دارید؟', () => {
+      roomCredentials = { id: '', pass: '' };
+      localStorage.setItem('cod_tournament_room', JSON.stringify(roomCredentials));
+      document.getElementById('admin-room-id').value = '';
+      document.getElementById('admin-room-pass').value = '';
+      updateRoomDisplay();
+      showToast('کد روم حذف شد.', 'info');
     });
-  });
+  };
 
-  document.getElementById('admin-save-time').addEventListener('click', async () => {
+  document.getElementById('admin-save-time').onclick = () => {
     const val = document.getElementById('admin-start-time').value;
-    if(!val){ showToast('تاریخ و ساعت شروع را انتخاب کنید.', 'err'); return; }
-    const newDate = new Date(val);
-    try {
-      const { error } = await supabaseClient.from('tournament_settings').upsert({
-        id: SETTINGS_ROW_ID, start_time: newDate.toISOString()
-      });
-      if(error){ showToast('خطا در ذخیره زمان', 'err'); return; }
-      tournamentStart = newDate;
-      updateCountdown();
-      showToast('زمان شروع تورنمنت به‌روز شد ✅', 'ok');
-    } catch(err){ console.error(err); showToast('خطای غیرمنتظره', 'err'); }
-  });
+    if (!val) return;
+    tournamentStartTime = new Date(val).getTime();
+    localStorage.setItem('cod_tournament_start_time', tournamentStartTime.toString());
+    showToast('زمان جدید برگزاری مسابقه ذخیره شد.', 'ok');
+  };
 
-  function applyRoomSettings(row){
-    if(!row) return;
-    if(row.start_time){ tournamentStart = new Date(row.start_time); updateCountdown(); }
-    if(row.published && row.room_id && row.room_password){
-      document.getElementById('room-id-val').textContent = row.room_id;
-      document.getElementById('room-pass-val').textContent = row.room_password;
-      document.getElementById('room-locked-overlay').style.display = 'none';
-    } else {
-      document.getElementById('room-id-val').textContent = '—';
-      document.getElementById('room-pass-val').textContent = '—';
-      document.getElementById('room-locked-overlay').style.display = 'flex';
-    }
-    registrationOpen = (typeof row.registration_open === 'boolean') ? row.registration_open : true;
-    updateRegistrationToggleUI();
+  function updateAdminToggleBtnText() {
+    const btn = document.getElementById('admin-toggle-registration');
+    btn.textContent = registrationOpen ? '⏸️ بستن ثبت‌نام' : '▶️ بازکردن ثبت‌نام';
   }
 
-  document.querySelectorAll('.copy-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const targetId = btn.dataset.copyTarget;
-      const text = document.getElementById(targetId).textContent;
-      if(text === '—') return;
-      navigator.clipboard?.writeText(text).then(() => showToast('کپی شد!', 'ok')).catch(() => showToast('خطا در کپی', 'err'));
+  document.getElementById('admin-toggle-registration').onclick = () => {
+    registrationOpen = !registrationOpen;
+    localStorage.setItem('cod_tournament_reg_open', registrationOpen ? 'true' : 'false');
+    updateAdminToggleBtnText();
+    showToast(registrationOpen ? 'ثبت‌نام باز شد.' : 'ثبت‌نام بسته شد.', 'info');
+  };
+
+  document.getElementById('admin-reset-all').onclick = () => {
+    showConfirmModal('ریست کامل تورنمنت', '⚠️ تمامی صندلی‌ها و ثبت‌نام‌ها پاک خواهند شد. آیا مطمئن هستید؟', () => {
+      slotsState = {};
+      mySeatNum = null;
+      localStorage.removeItem('cod_tournament_slots');
+      localStorage.removeItem(MY_SEAT_KEY);
+      renderSquads();
+      updateDrawerInfo();
+      showToast('تمام داده‌های تورنمنت پاک شدند.', 'info');
     });
+  };
+
+  document.getElementById('admin-logout').onclick = () => toggleAdminPanel(false);
+
+  document.getElementById('admin-open-table').onclick = () => {
+    renderPlayersTable();
+    document.getElementById('admin-table-modal-overlay').classList.add('open');
+  };
+
+  document.getElementById('table-close-btn').onclick = () => document.getElementById('admin-table-modal-overlay').classList.remove('open');
+
+  function renderPlayersTable(filter = '') {
+    const tbody = document.getElementById('players-table-body');
+    const emptyMsg = document.getElementById('players-table-empty');
+    tbody.innerHTML = '';
+
+    const query = filter.toLowerCase().trim();
+    let count = 0;
+
+    for (let i = 1; i <= TOTAL_SLOTS; i++) {
+      const s = slotsState[i];
+      if (!s) continue;
+
+      const ign = (s.ign || '').toLowerCase();
+      const phone = (s.phone || '').toLowerCase();
+      const social = (s.social || '').toLowerCase();
+
+      if (query && !i.toString().includes(query) && !ign.includes(query) && !phone.includes(query) && !social.includes(query)) {
+        continue;
+      }
+
+      count++;
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><b>#${i}</b></td>
+        <td>${avatarEmoji(s.avatar)} ${avatarLabel(s.avatar)}</td>
+        <td>${escapeHtml(s.ign)}</td>
+        <td>${escapeHtml(s.phone) || '—'}</td>
+        <td>${escapeHtml(s.social) || '—'}</td>
+      `;
+      tbody.appendChild(tr);
+    }
+
+    emptyMsg.style.display = count === 0 ? 'block' : 'none';
+  }
+
+  document.getElementById('table-search-input').addEventListener('input', (e) => {
+    renderPlayersTable(e.target.value);
   });
+
+  document.getElementById('table-copy-btn').onclick = () => {
+    let text = "🎮 لیست بازیکنان تورنمنت کال آف دیوتی:\n\n";
+    for (let i = 1; i <= TOTAL_SLOTS; i++) {
+      if (slotsState[i]) {
+        text += `صندلی #${i}: ${slotsState[i].ign} | ${slotsState[i].phone || '-'}\n`;
+      }
+    }
+    copyToClipboard(text);
+    showToast('لیست بازیکنان کپی شد.', 'ok');
+  };
+
+  document.getElementById('table-csv-btn').onclick = () => {
+    let csv = "\uFEFFSlot,IGN,Phone,Social,Avatar\n";
+    for (let i = 1; i <= TOTAL_SLOTS; i++) {
+      if (slotsState[i]) {
+        const s = slotsState[i];
+        csv += `${i},"${s.ign}","${s.phone || ''}","${s.social || ''}","${s.avatar}"\n`;
+      }
+    }
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "codm_tournament_players.csv";
+    link.click();
+    showToast('فایل CSV دانلود شد.', 'ok');
+  };
 
   const drawer = document.getElementById('drawer');
-  const drawerBackdrop = document.getElementById('drawer-backdrop');
-  const mySeatCard = document.getElementById('my-seat-card');
-  const drawerGotoBtn = document.getElementById('drawer-goto-btn');
+  const backdrop = document.getElementById('drawer-backdrop');
 
-  function refreshDrawerSeatCard(){
-    const my = getMySeat();
-    if(my && slotsState[my.slot]){
-      mySeatCard.classList.remove('empty');
-      mySeatCard.innerHTML = `<div><b style="color:var(--green)">صندلی #${my.slot}</b></div><div>${avatarEmoji(my.avatar)} ${escapeHtml(my.player_name)}</div>`;
-      drawerGotoBtn.style.display = 'block';
+  function openDrawer() {
+    drawer.classList.add('open');
+    backdrop.classList.add('open');
+    updateDrawerInfo();
+  }
+
+  function closeDrawer() {
+    drawer.classList.remove('open');
+    backdrop.classList.remove('open');
+  }
+
+  document.getElementById('hamburger-btn').onclick = openDrawer;
+  document.getElementById('drawer-close-btn').onclick = closeDrawer;
+  backdrop.onclick = closeDrawer;
+
+  function updateDrawerInfo() {
+    const card = document.getElementById('my-seat-card');
+    const gotoBtn = document.getElementById('drawer-goto-btn');
+
+    if (mySeatNum && slotsState[mySeatNum]) {
+      const s = slotsState[mySeatNum];
+      card.className = 'my-seat-card';
+      card.innerHTML = `
+        صندلی شما: <b style="color:var(--accent2)">#${mySeatNum}</b><br>
+        نام درون‌بازی: <b>${escapeHtml(s.ign)}</b>
+      `;
+      gotoBtn.style.display = 'block';
+      gotoBtn.onclick = () => {
+        closeDrawer();
+        const el = document.querySelector(`.slot[data-slot="${mySeatNum}"]`);
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      };
     } else {
-      mySeatCard.classList.add('empty');
-      mySeatCard.textContent = 'شما هنوز صندلی رزرو نکرده‌اید.';
-      drawerGotoBtn.style.display = 'none';
+      card.className = 'my-seat-card empty';
+      card.textContent = 'هنوز صندلی رزرو نکرده‌اید.';
+      gotoBtn.style.display = 'none';
     }
   }
 
-  function openDrawer(){
-    refreshDrawerSeatCard();
-    drawer.classList.add('open');
-    drawerBackdrop.classList.add('open');
-  }
-  function closeDrawer(){
-    drawer.classList.remove('open');
-    drawerBackdrop.classList.remove('open');
-  }
-  document.getElementById('hamburger-btn').addEventListener('click', openDrawer);
-  document.getElementById('drawer-close-btn').addEventListener('click', closeDrawer);
-  drawerBackdrop.addEventListener('click', closeDrawer);
-  drawerGotoBtn.addEventListener('click', () => {
-    const my = getMySeat();
-    if(!my) return;
-    closeDrawer();
-    setTimeout(() => scrollToSlot(my.slot, true), 200);
+  // Copy Buttons
+  document.querySelectorAll('.copy-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const targetId = btn.getAttribute('data-copy-target');
+      const val = document.getElementById(targetId).textContent;
+      if (val && val !== '—') {
+        copyToClipboard(val);
+        showToast('کپی شد!', 'ok');
+      }
+    });
   });
 
-  const SUPABASE_URL = "https://vpjhtozjrtdtkdtgmmwa.supabase.co";
-  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZwamh0b3pqcnRkdGtkdGdtbXdhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg1Mzc0NDUsImV4cCI6MjEwNDExMzQ0NX0.jQd6BfCCtwHIuFOgxqyECplW4D47oJHkGKh0zut_aec";
-
-  let supabaseClient = null;
-
-  async function initSupabase(){
-    if(!window.supabase){ showToast('⚠️ کتابخانه Supabase بارگذاری نشد', 'err'); return; }
-
-    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-    await fetchAllSlots();
-    await fetchSettings();
-    updateRegistrationToggleUI();
-    refreshDrawerSeatCard();
-
-    supabaseClient
-      .channel('public:slots')
-      .on('postgres_changes', { event:'INSERT', schema:'public', table:'slots' }, (payload) => {
-        const row = payload.new; if(!row) return;
-        const num = Number(row.slot_number);
-        const isNewFromOther = !slotsState[num];
-        slotsState[num] = { player_name: row.player_name, phone_number: row.phone_number, social_id: row.social_id, avatar: row.avatar };
-        renderSlotTaken(num, slotsState[num], { animate: isNewFromOther });
-        updateStats();
-      })
-      .on('postgres_changes', { event:'DELETE', schema:'public', table:'slots' }, (payload) => {
-        const row = payload.old; if(!row) return;
-        const num = Number(row.slot_number);
-        delete slotsState[num];
-        renderSlotEmpty(num);
-        updateStats();
-        const my = getMySeat();
-        if(my && Number(my.slot) === num && !ignoreDeleteSlots.has(num)){
-          clearMySeat();
-          showToast('صندلی شما توسط مدیریت حذف شد', 'err');
-        }
-      })
-      .on('postgres_changes', { event:'UPDATE', schema:'public', table:'slots' }, (payload) => {
-        const row = payload.new; if(!row) return;
-        const num = Number(row.slot_number);
-        slotsState[num] = { player_name: row.player_name, phone_number: row.phone_number, social_id: row.social_id, avatar: row.avatar };
-        renderSlotTaken(num, slotsState[num]);
-        updateStats();
-        if(isMine(num)){ setMySeat({ slot: num, ...slotsState[num] }); }
-      })
-      .subscribe();
-
-    supabaseClient
-      .channel('public:tournament_settings')
-      .on('postgres_changes', { event:'*', schema:'public', table:'tournament_settings' }, (payload) => {
-        applyRoomSettings(payload.new);
-      })
-      .subscribe();
-  }
-
-  async function fetchAllSlots(){
+  function copyToClipboard(text) {
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+    document.body.appendChild(textarea);
+    textarea.select();
     try {
-      const { data, error } = await supabaseClient.from('slots').select('slot_number, player_name, phone_number, social_id, avatar');
-      if(error){ console.error(error); showToast('خطا در دریافت صندلی‌ها', 'err'); return; }
-      slotsState = {};
-      (data || []).forEach(row => {
-        const num = Number(row.slot_number);
-        slotsState[num] = { player_name: row.player_name, phone_number: row.phone_number, social_id: row.social_id, avatar: row.avatar };
-      });
-      Object.keys(slotsState).forEach(n => renderSlotTaken(Number(n), slotsState[n]));
-      updateStats();
-    } catch(err){ console.error(err); showToast('خطا در اتصال به دیتابیس', 'err'); }
+      document.execCommand('copy');
+    } catch(e){}
+    document.body.removeChild(textarea);
   }
 
-  async function fetchSettings(){
-    try {
-      const { data, error } = await supabaseClient.from('tournament_settings').select('*').eq('id', SETTINGS_ROW_ID).maybeSingle();
-      if(error){ console.error(error); return; }
-      applyRoomSettings(data);
-    } catch(err){ console.error(err); }
+  document.getElementById('join-btn').onclick = () => {
+    // Find first empty slot
+    let firstEmpty = null;
+    for (let i = 1; i <= TOTAL_SLOTS; i++) {
+      if (!slotsState[i]) {
+        firstEmpty = i;
+        break;
+      }
+    }
+    if (firstEmpty) {
+      handleSlotClick(firstEmpty);
+    } else {
+      showToast('متأسفانه ظرفیت تورنمنت تکمیل شده است!', 'error');
+    }
+  };
+
+  function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
   }
 
-  try { initSupabase(); } catch(err){ console.error(err); }
+  window.addEventListener('DOMContentLoaded', () => {
+    loadState();
+    renderSquads();
+    updateRoomDisplay();
+    startCountdownTimer();
+    updateDrawerInfo();
+    if (isAdminLoggedIn) toggleAdminPanel(true);
+  });
 
 })();
 </script>
 </body>
-                                                                                                                                           </html>
+</html>
