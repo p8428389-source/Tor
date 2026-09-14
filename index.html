@@ -3,411 +3,421 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>COD Mobile | تورنمنت بتل رویال — لیکوئید گلس</title>
+<title>COD Mobile | تورنمنت بتل رویال — تاکتیکال گلس</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Vazirmatn:wght@400;500;700;800&display=swap" rel="stylesheet">
 <style>
-  :root{
-    --bg:#0A0A0E;
-    --glass:rgba(255,255,255,0.055);
-    --glass-strong:rgba(255,255,255,0.10);
-    --glass-border:rgba(255,255,255,0.14);
-    --accent1:#9AA9FF;
-    --accent2:#C9D3FF;
-    --accent-soft:rgba(154,169,255,0.38);
-    --red:#FF6B81;
-    --red-soft:rgba(255,107,129,0.35);
-    --green:#7CF7C4;
-    --green-soft:rgba(124,247,196,0.4);
-    --tg:#6FC1F0;
-    --tg-soft:rgba(111,193,240,0.35);
-    --text:#F5F5F8;
-    --text-dim:rgba(245,245,248,0.56);
-    --radius:26px;
+  :root {
+    --bg: #07080C;
+    --bg-card: rgba(18, 20, 29, 0.75);
+    --glass: rgba(255, 255, 255, 0.04);
+    --glass-strong: rgba(255, 255, 255, 0.08);
+    --glass-border: rgba(255, 255, 255, 0.12);
+    --glass-border-glow: rgba(139, 92, 246, 0.35);
+    --accent1: #8B5CF6; /* Cyber Purple */
+    --accent2: #06B6D4; /* Tactical Cyan */
+    --gold: #F59E0B; /* Victory Gold */
+    --red: #EF4444;
+    --red-soft: rgba(239, 68, 68, 0.2);
+    --green: #10B981;
+    --green-soft: rgba(16, 185, 129, 0.2);
+    --tg: #38BDF8;
+    --text: #F9FAFB;
+    --text-dim: #9CA3AF;
+    --radius: 20px;
   }
-  *{box-sizing:border-box;}
-  html,body{margin:0;padding:0; scroll-behavior:smooth;}
-  body{
-    background:
-      radial-gradient(circle at 12% 8%, rgba(154,169,255,0.16), transparent 46%),
-      radial-gradient(circle at 88% 20%, rgba(124,247,196,0.08), transparent 42%),
-      radial-gradient(circle at 55% 95%, rgba(255,107,129,0.07), transparent 48%),
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; scroll-behavior: smooth; }
+  body {
+    background: 
+      radial-gradient(circle at 15% 12%, rgba(139, 92, 246, 0.15), transparent 45%),
+      radial-gradient(circle at 85% 25%, rgba(6, 182, 212, 0.12), transparent 40%),
+      radial-gradient(circle at 50% 90%, rgba(245, 158, 11, 0.06), transparent 50%),
       var(--bg);
-    color:var(--text);
-    font-family:'Vazirmatn','Rajdhani',sans-serif;
-    min-height:100vh;
-    overflow-x:hidden;
+    color: var(--text);
+    font-family: 'Vazirmatn', 'Rajdhani', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
   }
-  .wrap{position:relative; z-index:2; max-width:1100px; margin:0 auto; padding:20px 16px 70px;}
-  ::-webkit-scrollbar{width:8px;}
-  ::-webkit-scrollbar-thumb{background:var(--glass-strong); border-radius:10px;}
-  a{color:inherit;}
+  
+  .wrap { position: relative; z-index: 2; max-width: 1120px; margin: 0 auto; padding: 20px 16px 70px; }
+  ::-webkit-scrollbar { width: 8px; }
+  ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 10px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.25); }
+  a { color: inherit; text-decoration: none; }
 
-  /* ===== glass panel base ===== */
-  .glass{
-    background:linear-gradient(160deg, var(--glass-strong), var(--glass));
-    backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px);
-    border:1px solid var(--glass-border);
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.12), inset 0 -14px 30px rgba(0,0,0,0.25), 0 14px 40px rgba(0,0,0,0.35);
-  }
-  /* same look, no backdrop-filter — used for large panels that scroll with the page,
-     since blurring a big area continuously during scroll is what causes jank */
-  .panel-static{
-    background:linear-gradient(160deg, var(--glass-strong), var(--glass));
-    border:1px solid var(--glass-border);
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.12), inset 0 -14px 30px rgba(0,0,0,0.25), 0 14px 40px rgba(0,0,0,0.35);
+  /* Static panel for performance: eliminates jank on fast scroll */
+  .panel-static {
+    background: linear-gradient(145deg, var(--bg-card), rgba(12, 14, 22, 0.85));
+    border: 1px solid var(--glass-border);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 12px 32px rgba(0, 0, 0, 0.4);
+    border-radius: var(--radius);
   }
 
-  /* ===== TOP BAR ===== */
-  .topbar{display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; gap:10px;}
-  .icon-btn{
-    width:42px;height:42px;border-radius:16px;
-    display:flex;align-items:center;justify-content:center;
-    cursor:pointer; font-size:17px; color:var(--text);
-    transition:transform .15s ease, box-shadow .2s ease;
-    flex-shrink:0;
-  }
-  .icon-btn:hover{transform:translateY(-2px); box-shadow: inset 0 1px 0 rgba(255,255,255,0.16), inset 0 -14px 26px rgba(0,0,0,0.28), 0 10px 26px rgba(154,169,255,0.18);}
-  .topbar-right{display:flex; align-items:center; gap:10px;}
-  .admin-badge{
-    display:none; align-items:center; gap:6px;
-    font-size:12px; font-weight:700; color:var(--accent2);
-    padding:8px 14px; border-radius:999px;
-  }
-  .admin-badge.active{display:flex;}
-
-  /* ===== HERO ===== */
-  header.hero{
-    position:relative; overflow:hidden;
-    border-radius:32px;
-    padding:30px 26px; margin-bottom:22px;
-  }
-  .hero-inner{display:flex; align-items:center; gap:26px; flex-wrap:wrap-reverse;}
-  .hero-text{flex:1 1 280px; min-width:260px;}
-  .hero-image-wrap{
-    flex-shrink:0; width:200px; display:flex; justify-content:center; align-items:center;
-    position:relative; margin:0 auto;
-  }
-  .hero-image-wrap::before{
-    content:""; position:absolute; inset:-26px; border-radius:50%;
-    background:radial-gradient(circle, rgba(154,169,255,0.4), transparent 68%);
-    filter:blur(28px); z-index:0;
-  }
-  .hero-image{
-    position:relative; z-index:1; width:100%; max-width:210px;
-    filter:drop-shadow(0 22px 34px rgba(0,0,0,0.55));
-    animation:floatSoft 5.5s ease-in-out infinite;
-    border-radius:24px;
-  }
-  @keyframes floatSoft{
-    0%,100%{transform:translateY(0) rotate(0deg);}
-    50%{transform:translateY(-14px) rotate(-1deg);}
-  }
-  .free-banner{
-    display:inline-flex; align-items:center; gap:8px;
-    font-size:12.5px; font-weight:700; letter-spacing:.2px;
-    color:var(--accent2);
-    padding:7px 16px; border-radius:999px;
-    margin-bottom:16px;
-  }
-  h1.title{
-    font-family:'Rajdhani',sans-serif; font-weight:700;
-    font-size:clamp(26px,4.6vw,42px); line-height:1.2; margin:0 0 10px;
-  }
-  h1.title .grad{
-    background:linear-gradient(90deg, var(--accent2), var(--accent1));
-    -webkit-background-clip:text; background-clip:text; color:transparent;
-  }
-  .subtitle{color:var(--text-dim); font-size:15px; max-width:560px; line-height:1.85; margin:0 0 22px;}
-
-  .hero-actions{display:flex; flex-wrap:wrap; gap:12px; margin-bottom:26px;}
-  .join-btn{
-    display:inline-flex; align-items:center; gap:10px;
-    background:linear-gradient(135deg, var(--accent1), #6f7fe8);
-    color:#0c0c14; font-weight:700; font-size:15px;
-    border:none; border-radius:999px; padding:15px 30px;
-    cursor:pointer;
-    box-shadow: inset 0 1px 1px rgba(255,255,255,0.55), inset 0 -8px 14px rgba(0,0,0,0.18), 0 10px 30px rgba(154,169,255,0.35);
-    transition:transform .15s ease, box-shadow .2s ease;
-  }
-  .join-btn:hover{transform:translateY(-2px) scale(1.015);}
-  .join-btn:active{transform:scale(.97);}
-  .tg-btn{
-    display:inline-flex; align-items:center; gap:9px;
-    background:rgba(111,193,240,0.10); color:var(--tg);
-    font-weight:700; font-size:14px; text-decoration:none;
-    border:1px solid var(--tg-soft); border-radius:999px; padding:14px 24px;
-    transition:transform .15s ease, background .2s ease;
-  }
-  .tg-btn:hover{transform:translateY(-2px); background:rgba(111,193,240,0.16);}
-
-  /* countdown */
-  .countdown-row{display:grid; grid-template-columns:repeat(4, 1fr); gap:8px; margin-bottom:20px;}
-  .cd-box{
-    border-radius:16px; padding:10px 4px; text-align:center; min-width:0;
-    background:linear-gradient(160deg, rgba(255,255,255,0.09), rgba(255,255,255,0.02));
-    border:1px solid var(--glass-border);
-  }
-  .cd-box .num{
-    font-family:'Rajdhani',monospace; font-size:clamp(18px,5.5vw,29px); font-weight:700;
-    color:var(--text); line-height:1; font-variant-numeric:tabular-nums;
-  }
-  .cd-box .lbl{font-size:10.5px; color:var(--text-dim); margin-top:5px;}
-
-  .stats-bar{display:flex; align-items:center; gap:16px; flex-wrap:wrap;}
-  .stats-text{font-size:14px; color:var(--text-dim);}
-  .stats-text b{color:var(--text); font-size:18px;}
-  .progress-track{flex:1; min-width:160px; height:10px; border-radius:20px; background:rgba(255,255,255,0.07); overflow:hidden;}
-  .progress-fill{height:100%; background:linear-gradient(90deg, var(--accent1), var(--green)); transition:width .5s ease;}
-
-  /* ===== ROOM CREDENTIALS ===== */
-  .room-box{position:relative; border-radius:var(--radius); padding:22px 24px; margin-bottom:22px; overflow:hidden;}
-  .room-box h3{font-family:'Rajdhani',sans-serif; font-size:16px; margin:0 0 14px; color:var(--text-dim); letter-spacing:.3px; font-weight:600;}
-  .room-grid{display:flex; gap:16px; flex-wrap:wrap;}
-  .room-field{flex:1; min-width:180px;}
-  .room-field .lbl2{font-size:12px; color:var(--text-dim); margin-bottom:6px;}
-  .room-field .val-row{display:flex; align-items:center; gap:10px;}
-  .room-field .val{
-    font-family:'Rajdhani',monospace; font-size:24px; font-weight:700;
-    color:var(--text); letter-spacing:1px;
-  }
-  .copy-btn{
-    background:rgba(255,255,255,0.08); border:1px solid var(--glass-border);
-    color:var(--text); border-radius:999px; padding:7px 14px; font-size:12px; cursor:pointer;
-  }
-  .copy-btn:hover{background:rgba(255,255,255,0.14);}
-
-  .room-locked-overlay{
-    position:absolute; inset:0;
-    background:rgba(10,10,14,0.92);
-    display:flex; flex-direction:column; align-items:center; justify-content:center;
-    text-align:center; gap:8px; padding:20px;
-  }
-  .room-locked-overlay .icon{font-size:26px;}
-  .room-locked-overlay .msg{color:var(--text-dim); font-size:13.5px; max-width:340px; line-height:1.7;}
-
-  /* ===== ADMIN PANEL ===== */
-  .admin-panel{display:none; border-radius:var(--radius); padding:20px 22px; margin-bottom:22px;}
-  .admin-panel.open{display:block;}
-  .admin-panel h3{font-family:'Rajdhani',sans-serif; font-size:17px; margin:0 0 14px; color:var(--accent2); font-weight:700;}
-  .admin-grid{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
-  @media (max-width:640px){.admin-grid{grid-template-columns:1fr;}}
-  .field label{font-size:12px; color:var(--text-dim); display:block; margin-bottom:5px;}
-  .field input{
-    width:100%; background:rgba(0,0,0,0.28); border:1px solid var(--glass-border);
-    border-radius:14px; padding:11px 14px; color:var(--text); font-family:'Vazirmatn',sans-serif; font-size:13.5px; outline:none;
-  }
-  .field input:focus{border-color:var(--accent1);}
-  .admin-actions-row{display:flex; gap:10px; margin-top:16px; flex-wrap:wrap;}
-  .btn-mini{
-    border:none; border-radius:999px; padding:10px 20px; font-size:13px; font-weight:700;
-    cursor:pointer; transition:filter .2s ease, transform .12s ease;
-  }
-  .btn-mini:active{transform:scale(.96);}
-  .btn-mini.primary{background:linear-gradient(135deg, var(--accent1), #6f7fe8); color:#0c0c14;}
-  .btn-mini.primary:hover{filter:brightness(1.08);}
-  .btn-mini.ghost{background:rgba(255,255,255,0.08); color:var(--text); border:1px solid var(--glass-border);}
-  .btn-mini.purple{background:linear-gradient(135deg, #C9A6FF, #8f6fe0); color:#140c1e;}
-  .btn-mini.danger{background:linear-gradient(135deg, var(--red), #c23a56); color:#1c0509;}
-  .btn-mini.danger:hover{filter:brightness(1.08);}
-
-  /* ===== SQUADS ===== */
-  .squads-section h2{
-    font-family:'Rajdhani',sans-serif; font-size:20px; font-weight:700; margin:0 0 16px;
-    display:flex; align-items:center; gap:10px;
-  }
-  .squads-section h2::before{content:""; width:5px;height:18px;background:var(--accent1);border-radius:4px;display:inline-block;}
-
-  .squad{ margin-bottom:18px; content-visibility:auto; contain-intrinsic-size:220px 140px; }
-  .squad-label{
-    font-family:'Rajdhani',sans-serif; font-size:12.5px; font-weight:700; letter-spacing:.5px;
-    color:var(--text-dim); margin-bottom:8px; text-align:center;
-  }
-  .squad-row{display:flex; align-items:stretch; justify-content:center; gap:30px;}
-  .squad-group{display:flex; gap:10px;}
-  .squad-divider{width:1px; background:linear-gradient(180deg, transparent, var(--glass-border), transparent); align-self:stretch;}
-
-  .slot{
-    width:84px; aspect-ratio:1/1;
-    border-radius:22px;
-    background:linear-gradient(160deg, rgba(255,255,255,0.10), rgba(255,255,255,0.02));
-    border:1px solid var(--glass-border);
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.16), inset 0 -8px 14px rgba(0,0,0,0.28), 0 6px 16px rgba(0,0,0,0.3);
-    display:flex; flex-direction:column; align-items:center; justify-content:center;
-    cursor:pointer; position:relative; padding:4px; overflow:hidden;
-    transition:transform .15s ease, box-shadow .2s ease;
-  }
-  @media (max-width:520px){
-    .slot{width:62px; border-radius:18px;}
-    .squad-row{gap:16px;}
-    .squad-group{gap:6px;}
-  }
-  .slot .num{font-family:'Rajdhani',monospace; font-weight:700; font-size:15px; color:var(--text-dim);}
-  .slot:hover:not(.taken){ transform:translateY(-3px); box-shadow: inset 0 1px 0 rgba(255,255,255,0.22), inset 0 -8px 14px rgba(0,0,0,0.25), 0 12px 26px rgba(154,169,255,0.28);}
-  .slot:hover:not(.taken) .num{color:var(--accent2);}
-
-  .slot.taken{
-    cursor:pointer;
-    background:linear-gradient(160deg, rgba(255,107,129,0.16), rgba(30,10,16,0.55));
-  }
-  .slot.taken .num{color:rgba(255,255,255,0.32); font-size:10px;}
-  .slot.taken .mark{font-size:16px; color:var(--red); line-height:1;}
-  .slot.taken .avatar-emoji{font-size:15px; line-height:1;}
-  .slot.taken .player-name{
-    font-size:8.6px; color:#ffd3da; margin-top:2px; max-width:100%;
-    overflow:hidden; text-overflow:ellipsis; white-space:nowrap; padding:0 2px;
-  }
-  .slot.taken.mine{ background:linear-gradient(160deg, rgba(124,247,196,0.20), rgba(6,26,20,0.55)); }
-  .slot.taken.mine .mark{color:var(--green);}
-  .slot.taken.mine .player-name{color:#c9ffe9;}
-  .slot.taken.admin-mode{box-shadow: inset 0 0 0 2px rgba(154,169,255,0.5);}
-  .slot.taken.admin-mode:hover{transform:translateY(-2px);}
-
-  @keyframes flashTaken{
-    0%{background:rgba(154,169,255,0.5);}
-    100%{background:linear-gradient(160deg, rgba(255,107,129,0.16), rgba(30,10,16,0.55));}
-  }
-  .slot.just-taken{animation:flashTaken .8s ease-out;}
-  .slot.highlight-pulse{animation:highlightPulse 1.4s ease-in-out 2;}
-  @keyframes highlightPulse{
-    0%,100%{box-shadow: inset 0 1px 0 rgba(255,255,255,0.16), inset 0 -8px 14px rgba(0,0,0,0.28), 0 6px 16px rgba(0,0,0,0.3);}
-    50%{box-shadow: inset 0 1px 0 rgba(255,255,255,0.2), 0 0 30px rgba(154,169,255,0.55);}
+  /* Blurry glass reserved ONLY for fixed overlays/modals to maintain 60+ FPS */
+  .glass-fixed {
+    background: rgba(15, 18, 28, 0.82);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--glass-border);
   }
 
-  /* ===== FOOTER ===== */
-  footer{
-    display:flex; flex-direction:column; align-items:center; gap:14px;
-    text-align:center; color:var(--text-dim); font-size:12.5px; margin-top:40px;
-    padding-top:24px; border-top:1px solid var(--glass-border);
+  .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; gap: 10px; }
+  .brand-logo {
+    display: flex; align-items: center; gap: 8px; font-family: 'Rajdhani', sans-serif;
+    font-weight: 700; font-size: 18px; letter-spacing: 1px; color: var(--text);
+  }
+  .brand-badge {
+    background: linear-gradient(90deg, var(--accent1), var(--accent2));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  
+  .icon-btn {
+    width: 44px; height: 44px; border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; font-size: 18px; color: var(--text);
+    background: rgba(255, 255, 255, 0.05); border: 1px solid var(--glass-border);
+    transition: transform .15s ease, border-color .2s ease, background .2s ease;
+    flex-shrink: 0;
+  }
+  .icon-btn:hover { transform: translateY(-2px); border-color: var(--accent2); background: rgba(255, 255, 255, 0.1); }
+  .topbar-right { display: flex; align-items: center; gap: 10px; }
+  .admin-badge {
+    display: none; align-items: center; gap: 6px; font-size: 12px; font-weight: 700;
+    color: var(--gold); background: rgba(245, 158, 11, 0.12); border: 1px solid rgba(245, 158, 11, 0.3);
+    padding: 8px 14px; border-radius: 999px;
+  }
+  .admin-badge.active { display: flex; }
+
+  header.hero {
+    position: relative; overflow: hidden;
+    padding: 32px 28px; margin-bottom: 24px;
+  }
+  .hero-inner { display: flex; align-items: center; gap: 28px; flex-wrap: wrap-reverse; }
+  .hero-text { flex: 1 1 300px; min-width: 260px; }
+  
+  .hero-image-wrap {
+    flex-shrink: 0; width: 210px; display: flex; justify-content: center; align-items: center;
+    position: relative; margin: 0 auto;
+  }
+  .hero-image-wrap::before {
+    content: ""; position: absolute; inset: -20px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(139, 92, 246, 0.35), transparent 70%);
+    filter: blur(24px); z-index: 0;
+  }
+  .hero-image {
+    position: relative; z-index: 1; width: 100%; max-width: 200px;
+    filter: drop-shadow(0 16px 28px rgba(0,0,0,0.6));
+    animation: floatSoft 5.5s ease-in-out infinite;
+    border-radius: 20px;
+  }
+  @keyframes floatSoft {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
   }
 
-  /* ===== MOVE-MODE BANNER ===== */
-  .move-banner{
-    position:fixed; bottom:20px; left:50%; transform:translateX(-50%) translateY(140%);
-    display:flex; align-items:center; gap:14px;
-    border-radius:999px; color:var(--accent2); padding:12px 20px; font-size:13.5px;
-    z-index:310; transition:transform .25s ease;
+  .free-banner {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 12.5px; font-weight: 700; color: var(--accent2);
+    background: rgba(6, 182, 212, 0.1); border: 1px solid rgba(6, 182, 212, 0.25);
+    padding: 6px 14px; border-radius: 999px; margin-bottom: 16px;
   }
-  .move-banner.show{transform:translateX(-50%) translateY(0);}
-  .move-banner button{
-    background:rgba(255,255,255,0.1); border:1px solid var(--glass-border); color:var(--text);
-    border-radius:999px; padding:6px 14px; font-size:12.5px; cursor:pointer;
+  
+  h1.title {
+    font-family: 'Rajdhani', sans-serif; font-weight: 700;
+    font-size: clamp(26px, 4.5vw, 42px); line-height: 1.25; margin: 0 0 12px;
+  }
+  h1.title .grad {
+    background: linear-gradient(90deg, #A78BFA, var(--accent2));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .subtitle { color: var(--text-dim); font-size: 14.5px; max-width: 580px; line-height: 1.8; margin: 0 0 22px; }
+
+  .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 26px; }
+  .join-btn {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: linear-gradient(135deg, var(--accent1), #6D28D9);
+    color: #FFF; font-weight: 700; font-size: 15px;
+    border: none; border-radius: 999px; padding: 14px 28px; cursor: pointer;
+    box-shadow: 0 8px 24px rgba(139, 92, 246, 0.35);
+    transition: transform .15s ease, box-shadow .2s ease;
+  }
+  .join-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(139, 92, 246, 0.5); }
+  .join-btn:active { transform: scale(.98); }
+  
+  .tg-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(56, 189, 248, 0.1); color: var(--tg);
+    font-weight: 700; font-size: 14px; border: 1px solid rgba(56, 189, 248, 0.3);
+    border-radius: 999px; padding: 13px 22px;
+    transition: transform .15s ease, background .2s ease;
+  }
+  .tg-btn:hover { transform: translateY(-2px); background: rgba(56, 189, 248, 0.18); }
+
+  .countdown-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
+  .cd-box {
+    border-radius: 16px; padding: 12px 6px; text-align: center;
+    background: rgba(255, 255, 255, 0.03); border: 1px solid var(--glass-border);
+  }
+  .cd-box .num {
+    font-family: 'Rajdhani', monospace; font-size: clamp(20px, 5.5vw, 30px); font-weight: 700;
+    color: var(--text); line-height: 1; font-variant-numeric: tabular-nums;
+  }
+  .cd-box .lbl { font-size: 11px; color: var(--text-dim); margin-top: 5px; }
+
+  .stats-bar { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+  .stats-text { font-size: 14px; color: var(--text-dim); }
+  .stats-text b { color: var(--text); font-size: 18px; }
+  .progress-track { flex: 1; min-width: 160px; height: 10px; border-radius: 20px; background: rgba(255, 255, 255, 0.08); overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent1), var(--green)); transition: width .5s ease; }
+
+  .room-box { position: relative; padding: 22px 24px; margin-bottom: 24px; overflow: hidden; }
+  .room-box h3 { font-family: 'Rajdhani', sans-serif; font-size: 17px; margin: 0 0 14px; color: var(--text-dim); font-weight: 600; }
+  .room-grid { display: flex; gap: 16px; flex-wrap: wrap; }
+  .room-field { flex: 1; min-width: 180px; }
+  .room-field .lbl2 { font-size: 12px; color: var(--text-dim); margin-bottom: 6px; }
+  .room-field .val-row { display: flex; align-items: center; gap: 10px; }
+  .room-field .val { font-family: 'Rajdhani', monospace; font-size: 24px; font-weight: 700; color: var(--text); letter-spacing: 1px; }
+  
+  .copy-btn {
+    background: rgba(255, 255, 255, 0.08); border: 1px solid var(--glass-border);
+    color: var(--text); border-radius: 999px; padding: 6px 14px; font-size: 12px; cursor: pointer;
+    transition: background .2s ease;
+  }
+  .copy-btn:hover { background: rgba(255, 255, 255, 0.16); }
+
+  .room-locked-overlay {
+    position: absolute; inset: 0; background: rgba(10, 11, 16, 0.94);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; gap: 8px; padding: 20px;
+  }
+  .room-locked-overlay .icon { font-size: 28px; }
+  .room-locked-overlay .msg { color: var(--text-dim); font-size: 13.5px; max-width: 380px; line-height: 1.7; }
+
+  .admin-panel { display: none; padding: 22px; margin-bottom: 24px; border-color: rgba(245, 158, 11, 0.3); }
+  .admin-panel.open { display: block; }
+  .admin-panel h3 { font-family: 'Rajdhani', sans-serif; font-size: 18px; margin: 0 0 14px; color: var(--gold); font-weight: 700; }
+  .admin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 640px) { .admin-grid { grid-template-columns: 1fr; } }
+  
+  .field label { font-size: 12px; color: var(--text-dim); display: block; margin-bottom: 5px; }
+  .field input {
+    width: 100%; background: rgba(0, 0, 0, 0.4); border: 1px solid var(--glass-border);
+    border-radius: 12px; padding: 10px 14px; color: var(--text); font-family: 'Vazirmatn', sans-serif; font-size: 13.5px; outline: none;
+  }
+  .field input:focus { border-color: var(--accent1); }
+  .admin-actions-row { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+  
+  .btn-mini {
+    border: none; border-radius: 999px; padding: 9px 18px; font-size: 13px; font-weight: 700;
+    font-family: 'Vazirmatn', sans-serif; cursor: pointer; transition: transform .12s ease, filter .2s ease;
+  }
+  .btn-mini:active { transform: scale(.96); }
+  .btn-mini.primary { background: linear-gradient(135deg, var(--accent1), #6D28D9); color: #FFF; }
+  .btn-mini.ghost { background: rgba(255, 255, 255, 0.08); color: var(--text); border: 1px solid var(--glass-border); }
+  .btn-mini.purple { background: linear-gradient(135deg, #C084FC, #9333EA); color: #FFF; }
+  .btn-mini.danger { background: linear-gradient(135deg, var(--red), #DC2626); color: #FFF; }
+
+  .squads-header {
+    display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;
+  }
+  .squads-header h2 {
+    font-family: 'Rajdhani', sans-serif; font-size: 22px; font-weight: 700; margin: 0;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .squads-header h2::before { content: ""; width: 4px; height: 18px; background: var(--accent2); border-radius: 4px; }
+  .squads-info-badge { font-size: 12.5px; color: var(--text-dim); background: rgba(255,255,255,0.04); padding: 5px 12px; border-radius: 999px; border: 1px solid var(--glass-border); }
+
+  /* Strict CSS performance optimizations for scrolling 100 squad items */
+  .squad { 
+    margin-bottom: 20px; 
+    contain: content; 
+    content-visibility: auto; 
+    contain-intrinsic-size: 100px 140px; 
+    padding: 16px;
+  }
+  .squad-top-bar {
+    display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;
+  }
+  .squad-label {
+    font-family: 'Rajdhani', sans-serif; font-size: 14px; font-weight: 700; letter-spacing: 0.5px; color: var(--accent2);
+  }
+  .squad-status { font-size: 11px; color: var(--text-dim); font-weight: 500; }
+
+  .squad-row { display: flex; align-items: center; justify-content: center; gap: 24px; }
+  .squad-group { display: flex; gap: 10px; }
+  .squad-divider { width: 1px; height: 40px; background: var(--glass-border); align-self: center; }
+
+  .slot {
+    width: 82px; height: 82px; border-radius: 18px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--glass-border);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    cursor: pointer; position: relative; padding: 4px; overflow: hidden;
+    transition: transform .15s ease, border-color .2s ease, background .2s ease;
+    will-change: transform;
+  }
+  @media (max-width: 540px) {
+    .slot { width: 62px; height: 62px; border-radius: 14px; }
+    .squad-row { gap: 10px; }
+    .squad-group { gap: 6px; }
+  }
+  .slot .num { font-family: 'Rajdhani', monospace; font-weight: 700; font-size: 15px; color: var(--text-dim); }
+  .slot:hover:not(.taken) { transform: translateY(-3px); border-color: var(--accent2); background: rgba(6, 182, 212, 0.08); }
+  .slot:hover:not(.taken) .num { color: var(--accent2); }
+
+  .slot.taken {
+    background: rgba(239, 68, 68, 0.08); border-color: rgba(239, 68, 68, 0.3);
+  }
+  .slot.taken .mark { font-size: 13px; color: var(--red); line-height: 1; margin-bottom: 2px; }
+  .slot.taken .avatar-emoji { font-size: 16px; line-height: 1; }
+  .slot.taken .player-name {
+    font-size: 9px; color: #FECDD3; margin-top: 3px; max-width: 100%;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 0 2px; text-align: center;
+  }
+  .slot.taken.mine {
+    background: rgba(16, 185, 129, 0.12); border-color: rgba(16, 185, 129, 0.5);
+  }
+  .slot.taken.mine .mark { color: var(--green); }
+  .slot.taken.mine .player-name { color: #A7F3D0; font-weight: 700; }
+  .slot.taken.admin-mode { border-style: dashed; border-color: var(--gold); }
+
+  @keyframes flashTaken {
+    0% { background: rgba(139, 92, 246, 0.5); }
+    100% { background: rgba(239, 68, 68, 0.08); }
+  }
+  .slot.just-taken { animation: flashTaken .8s ease-out; }
+
+  footer {
+    display: flex; flex-direction: column; align-items: center; gap: 14px;
+    text-align: center; color: var(--text-dim); font-size: 12.5px; margin-top: 40px;
+    padding-top: 24px; border-top: 1px solid var(--glass-border);
   }
 
-  /* toast */
-  .toast{
-    position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(20px);
-    color:var(--text); padding:13px 22px; border-radius:999px; font-size:14px; z-index:300;
-    opacity:0; transition:opacity .25s ease, transform .25s ease; max-width:90vw;
+  .move-banner {
+    position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(140%);
+    display: flex; align-items: center; gap: 14px;
+    border-radius: 999px; color: var(--text); padding: 12px 20px; font-size: 13.5px;
+    z-index: 310; transition: transform .25s cubic-bezier(.4,0,.2,1);
+    background: #1E1B4B; border: 1px solid var(--accent1); box-shadow: 0 10px 30px rgba(0,0,0,0.5);
   }
-  .toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
-  .toast.err{color:#ffc4cc;}
-  .toast.ok{color:var(--green);}
-
-  /* modal generic */
-  .modal-overlay{
-    position:fixed; inset:0; background:rgba(6,6,10,0.6); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px);
-    display:flex; align-items:center; justify-content:center; z-index:400; padding:16px;
-    opacity:0; pointer-events:none; transition:opacity .2s ease;
-  }
-  .modal-overlay.open{opacity:1; pointer-events:auto;}
-  .modal-box{
-    width:min(92vw, 420px); border-radius:30px; padding:28px 24px; position:relative;
-    transform:scale(.92) translateY(10px); transition:transform .28s cubic-bezier(.34,1.56,.64,1);
-    max-height:88vh; overflow-y:auto;
-  }
-  .modal-box.wide{width:min(94vw, 740px);}
-  .modal-overlay.open .modal-box{transform:scale(1) translateY(0);}
-  .modal-box h3{font-family:'Rajdhani',sans-serif; font-size:21px; margin:0 0 4px; font-weight:700;}
-  .modal-box h3 b{color:var(--accent2);}
-  .modal-box p.sub{color:var(--text-dim); font-size:13px; margin:0 0 18px;}
-  .modal-box label{font-size:12.5px; color:var(--text-dim); display:block; margin:14px 0 7px;}
-  .modal-box label:first-of-type{margin-top:0;}
-  .modal-box input{
-    width:100%; background:rgba(0,0,0,0.28); border:1px solid var(--glass-border); border-radius:16px;
-    padding:13px 15px; color:var(--text); font-family:'Vazirmatn',sans-serif; font-size:14px; outline:none;
-    transition:border-color .2s ease, box-shadow .2s ease;
-  }
-  .modal-box input:focus{border-color:var(--accent1); box-shadow:0 0 0 3px rgba(154,169,255,0.16);}
-  .err-msg{color:var(--red); font-size:12.5px; margin-top:8px; min-height:16px;}
-  .modal-actions{display:flex; gap:10px; margin-top:20px; flex-wrap:wrap;}
-  .btn{
-    flex:1; min-width:120px; border:none; border-radius:999px; padding:13px 16px; font-family:'Vazirmatn',sans-serif;
-    font-weight:600; font-size:14px; cursor:pointer; transition:filter .2s ease, transform .1s ease;
-    display:flex; align-items:center; justify-content:center; gap:8px;
-  }
-  .btn:active{transform:scale(.96);}
-  .btn-confirm{background:linear-gradient(135deg, var(--accent1), #6f7fe8); color:#0c0c14; box-shadow: inset 0 1px 1px rgba(255,255,255,0.5);}
-  .btn-confirm:hover{filter:brightness(1.08);}
-  .btn-confirm:disabled{opacity:.6; cursor:not-allowed; filter:none;}
-  .btn-cyan{background:linear-gradient(135deg, #8fe0d8, #4fb8ac); color:#041512;}
-  .btn-cyan:hover{filter:brightness(1.08);}
-  .btn-danger{background:linear-gradient(135deg, var(--red), #c23a56); color:#1c0509;}
-  .btn-danger:hover{filter:brightness(1.08);}
-  .btn-cancel{background:rgba(255,255,255,0.08); color:var(--text); border:1px solid var(--glass-border);}
-  .btn-cancel:hover{background:rgba(255,255,255,0.14);}
-  .spinner{width:15px;height:15px;border:2px solid rgba(0,0,0,0.25);border-top-color:#0c0c14;border-radius:50%;animation:spin .6s linear infinite;}
-  @keyframes spin{to{transform:rotate(360deg);}}
-
-  .detail-box{
-    background:rgba(0,0,0,0.25); border:1px solid var(--glass-border); border-radius:18px;
-    padding:15px 17px; font-size:13.5px; line-height:2;
-  }
-  .detail-box b{color:var(--accent2); font-weight:700;}
-
-  /* avatar chips */
-  .avatar-chip-row{display:flex; gap:8px; flex-wrap:wrap;}
-  .avatar-chip{
-    display:flex; flex-direction:column; align-items:center; gap:4px;
-    padding:11px 8px; border-radius:18px; border:1px solid var(--glass-border);
-    background:rgba(255,255,255,0.05); cursor:pointer; font-size:10.5px; color:var(--text-dim);
-    flex:1; min-width:72px; text-align:center; transition:all .2s ease;
-  }
-  .avatar-chip input{display:none;}
-  .avatar-chip span{font-size:22px;}
-  .avatar-chip.active{
-    border-color:var(--accent1);
-    background:linear-gradient(160deg, rgba(154,169,255,0.24), rgba(154,169,255,0.06));
-    color:var(--text);
+  .move-banner.show { transform: translateX(-50%) translateY(0); }
+  .move-banner button {
+    background: rgba(255,255,255,0.15); border: none; color: var(--text);
+    border-radius: 999px; padding: 6px 14px; font-size: 12.5px; cursor: pointer;
   }
 
-  /* admin table modal */
-  .table-search{margin-bottom:14px;}
-  .table-scroll{max-height:48vh; overflow:auto; border:1px solid var(--glass-border); border-radius:18px;}
-  table.players-table{width:100%; border-collapse:collapse; font-size:13px;}
-  table.players-table th{
-    position:sticky; top:0; background:#17171f; color:var(--accent2); text-align:right;
-    padding:10px 12px; font-weight:700; border-bottom:1px solid var(--glass-border);
+  .toast {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px);
+    color: var(--text); padding: 12px 24px; border-radius: 999px; font-size: 14px; z-index: 500;
+    opacity: 0; pointer-events: none; transition: opacity .25s ease, transform .25s ease; max-width: 90vw;
+    background: rgba(18, 20, 29, 0.95); border: 1px solid var(--glass-border); box-shadow: 0 10px 25px rgba(0,0,0,0.5);
   }
-  table.players-table td{padding:9px 12px; border-bottom:1px solid rgba(255,255,255,0.05); color:var(--text);}
-  table.players-table tr:hover td{background:rgba(154,169,255,0.06);}
-  .table-empty{padding:20px; text-align:center; color:var(--text-dim); font-size:13px;}
-  .table-actions{display:flex; gap:10px; margin-top:14px; flex-wrap:wrap;}
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: auto; }
+  .toast.err { border-color: rgba(239,68,68,0.5); color: #FCA5A5; }
+  .toast.ok { border-color: rgba(16,185,129,0.5); color: #6EE7B7; }
 
-  /* ===== DRAWER ===== */
-  .drawer-backdrop{
-    position:fixed; inset:0; background:rgba(6,6,10,0.55); backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px);
-    z-index:390; opacity:0; pointer-events:none; transition:opacity .25s ease;
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(5, 6, 10, 0.75);
+    display: flex; align-items: center; justify-content: center; z-index: 400; padding: 16px;
+    opacity: 0; pointer-events: none; transition: opacity .2s ease;
   }
-  .drawer-backdrop.open{opacity:1; pointer-events:auto;}
-  .drawer{
-    position:fixed; top:0; right:0; height:100%; width:min(86vw, 340px);
-    border-radius:28px 0 0 28px;
-    z-index:395; padding:24px 20px; overflow-y:auto;
-    transform:translateX(100%); transition:transform .32s cubic-bezier(.4,0,.2,1);
+  .modal-overlay.open { opacity: 1; pointer-events: auto; }
+  
+  .modal-box {
+    width: min(92vw, 430px); border-radius: 24px; padding: 26px 22px; position: relative;
+    transform: scale(.94) translateY(10px); transition: transform .25s cubic-bezier(.34,1.56,.64,1);
+    max-height: 88vh; overflow-y: auto;
   }
-  .drawer.open{transform:translateX(0);}
-  .drawer-head{display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;}
-  .drawer-head h3{font-family:'Rajdhani',sans-serif; font-size:19px; margin:0; color:var(--accent2); font-weight:700;}
-  .drawer-section{margin-bottom:22px;}
-  .drawer-section h4{font-size:12.5px; color:var(--text-dim); margin:0 0 10px; letter-spacing:.3px;}
-  .my-seat-card{
-    background:linear-gradient(160deg, rgba(124,247,196,0.14), transparent); border:1px solid var(--green-soft);
-    border-radius:18px; padding:15px; font-size:13.5px; line-height:1.95;
+  .modal-box.wide { width: min(94vw, 760px); }
+  .modal-overlay.open .modal-box { transform: scale(1) translateY(0); }
+  
+  .modal-box h3 { font-family: 'Rajdhani', sans-serif; font-size: 21px; margin: 0 0 4px; font-weight: 700; }
+  .modal-box h3 b { color: var(--accent2); }
+  .modal-box p.sub { color: var(--text-dim); font-size: 13px; margin: 0 0 18px; }
+  
+  .modal-box label { font-size: 12.5px; color: var(--text-dim); display: block; margin: 14px 0 6px; }
+  .modal-box label:first-of-type { margin-top: 0; }
+  .modal-box input {
+    width: 100%; background: rgba(0, 0, 0, 0.4); border: 1px solid var(--glass-border); border-radius: 12px;
+    padding: 12px 14px; color: var(--text); font-family: 'Vazirmatn', sans-serif; font-size: 14px; outline: none;
+    transition: border-color .2s ease;
   }
-  .my-seat-card.empty{ background:rgba(255,255,255,0.04); border:1px solid var(--glass-border); color:var(--text-dim); }
-  .rules-list{margin:0; padding-right:18px; font-size:13px; line-height:2; color:var(--text-dim);}
-  .rules-list li::marker{color:var(--accent1);}
+  .modal-box input:focus { border-color: var(--accent2); }
+  .err-msg { color: var(--red); font-size: 12.5px; margin-top: 8px; min-height: 16px; }
+  
+  .modal-actions { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
+  .btn {
+    flex: 1; min-width: 120px; border: none; border-radius: 999px; padding: 12px 16px; font-family: 'Vazirmatn', sans-serif;
+    font-weight: 700; font-size: 14px; cursor: pointer; transition: transform .1s ease, filter .2s ease;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .btn:active { transform: scale(.96); }
+  .btn-confirm { background: linear-gradient(135deg, var(--accent1), #6D28D9); color: #FFF; }
+  .btn-confirm:disabled { opacity: .6; cursor: not-allowed; }
+  .btn-cyan { background: linear-gradient(135deg, var(--accent2), #0891B2); color: #FFF; }
+  .btn-danger { background: linear-gradient(135deg, var(--red), #DC2626); color: #FFF; }
+  .btn-cancel { background: rgba(255, 255, 255, 0.08); color: var(--text); border: 1px solid var(--glass-border); }
+
+  .spinner { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #FFF; border-radius: 50%; animation: spin .6s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .detail-box {
+    background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); border-radius: 14px;
+    padding: 14px; font-size: 13.5px; line-height: 1.9;
+  }
+  .detail-box b { color: var(--accent2); }
+
+  .avatar-chip-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .avatar-chip {
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    padding: 10px 4px; border-radius: 14px; border: 1px solid var(--glass-border);
+    background: rgba(255,255,255,0.03); cursor: pointer; font-size: 10.5px; color: var(--text-dim);
+    text-align: center; transition: all .2s ease;
+  }
+  .avatar-chip input { display: none; }
+  .avatar-chip span { font-size: 22px; }
+  .avatar-chip.active {
+    border-color: var(--accent2); background: rgba(6, 182, 212, 0.15); color: var(--text);
+  }
+
+  .table-search { margin-bottom: 14px; }
+  .table-scroll { max-height: 48vh; overflow: auto; border: 1px solid var(--glass-border); border-radius: 14px; }
+  table.players-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  table.players-table th {
+    position: sticky; top: 0; background: #12141D; color: var(--accent2); text-align: right;
+    padding: 10px 12px; font-weight: 700; border-bottom: 1px solid var(--glass-border);
+  }
+  table.players-table td { padding: 9px 12px; border-bottom: 1px solid rgba(255,255,255,0.04); color: var(--text); }
+  table.players-table tr:hover td { background: rgba(255,255,255,0.03); }
+  .table-empty { padding: 20px; text-align: center; color: var(--text-dim); font-size: 13px; }
+  .table-actions { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+
+  .drawer-backdrop {
+    position: fixed; inset: 0; background: rgba(5,6,10,0.6);
+    z-index: 390; opacity: 0; pointer-events: none; transition: opacity .25s ease;
+  }
+  .drawer-backdrop.open { opacity: 1; pointer-events: auto; }
+  .drawer {
+    position: fixed; top: 0; right: 0; height: 100%; width: min(86vw, 340px);
+    z-index: 395; padding: 24px 20px; overflow-y: auto;
+    transform: translateX(100%); transition: transform .3s cubic-bezier(.4,0,.2,1);
+    background: #0E1017; border-left: 1px solid var(--glass-border);
+  }
+  .drawer.open { transform: translateX(0); }
+  .drawer-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+  .drawer-head h3 { font-family: 'Rajdhani', sans-serif; font-size: 20px; margin: 0; color: var(--accent2); font-weight: 700; }
+  .drawer-section { margin-bottom: 22px; }
+  .drawer-section h4 { font-size: 12.5px; color: var(--text-dim); margin: 0 0 10px; }
+  .my-seat-card {
+    background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.3);
+    border-radius: 14px; padding: 14px; font-size: 13.5px; line-height: 1.8;
+  }
+  .my-seat-card.empty { background: rgba(255,255,255,0.03); border-color: var(--glass-border); color: var(--text-dim); }
+  .rules-list { margin: 0; padding-right: 18px; font-size: 13px; line-height: 2; color: var(--text-dim); }
+  .rules-list li::marker { color: var(--accent1); }
 </style>
 </head>
 <body>
@@ -415,23 +425,26 @@
 <div class="wrap">
 
   <div class="topbar">
-    <div class="icon-btn glass" id="hamburger-btn" title="منو">☰</div>
+    <div class="brand-logo">
+      <span>⚔️</span>
+      <span class="brand-badge">CODM BR TOURNAMENT</span>
+    </div>
     <div class="topbar-right">
-      <span class="admin-badge glass" id="admin-badge">🛡️ حالت ادمین فعال</span>
-      <div class="icon-btn glass" id="lock-btn" title="ورود ادمین">🔒</div>
+      <span class="admin-badge" id="admin-badge">🛡️ حالت ادمین</span>
+      <div class="icon-btn" id="hamburger-btn" title="منو">☰</div>
+      <div class="icon-btn" id="lock-btn" title="ورود ادمین">🔒</div>
     </div>
   </div>
 
-  <!-- ===== HERO ===== -->
   <header class="hero panel-static">
     <div class="hero-inner">
       <div class="hero-text">
-        <div class="free-banner glass">⚡ ورودی تورنمنت ۱۰۰٪ رایگان است و نیاز به پرداخت هیچ هزینه‌ای نیست</div>
-        <h1 class="title">تورنمنت <span class="grad">Call of Duty Mobile</span> — بتل رویال</h1>
-        <p class="subtitle">۱۰۰ صندلی در قالب ۲۵ اسکواد ۴ نفره. جایگاهت رو رزرو کن، منتظر کد روم بمون و وارد میدون جنگ شو.</p>
+        <div class="free-banner">⚡ ورودی تورنمنت ۱۰۰٪ رایگان است (بدون نیاز به هزینه)</div>
+        <h1 class="title">تورنمنت <span class="grad">Call of Duty Mobile</span></h1>
+        <p class="subtitle">۱۰۰ صندلی در قالب ۲۵ اسکواد ۴ نفره. جایگاه خودت رو رزرو کن، منتظر کد روم بمون و وارد میدان نبرد شو.</p>
         <div class="hero-actions">
-          <button class="join-btn" id="join-btn">🎮 من هم می‌خواهم شرکت کنم!</button>
-          <a class="tg-btn" href="https://t.me/cmd_tor" target="_blank" rel="noopener">📣 کانال تلگرام تورنمنت</a>
+          <button class="join-btn" id="join-btn">🎮 رزرو سریع صندلی خالی</button>
+          <a class="tg-btn" href="https://t.me/cmd_tor" target="_blank" rel="noopener">📣 کانال تلگرام</a>
         </div>
       </div>
       <div class="hero-image-wrap">
@@ -447,14 +460,13 @@
     </div>
 
     <div class="stats-bar">
-      <div class="stats-text"><b id="filled-count">0</b> / 100 صندلی پر شده</div>
+      <div class="stats-text"><b id="filled-count">0</b> / 100 صندلی رزرو شده</div>
       <div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
     </div>
   </header>
 
-  <!-- ===== ROOM CREDENTIALS ===== -->
   <div class="room-box panel-static" id="room-box">
-    <h3>اطلاعات روم بازی</h3>
+    <h3>اطلاعات روم بازی (Room Credentials)</h3>
     <div class="room-grid">
       <div class="room-field">
         <div class="lbl2">کد روم (Room ID)</div>
@@ -477,9 +489,8 @@
     </div>
   </div>
 
-  <!-- ===== ADMIN PANEL ===== -->
   <div class="admin-panel panel-static" id="admin-panel">
-    <h3>پنل مدیریت</h3>
+    <h3>پنل مدیریت تورنمنت</h3>
     <div class="admin-grid">
       <div class="field">
         <label>کد روم (Room ID)</label>
@@ -505,21 +516,22 @@
     </div>
   </div>
 
-  <!-- ===== SQUADS ===== -->
   <section class="squads-section">
-    <h2>چیدمان اسکواد‌ها</h2>
+    <div class="squads-header">
+      <h2>چیدمان اسکواد‌ها</h2>
+      <div class="squads-info-badge">۲۵ اسکواد / ۱۰۰ صندلی</div>
+    </div>
     <div id="squads-container"></div>
   </section>
 
   <footer>
     <a class="tg-btn" href="https://t.me/cmd_tor" target="_blank" rel="noopener">📣 عضویت در کانال تلگرام تورنمنت</a>
-    <div>COD Mobile Tournament &copy; 2026 — لیکوئید گلس ادیشن</div>
+    <div>COD Mobile Tournament &copy; 2026 — تاکتیکال ادیشن</div>
   </footer>
 </div>
 
-<!-- ===== SIDEBAR DRAWER ===== -->
 <div class="drawer-backdrop" id="drawer-backdrop"></div>
-<div class="drawer glass" id="drawer">
+<div class="drawer" id="drawer">
   <div class="drawer-head">
     <h3>منوی بازیکن</h3>
     <div class="icon-btn" id="drawer-close-btn">✕</div>
@@ -528,7 +540,7 @@
   <div class="drawer-section">
     <h4>صندلی شما</h4>
     <div class="my-seat-card" id="my-seat-card">در حال بررسی...</div>
-    <button class="btn btn-cyan" id="drawer-goto-btn" style="width:100%; margin-top:10px; display:none;">🎯 برو به صندلی من</button>
+    <button class="btn btn-cyan" id="drawer-goto-btn" style="width:100%; margin-top:10px; display:none;">🎯 مشاهده صندلی من</button>
   </div>
 
   <div class="drawer-section">
@@ -537,29 +549,28 @@
   </div>
 
   <div class="drawer-section">
-    <h4>قوانین و راهنمای تورنمنت</h4>
+    <h4>قوانین تورنمنت</h4>
     <ul class="rules-list">
       <li>ورود به روم بازی حداقل ۱۰ دقیقه قبل از شروع الزامی است.</li>
-      <li>استفاده از هک، چیت یا هرگونه نرم‌افزار غیرمجاز باعث حذف فوری از تورنمنت می‌شود.</li>
-      <li>هر نفر تنها مسئول صندلی خودش است؛ رزرو برای دوستان با اطلاع و رضایت خودشان انجام شود.</li>
-      <li>کد روم و پسورد را با افراد خارج از تورنمنت به اشتراک نگذارید.</li>
-      <li>تصمیم مدیریت تورنمنت درباره‌ی تخلفات، نهایی و غیرقابل اعتراض است.</li>
+      <li>استفاده از چیت یا نرم‌افزار غیرمجاز باعث حذف فوری می‌شود.</li>
+      <li>هر نفر فقط مجاز به رزرو یک صندلی اصلی برای خود است.</li>
+      <li>کد روم را با افراد خارج از تورنمنت به اشتراک نگذارید.</li>
     </ul>
   </div>
 </div>
 
-<!-- ===== REGISTRATION MODAL ===== -->
+<!-- Registration Modal -->
 <div class="modal-overlay" id="modal-overlay">
-  <div class="modal-box glass">
-    <h3 id="modal-title">ثبت‌نام برای صندلی شماره <b id="modal-slot-num">-</b></h3>
-    <p class="sub" id="modal-sub">اطلاعاتت رو کامل وارد کن تا جایگاهت قطعی بشه.</p>
+  <div class="modal-box glass-fixed">
+    <h3>ثبت‌نام صندلی شماره <b id="modal-slot-num-text">-</b></h3>
+    <p class="sub" id="modal-sub">اطلاعات درون‌بازی را برای نهایی‌شدن رزرو وارد کنید.</p>
 
-    <label>انتخاب آواتار کاراکتر</label>
+    <label>انتخاب کاراکتر (آواتار)</label>
     <div class="avatar-chip-row" id="avatar-chip-row">
-      <label class="avatar-chip active" data-avatar="ghost"><input type="radio" name="avatar-choice" value="ghost" checked><span>💀</span><small>Ghost Mythic</small></label>
+      <label class="avatar-chip active" data-avatar="ghost"><input type="radio" name="avatar-choice" value="ghost" checked><span>💀</span><small>Ghost</small></label>
       <label class="avatar-chip" data-avatar="price"><input type="radio" name="avatar-choice" value="price"><span>🎯</span><small>Price</small></label>
-      <label class="avatar-chip" data-avatar="tracker"><input type="radio" name="avatar-choice" value="tracker"><span>🌲</span><small>Urban Tracker</small></label>
-      <label class="avatar-chip" data-avatar="manta"><input type="radio" name="avatar-choice" value="manta"><span>🌊</span><small>Manta Ray</small></label>
+      <label class="avatar-chip" data-avatar="tracker"><input type="radio" name="avatar-choice" value="tracker"><span>🌲</span><small>Tracker</small></label>
+      <label class="avatar-chip" data-avatar="manta"><input type="radio" name="avatar-choice" value="manta"><span>🌊</span><small>Manta</small></label>
     </div>
 
     <label>نام درون‌بازی (IGN)</label>
@@ -574,18 +585,30 @@
     <div class="err-msg" id="modal-err"></div>
     <div class="modal-actions">
       <button class="btn btn-cancel" id="btn-cancel">انصراف</button>
-      <button class="btn btn-confirm" id="btn-confirm"><span id="confirm-label">تأیید و ثبت</span></button>
+      <button class="btn btn-confirm" id="btn-confirm"><span id="confirm-label">تأیید و ثبت صندلی</span></button>
     </div>
   </div>
 </div>
 
-<!-- ===== ADMIN LOGIN MODAL ===== -->
+<!-- Custom Confirmation Modal (No alert/confirm) -->
+<div class="modal-overlay" id="confirm-modal-overlay">
+  <div class="modal-box glass-fixed">
+    <h3 id="confirm-modal-title">تأیید عملیات</h3>
+    <p class="sub" id="confirm-modal-desc">آیا از انجام این کار مطمئن هستید؟</p>
+    <div class="modal-actions">
+      <button class="btn btn-cancel" id="confirm-btn-cancel">انصراف</button>
+      <button class="btn btn-danger" id="confirm-btn-ok">تأیید و ادامه</button>
+    </div>
+  </div>
+</div>
+
+<!-- Admin Login Modal -->
 <div class="modal-overlay" id="admin-modal-overlay">
-  <div class="modal-box glass">
+  <div class="modal-box glass-fixed">
     <h3>ورود <b>ادمین</b></h3>
-    <p class="sub">برای دسترسی به پنل مدیریت، رمز عبور را وارد کنید.</p>
+    <p class="sub">رمز عبور پنل مدیریت را وارد کنید.</p>
     <label>رمز عبور</label>
-    <input type="password" id="admin-pass-input" placeholder="••••••" maxlength="10">
+    <input type="password" id="admin-pass-input" placeholder="••••••" maxlength="15">
     <div class="err-msg" id="admin-modal-err"></div>
     <div class="modal-actions">
       <button class="btn btn-cancel" id="admin-btn-cancel">انصراف</button>
@@ -594,35 +617,35 @@
   </div>
 </div>
 
-<!-- ===== SEAT CHOICE MODAL ===== -->
+<!-- Choice Modal -->
 <div class="modal-overlay" id="choice-modal-overlay">
-  <div class="modal-box glass">
+  <div class="modal-box glass-fixed">
     <h3>صندلی شماره <b id="choice-slot-num">-</b></h3>
-    <p class="sub">شما قبلاً یک صندلی رزرو کرده‌اید. می‌خواهید چه کاری انجام دهید؟</p>
+    <p class="sub">شما قبلاً یک صندلی رزرو کرده‌اید. چه عملیاتی انجام شود؟</p>
     <div class="modal-actions" style="flex-direction:column;">
       <button class="btn btn-cyan" id="choice-move-btn" style="width:100%;">🔁 جابه‌جایی صندلی من به اینجا</button>
-      <button class="btn btn-confirm" id="choice-friend-btn" style="width:100%;">➕ رزرو صندلی جدید برای دوست</button>
+      <button class="btn btn-confirm" id="choice-friend-btn" style="width:100%;">➕ رزرو این صندلی برای دوست</button>
       <button class="btn btn-cancel" id="choice-cancel-btn" style="width:100%;">انصراف</button>
     </div>
   </div>
 </div>
 
-<!-- ===== OWN SEAT ACTION MODAL ===== -->
+<!-- Own Seat Action Modal -->
 <div class="modal-overlay" id="own-modal-overlay">
-  <div class="modal-box glass">
+  <div class="modal-box glass-fixed">
     <h3>صندلی شما — شماره <b id="own-slot-num">-</b></h3>
-    <p class="sub">این صندلی متعلق به شماست.</p>
+    <p class="sub">اطلاعات ثبت‌شده برای صندلی شما</p>
     <div class="detail-box" id="own-detail-box"></div>
     <div class="modal-actions">
       <button class="btn btn-cancel" id="own-close-btn">بستن</button>
-      <button class="btn btn-danger" id="own-cancel-seat-btn">لغو صندلی من</button>
+      <button class="btn btn-danger" id="own-cancel-seat-btn">لغو رزرو صندلی</button>
     </div>
   </div>
 </div>
 
-<!-- ===== ADMIN SLOT ACTION MODAL ===== -->
+<!-- Admin Slot Modal -->
 <div class="modal-overlay" id="admin-slot-modal-overlay">
-  <div class="modal-box glass">
+  <div class="modal-box glass-fixed">
     <h3>مدیریت صندلی <b id="admin-slot-num">-</b></h3>
     <p class="sub">مشخصات بازیکن و عملیات مدیریتی</p>
     <div class="detail-box" id="admin-slot-detail"></div>
@@ -636,9 +659,9 @@
   </div>
 </div>
 
-<!-- ===== ADMIN PLAYERS TABLE MODAL ===== -->
+<!-- Admin Players Table Modal -->
 <div class="modal-overlay" id="admin-table-modal-overlay">
-  <div class="modal-box wide glass">
+  <div class="modal-box wide glass-fixed">
     <h3>لیست کامل <b>بازیکنان</b></h3>
     <p class="sub">جستجو بر اساس شماره صندلی، نام، موبایل یا آیدی</p>
     <input class="table-search" type="text" id="table-search-input" placeholder="جستجو...">
@@ -649,7 +672,7 @@
         </thead>
         <tbody id="players-table-body"></tbody>
       </table>
-      <div class="table-empty" id="players-table-empty" style="display:none;">صندلی پری یافت نشد.</div>
+      <div class="table-empty" id="players-table-empty" style="display:none;">هیچ بازیکن ثبت‌شده‌ای یافت نشد.</div>
     </div>
     <div class="table-actions">
       <button class="btn-mini primary" id="table-copy-btn">کپی لیست</button>
@@ -659,20 +682,17 @@
   </div>
 </div>
 
-<div class="move-banner glass" id="move-banner">
-  <span>حالت جابه‌جایی فعال است — یک صندلی خالی برای مقصد انتخاب کنید</span>
+<div class="move-banner" id="move-banner">
+  <span>حالت جابه‌جایی: صندلی خالی مقصد را انتخاب کنید</span>
   <button id="move-cancel-btn">لغو</button>
 </div>
 
-<div class="toast glass" id="toast"></div>
+<div class="toast" id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 (function(){
 
-  // ===================================================================
-  // تنظیمات پایه
-  // ===================================================================
   const TOTAL_SLOTS = 100;
   const SLOTS_PER_SQUAD = 4;
   const TOTAL_SQUADS = TOTAL_SLOTS / SLOTS_PER_SQUAD; // 25
@@ -681,19 +701,16 @@
   const MY_SEAT_KEY = 'cod_tournament_my_seat';
 
   const AVATARS = {
-    ghost:   { emoji:'💀', label:'Ghost Mythic' },
+    ghost:   { emoji:'💀', label:'Ghost' },
     price:   { emoji:'🎯', label:'Price' },
-    tracker: { emoji:'🌲', label:'Urban Tracker' },
-    manta:   { emoji:'🌊', label:'Manta Ray' }
+    tracker: { emoji:'🌲', label:'Tracker' },
+    manta:   { emoji:'🌊', label:'Manta' }
   };
   function avatarEmoji(id){ return (AVATARS[id] || AVATARS.ghost).emoji; }
   function avatarLabel(id){ return (AVATARS[id] || AVATARS.ghost).label; }
 
   let DEFAULT_START = new Date(2026, 9, 15, 20, 0, 0);
 
-  // ===================================================================
-  // وضعیت داخلی
-  // ===================================================================
   let slotsState = {};      // { slot_number: {player_name, phone_number, social_id, avatar} }
   let pendingSlot = null;
   let pendingIsSelf = false;
@@ -704,18 +721,25 @@
   let ignoreDeleteSlots = new Set();
   let registrationOpen = true;
 
-  // ===================================================================
-  // localStorage — تشخیص صندلی خودِ کاربر
-  // ===================================================================
   function getMySeat(){
-    try{ const raw = localStorage.getItem(MY_SEAT_KEY); return raw ? JSON.parse(raw) : null; }catch(e){ return null; }
+    try {
+      const raw = localStorage.getItem(MY_SEAT_KEY);
+      if(!raw) return null;
+      const parsed = JSON.parse(raw);
+      // Validate that the local seat still exists in active db state
+      if(parsed && parsed.slot && Object.keys(slotsState).length > 0 && !slotsState[parsed.slot]){
+        clearMySeat();
+        return null;
+      }
+      return parsed;
+    } catch(e) { return null; }
   }
   function setMySeat(obj){
-    try{ localStorage.setItem(MY_SEAT_KEY, JSON.stringify(obj)); }catch(e){}
+    try { localStorage.setItem(MY_SEAT_KEY, JSON.stringify(obj)); }catch(e){}
     refreshDrawerSeatCard();
   }
   function clearMySeat(){
-    try{ localStorage.removeItem(MY_SEAT_KEY); }catch(e){}
+    try { localStorage.removeItem(MY_SEAT_KEY); }catch(e){}
     refreshDrawerSeatCard();
   }
   function isMine(n){
@@ -723,21 +747,29 @@
     return !!(my && Number(my.slot) === Number(n));
   }
 
-  // ===================================================================
-  // ساخت چیدمان اسکوادی
-  // ===================================================================
   const squadsContainer = document.getElementById('squads-container');
   function buildSquads(){
     squadsContainer.innerHTML = '';
     let seatCounter = 1;
     for(let s = 1; s <= TOTAL_SQUADS; s++){
       const squadEl = document.createElement('div');
-      squadEl.className = 'squad';
+      squadEl.className = 'squad panel-static';
+
+      const topBar = document.createElement('div');
+      topBar.className = 'squad-top-bar';
 
       const label = document.createElement('div');
       label.className = 'squad-label';
       label.textContent = `Squad #${s}`;
-      squadEl.appendChild(label);
+
+      const status = document.createElement('div');
+      status.className = 'squad-status';
+      status.id = `squad-status-${s}`;
+      status.textContent = `0/4 رزرو شده`;
+
+      topBar.appendChild(label);
+      topBar.appendChild(status);
+      squadEl.appendChild(topBar);
 
       const row = document.createElement('div');
       row.className = 'squad-row';
@@ -767,9 +799,7 @@
       squadsContainer.appendChild(squadEl);
     }
   }
-  try {
-    buildSquads();
-  } catch(buildErr){ console.error('buildSquads failed:', buildErr); }
+  try { buildSquads(); } catch(err){ console.error(err); }
 
   function getSlotEl(n){ return squadsContainer.querySelector(`.slot[data-slot="${n}"]`); }
 
@@ -781,6 +811,7 @@
     const mine = isMine(n);
     el.classList.toggle('mine', mine);
     if(isAdmin) el.classList.add('admin-mode'); else el.classList.remove('admin-mode');
+    
     el.innerHTML = `
       <div class="mark">${mine ? '✅' : '❌'}</div>
       <div class="avatar-emoji">${avatarEmoji(info.avatar)}</div>
@@ -790,6 +821,7 @@
       el.classList.add('just-taken');
       setTimeout(() => el.classList.remove('just-taken'), 850);
     }
+    updateSquadStatusForSlot(n);
   }
 
   function renderSlotEmpty(n){
@@ -797,6 +829,21 @@
     if(!el) return;
     el.classList.remove('taken', 'admin-mode', 'mine');
     el.innerHTML = `<div class="num">#${n}</div>`;
+    updateSquadStatusForSlot(n);
+  }
+
+  function updateSquadStatusForSlot(slotNum){
+    const squadIdx = Math.ceil(slotNum / SLOTS_PER_SQUAD);
+    const startSlot = (squadIdx - 1) * SLOTS_PER_SQUAD + 1;
+    let filled = 0;
+    for(let i = startSlot; i < startSlot + SLOTS_PER_SQUAD; i++){
+      if(slotsState[i]) filled++;
+    }
+    const statusEl = document.getElementById(`squad-status-${squadIdx}`);
+    if(statusEl){
+      statusEl.textContent = filled === 4 ? '🔥 تکمیل شد' : `${filled}/4 رزرو شده`;
+      statusEl.style.color = filled === 4 ? 'var(--green)' : 'var(--text-dim)';
+    }
   }
 
   function escapeHtml(str){
@@ -817,10 +864,8 @@
     });
   }
 
-  // ===================================================================
-  // کلیک روی صندلی
-  // ===================================================================
   function onSlotClick(n){
+    n = Number(n);
     if(adminMoveSource !== null){
       if(slotsState[n]){ showToast('صندلی مقصد باید خالی باشد', 'err'); return; }
       const source = adminMoveSource;
@@ -838,7 +883,7 @@
 
     if(isAdmin){ openRegModal(n, {self:false}); return; }
     const my = getMySeat();
-    if(my){ openChoiceModal(n); return; }
+    if(my && slotsState[my.slot]){ openChoiceModal(n); return; }
     if(!registrationOpen){ showToast('ثبت‌نام برای این تورنمنت موقتاً بسته است ⏸️', 'err'); return; }
     openRegModal(n, {self:true});
   }
@@ -856,12 +901,9 @@
     const el = getSlotEl(n);
     if(!el) return;
     el.scrollIntoView({ behavior:'smooth', block:'center' });
-    if(pulse){ el.classList.add('highlight-pulse'); setTimeout(() => el.classList.remove('highlight-pulse'), 3000); }
+    if(pulse){ el.classList.add('highlight-pulse'); setTimeout(() => el.classList.remove('highlight-pulse'), 2500); }
   }
 
-  // ===================================================================
-  // تایمر معکوس
-  // ===================================================================
   function updateCountdown(){
     const now = new Date();
     let diff = tournamentStart - now;
@@ -878,25 +920,41 @@
   updateCountdown();
   setInterval(updateCountdown, 1000);
 
-  // ===================================================================
-  // Toast
-  // ===================================================================
+  const confirmOverlay = document.getElementById('confirm-modal-overlay');
+  const confirmTitleEl = document.getElementById('confirm-modal-title');
+  const confirmDescEl = document.getElementById('confirm-modal-desc');
+  const confirmBtnOk = document.getElementById('confirm-btn-ok');
+  const confirmBtnCancel = document.getElementById('confirm-btn-cancel');
+  let confirmCallback = null;
+
+  function showConfirmModal(title, desc, onOk){
+    confirmTitleEl.textContent = title;
+    confirmDescEl.textContent = desc;
+    confirmCallback = onOk;
+    confirmOverlay.classList.add('open');
+  }
+  function closeConfirmModal(){
+    confirmOverlay.classList.remove('open');
+    confirmCallback = null;
+  }
+  confirmBtnCancel.addEventListener('click', closeConfirmModal);
+  confirmBtnOk.addEventListener('click', () => {
+    if(typeof confirmCallback === 'function') confirmCallback();
+    closeConfirmModal();
+  });
+
   let toastTimeout = null;
   function showToast(msg, type=''){
     const t = document.getElementById('toast');
     t.textContent = msg;
-    t.className = 'toast glass show' + (type ? ' ' + type : '');
+    t.className = 'toast show' + (type ? ' ' + type : '');
     clearTimeout(toastTimeout);
     toastTimeout = setTimeout(() => t.classList.remove('show'), 2800);
   }
 
-  // ===================================================================
-  // مودال ثبت‌نام (شامل انتخاب آواتار)
-  // ===================================================================
   const overlay = document.getElementById('modal-overlay');
-  const modalTitle = document.getElementById('modal-title');
   const modalSub = document.getElementById('modal-sub');
-  const modalSlotNum = document.getElementById('modal-slot-num');
+  const modalSlotNumText = document.getElementById('modal-slot-num-text');
   const avatarChipRow = document.getElementById('avatar-chip-row');
   const ignInput = document.getElementById('reg-ign');
   const phoneInput = document.getElementById('reg-phone');
@@ -925,13 +983,13 @@
   }
 
   function openRegModal(n, {self}){
-    pendingSlot = n;
+    pendingSlot = Number(n);
     pendingIsSelf = !!self;
-    modalSlotNum.textContent = n;
-    modalTitle.innerHTML = `ثبت‌نام برای صندلی شماره <b id="modal-slot-num">${n}</b>`;
+    if(modalSlotNumText) modalSlotNumText.textContent = pendingSlot;
+    
     modalSub.textContent = self
-      ? 'اطلاعاتت رو کامل وارد کن تا جایگاهت قطعی بشه.'
-      : 'اطلاعات دوستت را وارد کن تا صندلی برایش رزرو شود.';
+      ? 'اطلاعات درون‌بازی خود را وارد کنید تا رزرو صندلی نهایی شود.'
+      : 'اطلاعات دوست خود را وارد کنید تا صندلی برای او رزرو شود.';
     resetAvatarChips();
     ignInput.value = ''; phoneInput.value = ''; socialInput.value = '';
     modalErr.textContent = '';
@@ -946,12 +1004,12 @@
     isSubmitting = state;
     btnConfirm.disabled = state;
     btnCancel.style.pointerEvents = state ? 'none' : 'auto';
-    btnCancel.style.opacity = state ? '.5' : '1';
-    confirmLabel.innerHTML = state ? '<span class="spinner"></span> در حال ثبت...' : 'تأیید و ثبت';
+    confirmLabel.innerHTML = state ? '<span class="spinner"></span> در حال ثبت...' : 'تأیید و ثبت صندلی';
   }
 
   btnConfirm.addEventListener('click', async () => {
     if(isSubmitting || pendingSlot === null) return;
+    const targetSlot = Number(pendingSlot);
     const ign = ignInput.value.trim();
     const phone = phoneInput.value.trim();
     const social = socialInput.value.trim();
@@ -959,11 +1017,11 @@
 
     if(!ign || ign.length < 2){ modalErr.textContent = 'نام درون‌بازی را وارد کنید (حداقل ۲ کاراکتر).'; return; }
     if(!phone || phone.length < 8){ modalErr.textContent = 'شماره موبایل معتبر وارد کنید.'; return; }
-    if(!social){ modalErr.textContent = 'آیدی تلگرام یا واتساپ را وارد کنید.'; return; }
+    if(!social){ modalErr.textContent = 'آیدی ارتباطی را وارد کنید.'; return; }
 
-    if(slotsState[pendingSlot]){
-      modalErr.textContent = 'این صندلی همین الان توسط شخص دیگری پر شد.';
-      renderSlotTaken(pendingSlot, slotsState[pendingSlot]);
+    if(slotsState[targetSlot]){
+      modalErr.textContent = 'این صندلی لحظاتی پیش رزرو شد.';
+      renderSlotTaken(targetSlot, slotsState[targetSlot]);
       updateStats();
       return;
     }
@@ -972,10 +1030,9 @@
     setSubmitting(true);
 
     try {
-      const slotNum = pendingSlot;
       const wasSelf = pendingIsSelf;
       const { error } = await supabaseClient.from('slots').insert([{
-        slot_number: slotNum,
+        slot_number: targetSlot,
         player_name: ign,
         phone_number: phone,
         social_id: social,
@@ -984,10 +1041,10 @@
 
       if(error){
         if(error.code === '23505' || /duplicate|unique/i.test(error.message || '')){
-          modalErr.textContent = 'این صندلی همین الان توسط شخص دیگری رزرو شد.';
-          showToast('این صندلی رزرو شده — یک صندلی دیگر انتخاب کنید', 'err');
+          modalErr.textContent = 'این صندلی قبلاً رزرو شده است.';
+          showToast('این صندلی رزرو شده — صندلی دیگری را انتخاب کنید', 'err');
         } else {
-          modalErr.textContent = 'خطا در ثبت‌نام. دوباره تلاش کنید.';
+          modalErr.textContent = 'خطا در ثبت صندلی. مجدداً تلاش کنید.';
           showToast('خطا در اتصال به سرور', 'err');
         }
         setSubmitting(false);
@@ -995,30 +1052,28 @@
       }
 
       const info = { player_name: ign, phone_number: phone, social_id: social, avatar: avatar };
-      slotsState[slotNum] = info;
-      if(wasSelf) setMySeat({ slot: slotNum, ...info });
-      renderSlotTaken(slotNum, info, {animate:true});
+      slotsState[targetSlot] = info;
+      if(wasSelf) setMySeat({ slot: targetSlot, ...info });
+      
+      renderSlotTaken(targetSlot, info, {animate:true});
       updateStats();
-      showToast(`✅ صندلی شماره ${slotNum} با نام «${ign}» ثبت شد`, 'ok');
+      showToast(`✅ صندلی شماره ${targetSlot} ثبت شد`, 'ok');
       setSubmitting(false);
       closeModal();
 
     } catch(err){
       console.error(err);
-      modalErr.textContent = 'خطای غیرمنتظره. لطفاً دوباره تلاش کنید.';
+      modalErr.textContent = 'خطای غیرمنتظره. دوباره تلاش کنید.';
       setSubmitting(false);
     }
   });
 
-  // ===================================================================
-  // مودال انتخاب هوشمند
-  // ===================================================================
   const choiceOverlay = document.getElementById('choice-modal-overlay');
   const choiceSlotNum = document.getElementById('choice-slot-num');
   let choiceTargetSlot = null;
 
   function openChoiceModal(n){
-    choiceTargetSlot = n;
+    choiceTargetSlot = Number(n);
     choiceSlotNum.textContent = n;
     choiceOverlay.classList.add('open');
   }
@@ -1041,16 +1096,13 @@
     openRegModal(target, {self:false});
   });
 
-  // ===================================================================
-  // مودال صندلی خودِ کاربر
-  // ===================================================================
   const ownOverlay = document.getElementById('own-modal-overlay');
   const ownSlotNum = document.getElementById('own-slot-num');
   const ownDetailBox = document.getElementById('own-detail-box');
   let ownActiveSlot = null;
 
   function openOwnSeatModal(n){
-    ownActiveSlot = n;
+    ownActiveSlot = Number(n);
     ownSlotNum.textContent = n;
     const info = slotsState[n] || {};
     ownDetailBox.innerHTML = `
@@ -1065,40 +1117,40 @@
   document.getElementById('own-close-btn').addEventListener('click', closeOwnModal);
   ownOverlay.addEventListener('click', (e) => { if(e.target === ownOverlay) closeOwnModal(); });
 
-  document.getElementById('own-cancel-seat-btn').addEventListener('click', async () => {
+  document.getElementById('own-cancel-seat-btn').addEventListener('click', () => {
     if(ownActiveSlot === null) return;
-    if(!confirm(`آیا مطمئنید می‌خواهید صندلی شماره ${ownActiveSlot} را لغو کنید؟`)) return;
     const n = ownActiveSlot;
-    closeOwnModal();
-    try{
-      const { error } = await supabaseClient.from('slots').delete().eq('slot_number', n);
-      if(error){ showToast('خطا در لغو صندلی', 'err'); return; }
-      delete slotsState[n];
-      renderSlotEmpty(n);
-      updateStats();
-      clearMySeat();
-      showToast('صندلی شما با موفقیت لغو شد', 'ok');
-    }catch(err){ console.error(err); showToast('خطای غیرمنتظره', 'err'); }
+    showConfirmModal('لغو رزرو صندلی', `آیا از لغو صندلی شماره ${n} اطمینان دارید؟`, async () => {
+      closeOwnModal();
+      try{
+        const { error } = await supabaseClient.from('slots').delete().eq('slot_number', n);
+        if(error){ showToast('خطا در لغو صندلی', 'err'); return; }
+        delete slotsState[n];
+        renderSlotEmpty(n);
+        updateStats();
+        clearMySeat();
+        showToast('صندلی شما با موفقیت لغو شد', 'ok');
+      }catch(err){ console.error(err); showToast('خطای غیرمنتظره', 'err'); }
+    });
   });
 
-  // ===================================================================
-  // جابه‌جایی صندلی
-  // ===================================================================
   async function performMove(fromSlot, toSlot, {self}){
+    fromSlot = Number(fromSlot);
+    toSlot = Number(toSlot);
     const info = slotsState[fromSlot];
     if(!info){ showToast('اطلاعات صندلی مبدا یافت نشد', 'err'); return; }
     if(slotsState[toSlot]){ showToast('صندلی مقصد باید خالی باشد', 'err'); return; }
 
     ignoreDeleteSlots.add(fromSlot);
-    try{
+    try {
       const del = await supabaseClient.from('slots').delete().eq('slot_number', fromSlot);
-      if(del.error){ showToast('خطا در جابه‌جایی (حذف مبدا)', 'err'); return; }
+      if(del.error){ showToast('خطا در جابه‌جایی صندلی', 'err'); return; }
 
       const ins = await supabaseClient.from('slots').insert([{
         slot_number: toSlot, player_name: info.player_name, phone_number: info.phone_number,
         social_id: info.social_id, avatar: info.avatar
       }]);
-      if(ins.error){ showToast('خطا در جابه‌جایی (ثبت مقصد)', 'err'); return; }
+      if(ins.error){ showToast('خطا در ثبت صندلی جدید', 'err'); return; }
 
       delete slotsState[fromSlot];
       renderSlotEmpty(fromSlot);
@@ -1116,16 +1168,13 @@
     }
   }
 
-  // ===================================================================
-  // مودال مدیریت صندلی (فقط ادمین)
-  // ===================================================================
   const adminSlotOverlay = document.getElementById('admin-slot-modal-overlay');
   const adminSlotNumEl = document.getElementById('admin-slot-num');
   const adminSlotDetail = document.getElementById('admin-slot-detail');
   let adminActiveSlot = null;
 
   function openAdminSlotModal(n){
-    adminActiveSlot = n;
+    adminActiveSlot = Number(n);
     adminSlotNumEl.textContent = n;
     const info = slotsState[n] || {};
     adminSlotDetail.innerHTML = `
@@ -1133,7 +1182,7 @@
       <div><b>نام:</b> ${escapeHtml(info.player_name)}</div>
       <div><b>موبایل:</b> ${escapeHtml(info.phone_number)}</div>
       <div><b>آیدی:</b> ${escapeHtml(info.social_id)}</div>
-      <div><b>وضعیت:</b> ${isMine(n) ? 'صندلی همین دستگاه' : 'بازیکن دیگر'}</div>
+      <div><b>وضعیت:</b> ${isMine(n) ? 'صندلی دستگاه شما' : 'بازیکن دیگر'}</div>
     `;
     adminSlotOverlay.classList.add('open');
   }
@@ -1141,19 +1190,20 @@
   document.getElementById('admin-slot-close-btn').addEventListener('click', closeAdminSlotModal);
   adminSlotOverlay.addEventListener('click', (e) => { if(e.target === adminSlotOverlay) closeAdminSlotModal(); });
 
-  document.getElementById('admin-slot-kick-btn').addEventListener('click', async () => {
+  document.getElementById('admin-slot-kick-btn').addEventListener('click', () => {
     if(adminActiveSlot === null) return;
-    if(!confirm(`آیا مطمئنید می‌خواهید بازیکن صندلی #${adminActiveSlot} را حذف کنید؟`)) return;
     const n = adminActiveSlot;
-    closeAdminSlotModal();
-    try{
-      const { error } = await supabaseClient.from('slots').delete().eq('slot_number', n);
-      if(error){ showToast('خطا در حذف بازیکن', 'err'); return; }
-      delete slotsState[n];
-      renderSlotEmpty(n);
-      updateStats();
-      showToast(`صندلی #${n} خالی شد`, 'ok');
-    }catch(err){ console.error(err); showToast('خطای غیرمنتظره در حذف', 'err'); }
+    showConfirmModal('حذف بازیکن', `آیا از حذف بازیکن صندلی شماره #${n} مطمئن هستید؟`, async () => {
+      closeAdminSlotModal();
+      try{
+        const { error } = await supabaseClient.from('slots').delete().eq('slot_number', n);
+        if(error){ showToast('خطا در حذف بازیکن', 'err'); return; }
+        delete slotsState[n];
+        renderSlotEmpty(n);
+        updateStats();
+        showToast(`صندلی #${n} خالی شد`, 'ok');
+      }catch(err){ console.error(err); showToast('خطای غیرمنتظره در حذف', 'err'); }
+    });
   });
 
   document.getElementById('admin-slot-move-btn').addEventListener('click', () => {
@@ -1165,9 +1215,9 @@
 
   const moveBanner = document.getElementById('move-banner');
   function enterMoveMode(sourceSlot){
-    adminMoveSource = sourceSlot;
+    adminMoveSource = Number(sourceSlot);
     moveBanner.classList.add('show');
-    showToast(`صندلی خالی مقصد برای انتقال #${sourceSlot} را انتخاب کنید`, 'ok');
+    showToast(`صندلی خالی مقصد برای صندلی #${sourceSlot} را انتخاب کنید`, 'ok');
   }
   function cancelMoveMode(){
     adminMoveSource = null;
@@ -1175,9 +1225,6 @@
   }
   document.getElementById('move-cancel-btn').addEventListener('click', cancelMoveMode);
 
-  // ===================================================================
-  // مودال لیست کامل بازیکنان (ادمین)
-  // ===================================================================
   const tableOverlay = document.getElementById('admin-table-modal-overlay');
   const tableSearchInput = document.getElementById('table-search-input');
   const tableBody = document.getElementById('players-table-body');
@@ -1238,15 +1285,12 @@
     const blob = new Blob(['\uFEFF' + csv], { type:'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
-    a.href = url; a.download = 'players.csv';
+    a.href = url; a.download = 'codm_players.csv';
     document.body.appendChild(a); a.click(); document.body.removeChild(a);
     URL.revokeObjectURL(url);
     showToast('فایل CSV دانلود شد ✅', 'ok');
   });
 
-  // ===================================================================
-  // ورود ادمین
-  // ===================================================================
   const lockBtn = document.getElementById('lock-btn');
   const adminModalOverlay = document.getElementById('admin-modal-overlay');
   const adminPassInput = document.getElementById('admin-pass-input');
@@ -1257,7 +1301,7 @@
   const adminPanel = document.getElementById('admin-panel');
 
   lockBtn.addEventListener('click', () => {
-    if(isAdmin){ showToast('شما در حال حاضر ادمین هستید.', 'ok'); return; }
+    if(isAdmin){ showToast('حالت ادمین در حال حاضر فعال است', 'ok'); return; }
     adminPassInput.value = '';
     adminModalErr.textContent = '';
     adminModalOverlay.classList.add('open');
@@ -1302,24 +1346,25 @@
         id: SETTINGS_ROW_ID, room_id: roomId, room_password: roomPass, published: true
       });
       if(error){ showToast('خطا در ذخیره کد روم', 'err'); console.error(error); return; }
-      showToast('کد روم برای همه منتشر شد ✅', 'ok');
+      showToast('کد روم منتشر شد ✅', 'ok');
     } catch(err){ console.error(err); showToast('خطای غیرمنتظره', 'err'); }
   });
 
-  document.getElementById('admin-clear-room').addEventListener('click', async () => {
-    if(!confirm('کد روم و پسورد فعلی برای همه حذف شود؟')) return;
-    try {
-      const { error } = await supabaseClient.from('tournament_settings').upsert({
-        id: SETTINGS_ROW_ID, room_id: null, room_password: null, published: false
-      });
-      if(error){ showToast('خطا در حذف کد روم', 'err'); console.error(error); return; }
-      document.getElementById('admin-room-id').value = '';
-      document.getElementById('admin-room-pass').value = '';
-      document.getElementById('room-id-val').textContent = '—';
-      document.getElementById('room-pass-val').textContent = '—';
-      document.getElementById('room-locked-overlay').style.display = 'flex';
-      showToast('کد روم حذف شد ✅', 'ok');
-    } catch(err){ console.error(err); showToast('خطای غیرمنتظره', 'err'); }
+  document.getElementById('admin-clear-room').addEventListener('click', () => {
+    showConfirmModal('حذف کد روم', 'کد روم و پسورد فعلی برای همه کاربران حذف شود؟', async () => {
+      try {
+        const { error } = await supabaseClient.from('tournament_settings').upsert({
+          id: SETTINGS_ROW_ID, room_id: null, room_password: null, published: false
+        });
+        if(error){ showToast('خطا در حذف کد روم', 'err'); return; }
+        document.getElementById('admin-room-id').value = '';
+        document.getElementById('admin-room-pass').value = '';
+        document.getElementById('room-id-val').textContent = '—';
+        document.getElementById('room-pass-val').textContent = '—';
+        document.getElementById('room-locked-overlay').style.display = 'flex';
+        showToast('کد روم حذف شد ✅', 'ok');
+      } catch(err){ console.error(err); showToast('خطای غیرمنتظره', 'err'); }
+    });
   });
 
   function updateRegistrationToggleUI(){
@@ -1339,45 +1384,42 @@
       const { error } = await supabaseClient.from('tournament_settings').upsert({
         id: SETTINGS_ROW_ID, registration_open: newState
       });
-      if(error){ showToast('خطا در تغییر وضعیت ثبت‌نام', 'err'); console.error(error); return; }
+      if(error){ showToast('خطا در تغییر وضعیت ثبت‌نام', 'err'); return; }
       registrationOpen = newState;
       updateRegistrationToggleUI();
-      showToast(newState ? 'ثبت‌نام دوباره باز شد ✅' : 'ثبت‌نام موقتاً بسته شد ⏸️', 'ok');
+      showToast(newState ? 'ثبت‌نام باز شد ✅' : 'ثبت‌نام بسته‌ شد ⏸️', 'ok');
     } catch(err){ console.error(err); showToast('خطای غیرمنتظره', 'err'); }
   });
 
-  document.getElementById('admin-reset-all').addEventListener('click', async () => {
-    if(!confirm('⚠️ این عملیات تمام ۱۰۰ صندلی را برای همیشه پاک می‌کند. ادامه می‌دهید؟')) return;
-    if(!confirm('تأیید نهایی: واقعاً همه‌ی صندلی‌ها حذف شوند؟')) return;
-    try {
-      const { error } = await supabaseClient.from('slots').delete().gt('slot_number', 0);
-      if(error){ showToast('خطا در ریست تورنمنت', 'err'); console.error(error); return; }
-      slotsState = {};
-      for(let i = 1; i <= TOTAL_SLOTS; i++) renderSlotEmpty(i);
-      updateStats();
-      clearMySeat();
-      showToast('تمام صندلی‌ها ریست شدند ✅', 'ok');
-    } catch(err){ console.error(err); showToast('خطای غیرمنتظره', 'err'); }
+  document.getElementById('admin-reset-all').addEventListener('click', () => {
+    showConfirmModal('⚠️ ریست کامل تورنمنت', 'تمام ۱۰۰ صندلی ثبت‌شده پاک خواهند شد. آیا اطمینان دارید؟', async () => {
+      try {
+        const { error } = await supabaseClient.from('slots').delete().gt('slot_number', 0);
+        if(error){ showToast('خطا در ریست تورنمنت', 'err'); return; }
+        slotsState = {};
+        for(let i = 1; i <= TOTAL_SLOTS; i++) renderSlotEmpty(i);
+        updateStats();
+        clearMySeat();
+        showToast('تمام صندلی‌ها ریست شدند ✅', 'ok');
+      } catch(err){ console.error(err); showToast('خطای غیرمنتظره', 'err'); }
+    });
   });
 
   document.getElementById('admin-save-time').addEventListener('click', async () => {
     const val = document.getElementById('admin-start-time').value;
-    if(!val){ showToast('یک تاریخ و ساعت انتخاب کنید.', 'err'); return; }
+    if(!val){ showToast('تاریخ و ساعت شروع را انتخاب کنید.', 'err'); return; }
     const newDate = new Date(val);
     try {
       const { error } = await supabaseClient.from('tournament_settings').upsert({
         id: SETTINGS_ROW_ID, start_time: newDate.toISOString()
       });
-      if(error){ showToast('خطا در ذخیره زمان', 'err'); console.error(error); return; }
+      if(error){ showToast('خطا در ذخیره زمان', 'err'); return; }
       tournamentStart = newDate;
       updateCountdown();
-      showToast('زمان شروع تورنمنت به‌روزرسانی شد ✅', 'ok');
+      showToast('زمان شروع تورنمنت به‌روز شد ✅', 'ok');
     } catch(err){ console.error(err); showToast('خطای غیرمنتظره', 'err'); }
   });
 
-  // ===================================================================
-  // نمایش کد روم برای عموم
-  // ===================================================================
   function applyRoomSettings(row){
     if(!row) return;
     if(row.start_time){ tournamentStart = new Date(row.start_time); updateCountdown(); }
@@ -1403,9 +1445,6 @@
     });
   });
 
-  // ===================================================================
-  // منوی کشویی
-  // ===================================================================
   const drawer = document.getElementById('drawer');
   const drawerBackdrop = document.getElementById('drawer-backdrop');
   const mySeatCard = document.getElementById('my-seat-card');
@@ -1413,13 +1452,13 @@
 
   function refreshDrawerSeatCard(){
     const my = getMySeat();
-    if(my){
+    if(my && slotsState[my.slot]){
       mySeatCard.classList.remove('empty');
       mySeatCard.innerHTML = `<div><b style="color:var(--green)">صندلی #${my.slot}</b></div><div>${avatarEmoji(my.avatar)} ${escapeHtml(my.player_name)}</div>`;
       drawerGotoBtn.style.display = 'block';
     } else {
       mySeatCard.classList.add('empty');
-      mySeatCard.textContent = 'شما هنوز صندلی‌ای رزرو نکرده‌اید.';
+      mySeatCard.textContent = 'شما هنوز صندلی رزرو نکرده‌اید.';
       drawerGotoBtn.style.display = 'none';
     }
   }
@@ -1443,9 +1482,6 @@
     setTimeout(() => scrollToSlot(my.slot, true), 200);
   });
 
-  // ===================================================================
-  // اتصال به Supabase
-  // ===================================================================
   const SUPABASE_URL = "https://vpjhtozjrtdtkdtgmmwa.supabase.co";
   const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZwamh0b3pqcnRkdGtkdGdtbXdhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg1Mzc0NDUsImV4cCI6MjEwNDExMzQ0NX0.jQd6BfCCtwHIuFOgxqyECplW4D47oJHkGKh0zut_aec";
 
@@ -1465,28 +1501,31 @@
       .channel('public:slots')
       .on('postgres_changes', { event:'INSERT', schema:'public', table:'slots' }, (payload) => {
         const row = payload.new; if(!row) return;
-        const isNewFromOther = !slotsState[row.slot_number];
-        slotsState[row.slot_number] = { player_name: row.player_name, phone_number: row.phone_number, social_id: row.social_id, avatar: row.avatar };
-        renderSlotTaken(row.slot_number, slotsState[row.slot_number], { animate: isNewFromOther });
+        const num = Number(row.slot_number);
+        const isNewFromOther = !slotsState[num];
+        slotsState[num] = { player_name: row.player_name, phone_number: row.phone_number, social_id: row.social_id, avatar: row.avatar };
+        renderSlotTaken(num, slotsState[num], { animate: isNewFromOther });
         updateStats();
       })
       .on('postgres_changes', { event:'DELETE', schema:'public', table:'slots' }, (payload) => {
         const row = payload.old; if(!row) return;
-        delete slotsState[row.slot_number];
-        renderSlotEmpty(row.slot_number);
+        const num = Number(row.slot_number);
+        delete slotsState[num];
+        renderSlotEmpty(num);
         updateStats();
         const my = getMySeat();
-        if(my && Number(my.slot) === Number(row.slot_number) && !ignoreDeleteSlots.has(row.slot_number)){
+        if(my && Number(my.slot) === num && !ignoreDeleteSlots.has(num)){
           clearMySeat();
           showToast('صندلی شما توسط مدیریت حذف شد', 'err');
         }
       })
       .on('postgres_changes', { event:'UPDATE', schema:'public', table:'slots' }, (payload) => {
         const row = payload.new; if(!row) return;
-        slotsState[row.slot_number] = { player_name: row.player_name, phone_number: row.phone_number, social_id: row.social_id, avatar: row.avatar };
-        renderSlotTaken(row.slot_number, slotsState[row.slot_number]);
+        const num = Number(row.slot_number);
+        slotsState[num] = { player_name: row.player_name, phone_number: row.phone_number, social_id: row.social_id, avatar: row.avatar };
+        renderSlotTaken(num, slotsState[num]);
         updateStats();
-        if(isMine(row.slot_number)){ setMySeat({ slot: row.slot_number, ...slotsState[row.slot_number] }); }
+        if(isMine(num)){ setMySeat({ slot: num, ...slotsState[num] }); }
       })
       .subscribe();
 
@@ -1501,10 +1540,11 @@
   async function fetchAllSlots(){
     try {
       const { data, error } = await supabaseClient.from('slots').select('slot_number, player_name, phone_number, social_id, avatar');
-      if(error){ console.error(error); showToast('خطا در بارگذاری صندلی‌ها', 'err'); return; }
+      if(error){ console.error(error); showToast('خطا در دریافت صندلی‌ها', 'err'); return; }
       slotsState = {};
       (data || []).forEach(row => {
-        slotsState[row.slot_number] = { player_name: row.player_name, phone_number: row.phone_number, social_id: row.social_id, avatar: row.avatar };
+        const num = Number(row.slot_number);
+        slotsState[num] = { player_name: row.player_name, phone_number: row.phone_number, social_id: row.social_id, avatar: row.avatar };
       });
       Object.keys(slotsState).forEach(n => renderSlotTaken(Number(n), slotsState[n]));
       updateStats();
@@ -1519,11 +1559,9 @@
     } catch(err){ console.error(err); }
   }
 
-  try {
-    initSupabase();
-  } catch(initErr){ console.error('initSupabase failed:', initErr); showToast('خطا در راه‌اندازی اولیه', 'err'); }
+  try { initSupabase(); } catch(err){ console.error(err); }
 
 })();
 </script>
 </body>
-</html>
+                                                                                                                                           </html>
